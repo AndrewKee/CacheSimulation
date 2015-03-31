@@ -15,6 +15,6 @@ typedef struct cache {
 	unsigned int mem_chunksize;
 } cache;
 
-void parse_config(char* filename, cache l1_data, cache l1_inst, cache l2, cache main_mem);
+void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem);
 
 void report();
