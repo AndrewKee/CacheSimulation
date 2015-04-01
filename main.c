@@ -18,7 +18,7 @@ int main(int argc, char *argv[]){
 	printf("%s\n", argv[1]);
 	parse_config(argv[1], &l1_data, &l1_inst, &l2, &main_mem);
 
-	read_trace(&num_inst, &num_reads, &num_writes);//pass tracefile name, num_inst, num_reads, num_writes
+	read_trace(&num_inst, &num_reads, &num_writes);
 	report(&l1_data, &l1_inst, &l2, &main_mem, &num_inst, &num_reads, &num_writes);
 }
 
