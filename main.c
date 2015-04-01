@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
 	ull num_reads	= 0;
 	ull num_writes 	= 0;
 	parse_config("config.dat", &l1_data, &l1_inst, &l2, &main_mem);
-	read_trace();//pass tracefile name, num_inst, num_reads, num_writes
+	read_trace("tracefile.dat", &num_inst, &num_reads, &num_writes);//pass tracefile name, num_inst, num_reads, num_writes
 	report(&l1_data, &l1_inst, &l2, &main_mem, &num_inst, &num_reads, &num_writes);
 }
 
