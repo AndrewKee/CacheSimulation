@@ -44,13 +44,15 @@ typedef struct cache_block {
 	uint tag;
 } cache_block;
 
+
+
 //parse through the config file.
 //Will store the values into the cache structs l1_data, l1_inst, l2, and main_mem
 //these are all just properties of each of the caches and the main memory 
 void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem);
 
 //loops through the traces and does the trace
-void read_trace(char* filename, ull* num_inst, ull* num_reads, ull* num_writes);
+void read_trace(ull* num_inst, ull* num_reads, ull* num_writes);
 
 //outputs the results into a file
 void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
