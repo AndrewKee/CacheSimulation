@@ -70,19 +70,21 @@ void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, 
 
 void read_trace(ull* num_inst, ull* num_reads, ull* num_writes){
 	char op;
-	ull address;
-	uint bytesize;
-	while(scanf("%c %llu %d\n", &op, &address, &bytesize) == 3){
-		printf("in the trace\n");
+	unsigned long long int address = 0;
+	uint bytesize = 0;
+	while(scanf("%c %llx %d\n", &op, &address, &bytesize) == 3){
+		// printf("%c %llx %d\n", op, address, bytesize);
 		if(op == 'I'){
-			num_inst++;
+			*num_inst = *num_inst + 1;
 		} else if (op == 'R'){
-			num_reads++;
+			*num_reads = *num_reads + 1;
 		} else if (op == 'W'){
-			num_writes++;
+			*num_writes = *num_writes + 1;
 		}
 	}
 	printf("%llu \n", *num_inst);
+	printf("%llu \n", *num_reads);
+	printf("%llu \n", *num_writes);
 }
 
 void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct main_memory* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
