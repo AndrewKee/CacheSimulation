@@ -10,7 +10,8 @@
 #include "cache.h"
 
 int main(int argc, char *argv[]){
-	struct cache l1_data, l1_inst, l2, main_mem;
+	struct cache l1_data, l1_inst, l2;
+	struct main_memory main_mem;
 	ull num_inst 	= 0;
 	ull num_reads	= 0;
 	ull num_writes 	= 0;

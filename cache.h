@@ -11,12 +11,6 @@ typedef struct cache {
 	uint transfer_time;
 	uint bus_width;
 
-	//main memory parameters
-	uint mem_sendaddr;
-	uint mem_ready;
-	uint mem_chunktime;
-	uint mem_chunksize;
-
 	//store whether the blocks are dirty/valid
 	struct cache_block* cache_blocks;
 
@@ -44,6 +38,13 @@ typedef struct cache_block {
 	uint tag;
 } cache_block;
 
+typedef struct main_memory {
+	//main memory parameters
+	uint mem_sendaddr;
+	uint mem_ready;
+	uint mem_chunktime;
+	uint mem_chunksize;
+} main_memory;
 
 
 //parse through the config file.
@@ -55,4 +56,4 @@ void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, 
 void read_trace(ull* num_inst, ull* num_reads, ull* num_writes);
 
 //outputs the results into a file
-void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
+void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct main_memory* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
