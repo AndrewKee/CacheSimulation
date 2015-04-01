@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct maine_memory* main_mem){
+void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct main_memory* main_mem){
 	FILE *fp;
 	char input[20];
 	char cacheLevel[10];

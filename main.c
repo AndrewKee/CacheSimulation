@@ -19,8 +19,11 @@ int main(int argc, char *argv[]){
 	char op;
 	ull address;
 	uint bytesize;
+	// printf("%d\n", scanf("%c %llu %d\n", &op, &address, &bytesize));
+	// printf("%c", op);
+	while(scanf("%c %llu %d\n", &op, &address, &bytesize) == 2){};
 	while(scanf("%c %llu %d\n", &op, &address, &bytesize) == 3){
-		printf("in the trace\n");
+		printf("%c %llu %d\n", op, address, bytesize);
 		if(op == 'I'){
 			num_inst++;
 		} else if (op == 'R'){
