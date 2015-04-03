@@ -18,7 +18,7 @@ int main(int argc, char *argv[]){
 
 	char * x;
 	if (argv[1]) x = argv[1];
-	else x = "defaults.dat";
+	else x = "Config/defaults.dat";
 
 	printf("%s\n", x);
 	parse_config(x, &l1_data, &l1_inst, &l2, &main_mem);

@@ -1,0 +1,18 @@
+L1 block_size		32
+L1 cache_size		8192
+L1 assoc			2
+L1 hit_time			1
+L1 miss_time		1
+
+L2 block_size		64
+L2 cache_size		65536
+L2 assoc			1
+L2 hit_time			5
+L2 miss_time		7
+L2 transfer_time	5
+L2 bus_width		16
+
+mm mem_sendaddr		10
+mm mem_ready 		30
+mm mem_chunktime 	15
+mm mem_chunksize 	8
