@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
-void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct main_memory* main_mem){
+void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem){
 	FILE *fp;
 	char input[20];
 	char cacheLevel[10];
@@ -21,51 +22,69 @@ void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, 
 		// repeated over new lines
 		while (fscanf(fp,"%s %s %d\n",cacheLevel, input, &val) == 3){
 			if(strcmp(cacheLevel, "L1") == 0){
-				if (strcmp(input, "block_size") == 0){
+				if (strcmp(input, "block_size") 		== 0){
 					l1_data->block_size = val;
 					l1_inst->block_size = val;
-				} else if (strcmp(input, "cache_size") == 0){
+				} else if (strcmp(input, "cache_size") 	== 0){
 					l1_data->cache_size = val;
 					l1_inst->cache_size = val;
-				} else if (strcmp(input, "assoc") == 0){
+				} else if (strcmp(input, "assoc") 		== 0){
 					l1_data->assoc = val;
 					l1_inst->assoc = val;
-				} else if (strcmp(input, "hit_time") == 0){
+				} else if (strcmp(input, "hit_time") 	== 0){
 					l1_data->hit_time = val;
 					l1_inst->hit_time = val;
-				} else if (strcmp(input, "miss_time") == 0){
+				} else if (strcmp(input, "miss_time") 	== 0){
 					l1_data->miss_time = val;
 					l1_inst->miss_time = val;
 				}				
 			} else if (strcmp(input, "L2") == 0){
 				if (strcmp(input, "block_size") == 0){
 					l2->block_size = val;
-				} else if (strcmp(input, "cache_size") == 0){
+				} else if (strcmp(input, "cache_size") 		== 0){
 					l2->cache_size = val;
-				} else if (strcmp(input, "assoc") == 0){
+				} else if (strcmp(input, "assoc") 			== 0){
 					l2->assoc = val;
-				} else if (strcmp(input, "hit_time") == 0){
+				} else if (strcmp(input, "hit_time") 		== 0){
 					l2->hit_time = val;
-				} else if (strcmp(input, "miss_time") == 0){
+				} else if (strcmp(input, "miss_time") 		== 0){
 					l2->miss_time = val;
-				} else if (strcmp(input, "transfer_time") == 0){
+				} else if (strcmp(input, "transfer_time") 	== 0){
 					l2->transfer_time = val;
-				} else if (strcmp(input, "bus_width") == 0){
+				} else if (strcmp(input, "bus_width") 		== 0){
 					l2->bus_width = val;
 				}
 			} else if (strcmp(input, "mm") == 0){
-				if (strcmp(input, "mem_sendaddr") == 0){
+				if (strcmp(input, "mem_sendaddr") 			== 0){
 					main_mem->mem_sendaddr = val;
-				} else if (strcmp(input, "mem_ready") == 0){
+				} else if (strcmp(input, "mem_ready") 		== 0){
 					main_mem->mem_ready = val;
-				} else if (strcmp(input, "mem_chunktime") == 0){
+				} else if (strcmp(input, "mem_chunktime") 	== 0){
 					main_mem->mem_chunktime = val;
-				} else if (strcmp(input, "mem_chunksize") == 0){
+				} else if (strcmp(input, "mem_chunksize") 	== 0){
 					main_mem->mem_chunksize = val;
 				}
 			}
 		}
+
+		l1_data->num_sets = l1_data->cache_size / (l1_data->assoc * l1_data->block_size);
+		l1_data->tag_size = 32 - log(l1_data->cache_size)/log(2) - log(l1_data->block_size)/log(2);
+		l1_data->next_level = l2;
+
+		l1_inst->num_sets = l1_inst->cache_size / (l1_inst->assoc * l1_inst->block_size);
+		l1_inst->tag_size = 32 - log(l1_inst->cache_size)/log(2) - log(l1_inst->block_size)/log(2);
+		l1_inst->next_level = l2;
+
+		l2->num_sets = l2->cache_size / (l2->assoc * l2->block_size);
+		l2->tag_size = 32 - log(l2->cache_size)/log(2) - log(l2->block_size)/log(2);
+		l2->next_level = main_mem;
+
+		main_mem->next_level = NULL;
 	}
+}
+
+void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache* l2){
+	//l1_data->cache_blocks = 
 }
 
 void read_trace(ull* num_inst, ull* num_reads, ull* num_writes){
@@ -87,7 +106,7 @@ void read_trace(ull* num_inst, ull* num_reads, ull* num_writes){
 	printf("%llu \n", *num_writes);
 }
 
-void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct main_memory* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
+void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
 
 	// FILE * outputFile;
 
