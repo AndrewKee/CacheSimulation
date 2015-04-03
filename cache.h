@@ -1,6 +1,7 @@
 typedef unsigned int uint;
 typedef enum { false, true } bool;
 typedef unsigned long long ull;
+
 typedef struct cache {
 	//cache parameters
 	uint block_size;
@@ -14,8 +15,8 @@ typedef struct cache {
 	uint num_sets;
 	uint tag_size;
 
-	//store whether the blocks are dirty/valid
-	struct cache_block* cache_blocks;
+	//Each set points to a set of blocks
+	struct cache_set* cache_set;
 
 	//must know where to go next if we get a miss
 	struct cache* next_level;
@@ -41,6 +42,11 @@ typedef struct cache {
 
 } cache;
 
+//Cache set structure
+typedef struct cache_set {
+	struct cache_block* cache_block;
+} cache_set;
+
 typedef struct cache_block {
 	bool valid;
 	uint tag;
@@ -50,7 +56,7 @@ typedef struct cache_block {
 //parse through the config file.
 //Will store the values into the cache structs l1_data, l1_inst, l2, and main_mem
 //these are all just properties of each of the caches and the main memory 
-void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem);
+int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem);
 
 void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache* l2);
 

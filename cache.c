@@ -4,7 +4,7 @@
 #include <string.h>
 #include <math.h>
 
-void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem){
+int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem){
 	FILE *fp;
 	char input[20];
 	char cacheLevel[10];
@@ -12,8 +12,11 @@ void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, 
 	// printf("%s \n", filename);
 	fp = fopen(filename, "r");
 
-	if(fp == NULL){
+	if(!fp){
 		printf("File Don't Exist \n");
+		fp = fopen("Config/default.dat", "r");
+
+		if (!fp) return -1;
 	}
 	else{  
 		//read through the config file, 
@@ -81,6 +84,8 @@ void parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, 
 
 		main_mem->next_level = NULL;
 	}
+
+	return 0;
 }
 
 void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache* l2){
