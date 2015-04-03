@@ -9,7 +9,6 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 	char input[20];
 	char cacheLevel[10];
 	int val;
-	// printf("%s \n", filename);
 	fp = fopen(filename, "r");
 
 	if(!fp){
