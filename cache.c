@@ -23,6 +23,7 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 			// cacheLevel(string) property(string) value(integer)
 		// repeated over new lines
 		while (fscanf(fp,"%s %s %d\n",cacheLevel, input, &val) == 3){
+			// printf("%s %s %d\n", cacheLevel, input, val);
 			if(strcmp(cacheLevel, "L1") == 0){
 				if (strcmp(input, "block_size") 		== 0){
 					l1_data->block_size = val;
@@ -40,7 +41,8 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 					l1_data->miss_time = val;
 					l1_inst->miss_time = val;
 				}				
-			} else if (strcmp(input, "L2") == 0){
+			} else if (strcmp(cacheLevel, "L2") == 0){
+				printf("in L2\n");
 				if (strcmp(input, "block_size") == 0){
 					l2->block_size = val;
 				} else if (strcmp(input, "cache_size") 		== 0){
@@ -56,7 +58,8 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 				} else if (strcmp(input, "bus_width") 		== 0){
 					l2->bus_width = val;
 				}
-			} else if (strcmp(input, "mm") == 0){
+			} else if (strcmp(cacheLevel, "mm") == 0){
+				printf("in mem\n");
 				if (strcmp(input, "mem_sendaddr") 			== 0){
 					main_mem->mem_sendaddr = val;
 				} else if (strcmp(input, "mem_ready") 		== 0){
