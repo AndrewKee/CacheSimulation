@@ -15,11 +15,18 @@ int main(int argc, char *argv[]){
 	ull num_inst 	= 0;
 	ull num_reads	= 0;
 	ull num_writes 	= 0;
-	printf("%s\n", argv[1]);
-	parse_config(argv[1], &l1_data, &l1_inst, &l2, &main_mem);
+
+	char * x;
+	if (argv[1]) x = argv[1];
+	else x = "defaults.dat";
+
+	printf("%s\n", x);
+	parse_config(x, &l1_data, &l1_inst, &l2, &main_mem);
 
 	read_trace(&num_inst, &num_reads, &num_writes);
 	report(&l1_data, &l1_inst, &l2, &main_mem, &num_inst, &num_reads, &num_writes);
+
+	return 0;
 }
 
 
