@@ -91,7 +91,24 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 }
 
 void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache* l2){
-	//l1_data->cache_blocks = 
+	uint i = 0;
+	//The cache has to have enough space to store the pointers to each set (which is a number of blocks)
+	l1_data->cache_set = (struct cache_set*) malloc(l1_data->num_sets * sizeof(struct cache_block*));
+
+	//the set must have a pointer to each block
+	for(i = 0; i < l1_data->num_sets; i++){
+		l1_data->cache_set[i].cache_block = (struct cache_block*) malloc(l1_data->assoc * sizeof(struct cache_block));
+	}
+
+	l1_inst->cache_set = (struct cache_set*)malloc(l1_inst->num_sets * sizeof(struct cache_block*));
+	for(i = 0; i < l1_inst->num_sets; i++){
+		l1_inst->cache_set[i].cache_block = (struct cache_block*) malloc(l1_inst->assoc * sizeof(struct cache_block));
+	}
+
+	l2->cache_set = (struct cache_set*)malloc(l2->num_sets * sizeof(struct cache_block*));
+	for(i = 0; i < l2->num_sets; i++){
+		l2->cache_set[i].cache_block = (struct cache_block*) malloc(l2->assoc * sizeof(struct cache_block));
+	}
 }
 
 void read_trace(ull* num_inst, ull* num_reads, ull* num_writes){

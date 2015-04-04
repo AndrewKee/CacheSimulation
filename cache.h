@@ -39,7 +39,6 @@ typedef struct cache {
 	ull dirty_kickouts;
 	ull transfers;
 	ull flush_kickouts;
-
 } cache;
 
 //Cache set structure
