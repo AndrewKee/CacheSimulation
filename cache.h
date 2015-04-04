@@ -60,7 +60,9 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache* l2);
 
 //loops through the traces and does the trace
-void read_trace(ull* num_inst, ull* num_reads, ull* num_writes);
+void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes);
+
+void look_through_cache(struct cache* cache_level, unsigned long long int address);
 
 //outputs the results into a file
 void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);

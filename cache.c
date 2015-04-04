@@ -42,7 +42,6 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 					l1_inst->miss_time = val;
 				}				
 			} else if (strcmp(cacheLevel, "L2") == 0){
-				printf("in L2\n");
 				if (strcmp(input, "block_size") == 0){
 					l2->block_size = val;
 				} else if (strcmp(input, "cache_size") 		== 0){
@@ -59,7 +58,6 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 					l2->bus_width = val;
 				}
 			} else if (strcmp(cacheLevel, "mm") == 0){
-				printf("in mem\n");
 				if (strcmp(input, "mem_sendaddr") 			== 0){
 					main_mem->mem_sendaddr = val;
 				} else if (strcmp(input, "mem_ready") 		== 0){
@@ -91,27 +89,29 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 }
 
 void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache* l2){
+	printf("allocating");
 	uint i = 0;
 	//The cache has to have enough space to store the pointers to each set (which is a number of blocks)
 	l1_data->cache_set = (struct cache_set*) malloc(l1_data->num_sets * sizeof(struct cache_block*));
-
+	printf("allocating1");
 	//the set must have a pointer to each block
 	for(i = 0; i < l1_data->num_sets; i++){
 		l1_data->cache_set[i].cache_block = (struct cache_block*) malloc(l1_data->assoc * sizeof(struct cache_block));
 	}
-
+	printf("allocating2");
 	l1_inst->cache_set = (struct cache_set*)malloc(l1_inst->num_sets * sizeof(struct cache_block*));
 	for(i = 0; i < l1_inst->num_sets; i++){
 		l1_inst->cache_set[i].cache_block = (struct cache_block*) malloc(l1_inst->assoc * sizeof(struct cache_block));
 	}
-
+	printf("allocating3");
 	l2->cache_set = (struct cache_set*)malloc(l2->num_sets * sizeof(struct cache_block*));
 	for(i = 0; i < l2->num_sets; i++){
 		l2->cache_set[i].cache_block = (struct cache_block*) malloc(l2->assoc * sizeof(struct cache_block));
 	}
+	printf("allocating4");
 }
 
-void read_trace(ull* num_inst, ull* num_reads, ull* num_writes){
+void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes){
 	char op;
 	unsigned long long int address = 0;
 	uint bytesize = 0;
@@ -119,15 +119,41 @@ void read_trace(ull* num_inst, ull* num_reads, ull* num_writes){
 		// printf("%c %llx %d\n", op, address, bytesize);
 		if(op == 'I'){
 			*num_inst = *num_inst + 1;
+			look_through_cache(l1_inst, address);
 		} else if (op == 'R'){
 			*num_reads = *num_reads + 1;
+			look_through_cache(l1_data, address);
 		} else if (op == 'W'){
 			*num_writes = *num_writes + 1;
+			look_through_cache(l1_data, address);
 		}
 	}
-	printf("%llu \n", *num_inst);
-	printf("%llu \n", *num_reads);
-	printf("%llu \n", *num_writes);
+	// printf("%llu \n", *num_inst);
+	// printf("%llu \n", *num_reads);
+	// printf("%llu \n", *num_writes);
+}
+
+void look_through_cache(struct cache* cache_level, unsigned long long int address){
+	uint index, tag;
+	tag 	= address >> (32 - cache_level->tag_size);
+	index 	= address << cache_level->tag_size;
+	index 	= index >> (uint)(cache_level->tag_size + (32 - cache_level->tag_size - log(cache_level->num_sets)/log(2)));
+	// printf("%u %u\n", tag, index);
+	uint i;
+	for(i = 0; i < cache_level->assoc; i++){
+		if(cache_level->cache_set[index].cache_block[i].valid && cache_level->cache_set[index].cache_block[i].tag == tag){
+			//We found a match, and it's valid! lets count it as a hit!
+			cache_level->num_hits = cache_level->num_hits + 1;
+			return;
+		}
+	}
+
+	/*------------------------------------------------------
+			STILL NEED TO GO TO NEXT CACHE LEVEL
+		  SHOULD WE DO RECURSIVE? WHO KNOWS? I DONT
+	--------------------------------------------------------*/
+	//didn't find the stuff, def a miss
+	cache_level->num_misses = cache_level->num_misses + 1;
 }
 
 void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
