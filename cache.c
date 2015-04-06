@@ -4,6 +4,8 @@
 #include <string.h>
 #include <math.h>
 
+// #define DEBUG
+
 int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem){
 	FILE *fp;
 	char input[20];
@@ -89,26 +91,21 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 }
 
 void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache* l2){
-	printf("allocating");
 	uint i = 0;
 	//The cache has to have enough space to store the pointers to each set (which is a number of blocks)
 	l1_data->cache_set = (struct cache_set*) malloc(l1_data->num_sets * sizeof(struct cache_block*));
-	printf("allocating1");
 	//the set must have a pointer to each block
 	for(i = 0; i < l1_data->num_sets; i++){
 		l1_data->cache_set[i].cache_block = (struct cache_block*) malloc(l1_data->assoc * sizeof(struct cache_block));
 	}
-	printf("allocating2");
 	l1_inst->cache_set = (struct cache_set*)malloc(l1_inst->num_sets * sizeof(struct cache_block*));
 	for(i = 0; i < l1_inst->num_sets; i++){
 		l1_inst->cache_set[i].cache_block = (struct cache_block*) malloc(l1_inst->assoc * sizeof(struct cache_block));
 	}
-	printf("allocating3");
 	l2->cache_set = (struct cache_set*)malloc(l2->num_sets * sizeof(struct cache_block*));
 	for(i = 0; i < l2->num_sets; i++){
 		l2->cache_set[i].cache_block = (struct cache_block*) malloc(l2->assoc * sizeof(struct cache_block));
 	}
-	printf("allocating4");
 }
 
 void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes){
@@ -128,9 +125,11 @@ void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull
 			look_through_cache(l1_data, address);
 		}
 	}
-	// printf("%llu \n", *num_inst);
-	// printf("%llu \n", *num_reads);
-	// printf("%llu \n", *num_writes);
+	#ifdef DEGBUG
+		printf("%llu \n", *num_inst);
+		printf("%llu \n", *num_reads);
+		printf("%llu \n", *num_writes);
+	#endif 
 }
 
 void look_through_cache(struct cache* cache_level, unsigned long long int address){
@@ -138,7 +137,9 @@ void look_through_cache(struct cache* cache_level, unsigned long long int addres
 	tag 	= address >> (32 - cache_level->tag_size);
 	index 	= address << cache_level->tag_size;
 	index 	= index >> (uint)(cache_level->tag_size + (32 - cache_level->tag_size - log(cache_level->num_sets)/log(2)));
-	// printf("%u %u\n", tag, index);
+	#ifdef DEBUG
+		printf("%u %u\n", tag, index);
+	#endif	
 	uint i;
 	for(i = 0; i < cache_level->assoc; i++){
 		if(cache_level->cache_set[index].cache_block[i].valid && cache_level->cache_set[index].cache_block[i].tag == tag){
@@ -220,7 +221,7 @@ void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, stru
 	// fprintf(outputFile, "	Total Requests = %llu", l1_inst->total_requests);
 	// fprintf(outputFile, " 	Hit Rate = %.1f%% 	Miss Rate = %.1f%%\n", l1_inst->hit_rate, l1_inst->miss_rate);
 	// fprintf(outputFile, "	Kickouts = %llu; Dirty Kickouts = %llu; Transfers = %llu\n", l1_inst->kickouts, l1_inst->dirty_kickouts, l1_inst->transfers);
-	// fprintf(outputFile, "Flush Kickouts = %llu", l1_inst->flush_kickouts);
+	// fprintf(outputFile, "Flush Kickouts = %llu\n", l1_inst->flush_kickouts);
 	// fprintf(outputFile, "\n");
 
 	// fprintf(outputFile, "Memory Level: 	L1d");
@@ -228,7 +229,7 @@ void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, stru
 	// fprintf(outputFile, "	Total Requests = %llu", l1_data->total_requests);
 	// fprintf(outputFile, " 	Hit Rate = %.1f%% 	Miss Rate = %.1f%%\n", l1_data->hit_rate, l1_data->miss_rate);
 	// fprintf(outputFile, "	Kickouts = %llu; Dirty Kickouts = %llu; Transfers = %llu\n", l1_data->kickouts, l1_data->dirty_kickouts, l1_data->transfers);
-	// fprintf(outputFile, "Flush Kickouts = %llu", l1_data->flush_kickouts);
+	// fprintf(outputFile, "Flush Kickouts = %llu\n", l1_data->flush_kickouts);
 	// fprintf(outputFile, "\n");
 
 	// fprintf(outputFile, "Memory Level: 	L2");
@@ -236,7 +237,7 @@ void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, stru
 	// fprintf(outputFile, "	Total Requests = %llu", l2->total_requests);
 	// fprintf(outputFile, " 	Hit Rate = %.1f%% 	Miss Rate = %.1f%%\n", l2->hit_rate, l2->miss_rate);
 	// fprintf(outputFile, "	Kickouts = %llu; Dirty Kickouts = %llu; Transfers = %llu\n", l2->kickouts, l2->dirty_kickouts, l2->transfers);
-	// fprintf(outputFile, "Flush Kickouts = %llu", l2->flush_kickouts);
+	// fprintf(outputFile, "Flush Kickouts = %llu\n", l2->flush_kickouts);
 	// fprintf(outputFile, "\n");
 
 	// fprintf(outputFile, "L1 cache cost (Icache $%d) + (Dcache $%d) = $%d", , , );
