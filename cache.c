@@ -98,10 +98,12 @@ void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache*
 	for(i = 0; i < l1_data->num_sets; i++){
 		l1_data->cache_set[i].cache_block = (struct cache_block*) malloc(l1_data->assoc * sizeof(struct cache_block));
 	}
+
 	l1_inst->cache_set = (struct cache_set*)malloc(l1_inst->num_sets * sizeof(struct cache_block*));
 	for(i = 0; i < l1_inst->num_sets; i++){
-		l1_inst->cache_set[i].cache_block = (struct cache_block*) malloc(l1_inst->assoc * sizeof(struct cache_block));
+         l1_inst->cache_set[i].cache_block = (struct cache_block*) malloc(l1_inst->assoc * sizeof(struct cache_block));
 	}
+
 	l2->cache_set = (struct cache_set*)malloc(l2->num_sets * sizeof(struct cache_block*));
 	for(i = 0; i < l2->num_sets; i++){
 		l2->cache_set[i].cache_block = (struct cache_block*) malloc(l2->assoc * sizeof(struct cache_block));
@@ -132,7 +134,7 @@ void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull
 	#endif 
 }
 
-void look_through_cache(struct cache* cache_level, unsigned long long int address){
+cache_block look_through_cache(struct cache* cache_level, unsigned long long int address){
 	uint index, tag;
 	tag 	= address >> (32 - cache_level->tag_size);
 	index 	= address << cache_level->tag_size;
@@ -141,20 +143,43 @@ void look_through_cache(struct cache* cache_level, unsigned long long int addres
 		printf("%u %u\n", tag, index);
 	#endif	
 	uint i;
-	for(i = 0; i < cache_level->assoc; i++){
-		if(cache_level->cache_set[index].cache_block[i].valid && cache_level->cache_set[index].cache_block[i].tag == tag){
-			//We found a match, and it's valid! lets count it as a hit!
-			cache_level->num_hits = cache_level->num_hits + 1;
-			return;
+
+	struct cache_block block;
+
+	if (cache_level->next_level != NULL)
+	{
+		for(i = 0; i < cache_level->assoc; i++){
+			if(cache_level->cache_set[index].cache_block[i].valid && cache_level->cache_set[index].cache_block[i].tag == tag){
+				//We found a match, and it's valid! lets count it as a hit!
+				cache_level->num_hits = cache_level->num_hits + 1;
+				//Return the block to the previous level
+				block.tag = tag;
+				block.valid = true;
+				return block;
+			}
 		}
+		//didn't find the stuff, def a miss
+		cache_level->num_misses = cache_level->num_misses + 1;
+
+		//Recursive search through the cache, not in main memory
+		block = look_through_cache(cache_level->next_level, address);
+
+		//We returned the block, now update the block using an LRU
+		/*TODO!!*/
+	}
+	//We are in main memory
+	else
+	{
+		//Return a block containing the tag and valid of the block
+		cache_level->num_hits = cache_level->num_hits + 1;
+
+		block.tag = tag;
+		block.valid = true;
+		return block;
 	}
 
-	/*------------------------------------------------------
-			STILL NEED TO GO TO NEXT CACHE LEVEL
-		  SHOULD WE DO RECURSIVE? WHO KNOWS? I DONT
-	--------------------------------------------------------*/
-	//didn't find the stuff, def a miss
-	cache_level->num_misses = cache_level->num_misses + 1;
+
+	return block;
 }
 
 void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
