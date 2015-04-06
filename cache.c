@@ -127,7 +127,7 @@ void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull
 			look_through_cache(l1_data, address);
 		}
 	}
-	#ifdef DEGBUG
+	#ifdef DEBUG
 		printf("%llu \n", *num_inst);
 		printf("%llu \n", *num_reads);
 		printf("%llu \n", *num_writes);
