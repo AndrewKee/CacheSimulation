@@ -7,7 +7,7 @@
 
 // #define DEBUG
 
-int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem){
+int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem){
 	FILE *fp;
 	char input[20];
 	char cacheLevel[10];
@@ -93,7 +93,7 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 	return 0;
 }
 
-void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache* l2){
+void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 	uint i = 0;
 	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set*));
 	for(i = 0; i < l1_data->num_sets; i++){
@@ -109,7 +109,7 @@ void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache*
 	}
 }
 
-void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes){
+void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes){
 	char op;
 	unsigned long long int address = 0;
 	// printf("%lu\n", sizeof(unsigned long long int));
@@ -134,7 +134,7 @@ void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull
 	#endif 
 }
 
-void look_through_cache(struct cache* cache_level, ulli address){
+void look_through_cache(cache* cache_level, ulli address){
 	
 	uint i;
 	// uint new_address = 
@@ -203,7 +203,7 @@ LRU* LRU_Construct(unsigned int num_block)
 	return NULL;
 }
 
-void LRU_Update(struct cache* cache_level, unsigned int set, unsigned int index){
+void LRU_Update(cache* cache_level, uint set, uint index){
 	if (!index)
 	{
 		return;
@@ -240,7 +240,7 @@ LRU* LRU_getLRU(struct LRU *lru){
 }
 
 
-void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
+void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
 
 	// FILE * outputFile;
 

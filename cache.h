@@ -17,10 +17,10 @@ typedef struct cache {
 	uint tag_size;
 
 	//cache set points to array of sets
-	struct cache_set** cache_set;
+	cache_set** cache_set;
 
 	//must know where to go next if we get a miss
-	struct cache* next_level;
+	cache* next_level;
 
 	//main memory parameters
 	uint mem_sendaddr;
@@ -45,7 +45,7 @@ typedef struct cache {
 //Cache set structure
 typedef struct cache_set {
 	// struct cache_block* cache_block;
-	struct LRU* lru;
+	LRU* lru;
 	ulli tag;
 	bool valid;
 } cache_set;
@@ -58,17 +58,17 @@ typedef struct cache_set {
 //parse through the config file.
 //Will store the values into the cache structs l1_data, l1_inst, l2, and main_mem
 //these are all just properties of each of the caches and the main memory 
-int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem);
+int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem);
 
-void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache* l2);
+void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2);
 
 //loops through the traces and does the trace
-void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes);
+void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes);
 
-void look_through_cache(struct cache* cache_level, unsigned long long int address);
+void look_through_cache(cache* cache_level, ulli address);
 
 //outputs the results into a file
-void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
+void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
 
 
 
@@ -78,17 +78,17 @@ void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, stru
 
 
 typedef struct node {
-	struct node* next;
+	node* next;
 	unsigned int index;
 } node;
 
 typedef struct LRU {
-	struct node* head;
-	struct node* tail;
+	node* head;
+	node* tail;
 } LRU;
 
 LRU* LRU_Construct(unsigned int num_block);
 
-void LRU_Update(struct cache* cache_level, unsigned int set, unsigned int index);
+void LRU_Update(cache* cache_level, uint set, uint index);
 
-LRU* LRU_getLRU(struct LRU *lru);
+LRU* LRU_getLRU(LRU *lru);
