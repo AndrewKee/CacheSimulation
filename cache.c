@@ -154,13 +154,16 @@ void look_through_cache(struct cache* cache_level, unsigned long long int addres
 	struct cache_block block;
 
 	if (cache_level->next_level != NULL){
-		uint index, tag;
+		unsigned long long int index, tag;
 		tag 	= (address >> (64 - cache_level->tag_size));
 		index 	= address << cache_level->tag_size;
-		index 	= index   >> (uint)(cache_level->tag_size + (64 - cache_level->tag_size - log(cache_level->num_sets)/log(2)));
+		// printf("%llx\n", index);
+		index 	= index   >> (cache_level->tag_size);
+		// printf("%llx\n", index);
+		index 	= index   >> (uint)(log(cache_level->block_size)/log(2));
 		#ifdef DEBUG
 			printf("sizes: %u %u\n", cache_level->tag_size, cache_level->num_sets);
-			printf("address: %u %u\n", tag, index);
+			printf("address: %llx %llx\n", tag, index);
 		#endif	
 
 	// {
