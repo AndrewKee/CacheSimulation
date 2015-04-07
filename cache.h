@@ -44,6 +44,7 @@ typedef struct cache {
 //Cache set structure
 typedef struct cache_set {
 	struct cache_block* cache_block;
+	struct LRU* lru;
 } cache_set;
 
 typedef struct cache_block {
@@ -62,7 +63,30 @@ void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache*
 //loops through the traces and does the trace
 void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes);
 
-cache_block look_through_cache(struct cache* cache_level, unsigned long long int address);
+void look_through_cache(struct cache* cache_level, unsigned long long int address);
 
 //outputs the results into a file
 void report(struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
+
+
+
+
+
+
+
+
+typedef struct node {
+	struct node* next;
+	unsigned int index;
+} node;
+
+typedef struct LRU {
+	struct node* head;
+	struct node* tail;
+} LRU;
+
+LRU* LRU_Construct(unsigned int num_block);
+
+void LRU_Update(struct cache* cache_level, unsigned int set, unsigned int index);
+
+LRU* LRU_getLRU(struct LRU *lru);
