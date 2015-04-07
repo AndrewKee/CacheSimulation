@@ -17,10 +17,10 @@ typedef struct cache {
 	uint tag_size;
 
 	//cache set points to array of sets
-	cache_set** cache_set;
+	struct cache_set** cache_set;
 
 	//must know where to go next if we get a miss
-	cache* next_level;
+	struct cache* next_level;
 
 	//main memory parameters
 	uint mem_sendaddr;
@@ -45,7 +45,7 @@ typedef struct cache {
 //Cache set structure
 typedef struct cache_set {
 	// struct cache_block* cache_block;
-	LRU* lru;
+	struct LRU* lru;
 	ulli tag;
 	bool valid;
 } cache_set;
@@ -78,13 +78,13 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 
 
 typedef struct node {
-	node* next;
+	struct node* next;
 	unsigned int index;
 } node;
 
 typedef struct LRU {
-	node* head;
-	node* tail;
+	struct node* head;
+	struct node* tail;
 } LRU;
 
 LRU* LRU_Construct(unsigned int num_block);

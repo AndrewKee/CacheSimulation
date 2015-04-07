@@ -98,14 +98,17 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set*));
 	for(i = 0; i < l1_data->num_sets; i++){
 		l1_data->cache_set[i] = malloc(l1_data->assoc * sizeof(cache_set));
+		l1_data->cache_set[i]->lru = LRU_Construct(l1_data->assoc);
 	}
 	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
 	for(i = 0; i < l1_inst->num_sets; i++){
 		l1_inst->cache_set[i] = malloc(l1_inst->assoc * sizeof(cache_set));
+		l1_inst->cache_set[i]->lru = LRU_Construct(l1_inst->assoc);
 	}
 	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
 	for(i = 0; i < l2->num_sets; i++){
 		l2->cache_set[i] = malloc(l2->assoc * sizeof(cache_set));
+		l2->cache_set[i]->lru = LRU_Construct(l2->assoc);
 	}
 }
 
@@ -144,9 +147,7 @@ void look_through_cache(cache* cache_level, ulli address){
 		ulli index, tag;
 		tag 	= (address >> (64 - cache_level->tag_size));
 		index 	= address << cache_level->tag_size;
-		// printf("%llx\n", index);
 		index 	= index   >> (cache_level->tag_size);
-		// printf("%llx\n", index);
 		index 	= index   >> (uint)(log(cache_level->block_size)/log(2));
 		#ifdef DEBUG
 			printf("sizes: %u %u\n", cache_level->tag_size, cache_level->num_sets);
@@ -166,7 +167,9 @@ void look_through_cache(cache* cache_level, ulli address){
 	// 	//Recursive search through the cache, not in main memory
 	 	look_through_cache(cache_level->next_level, address);
 	 	return;
+	 	LRU_Update(cache_level, index, i);
 		//We returned the block, now update the block using an LRU
+
 		/*TODO!!*/
 	}
 	// printf("2\n");
