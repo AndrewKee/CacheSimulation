@@ -1,6 +1,7 @@
 typedef unsigned int uint;
 typedef enum { false, true } bool;
 typedef unsigned long long ull;
+typedef unsigned long long int ulli;
 
 typedef struct cache {
 	//cache parameters
@@ -15,8 +16,8 @@ typedef struct cache {
 	uint num_sets;
 	uint tag_size;
 
-	//Each set points to a set of blocks
-	struct cache_set* cache_set;
+	//cache set points to array of sets
+	struct cache_set** cache_set;
 
 	//must know where to go next if we get a miss
 	struct cache* next_level;
@@ -43,14 +44,15 @@ typedef struct cache {
 
 //Cache set structure
 typedef struct cache_set {
-	struct cache_block* cache_block;
+	// struct cache_block* cache_block;
 	struct LRU* lru;
+	ulli tag;
+	bool valid;
 } cache_set;
 
-typedef struct cache_block {
-	bool valid;
-	uint tag;
-} cache_block;
+// typedef struct cache_block {
+	
+// } cache_block;
 
 
 //parse through the config file.

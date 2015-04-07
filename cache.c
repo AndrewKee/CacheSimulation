@@ -5,7 +5,7 @@
 #include <string.h>
 #include <math.h>
 
- #define DEBUG
+// #define DEBUG
 
 int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, struct cache* l2, struct cache* main_mem){
 	FILE *fp;
@@ -76,17 +76,17 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 		uint addres_length = 64;
 
 		l1_data->num_sets = l1_data->cache_size / (l1_data->assoc * l1_data->block_size);
-		l1_data->tag_size = addres_length - log(l1_data->cache_size)/log(2) - log(l1_data->block_size)/log(2);
+		l1_data->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l1_data->block_size)/log(2);
 		// printf("%f %f\n", log(l1_data->cache_size)/log(2), log(l1_data->block_size)/log(2));
 		// printf("%u %u\n", l1_data->num_sets, l1_data->tag_size);
 		l1_data->next_level = l2;
 
 		l1_inst->num_sets = l1_inst->cache_size / (l1_inst->assoc * l1_inst->block_size);
-		l1_inst->tag_size = addres_length - log(l1_inst->cache_size)/log(2) - log(l1_inst->block_size)/log(2);
+		l1_inst->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l1_inst->block_size)/log(2);
 		l1_inst->next_level = l2;
 
 		l2->num_sets = l2->cache_size / (l2->assoc * l2->block_size);
-		l2->tag_size = addres_length - log(l2->cache_size)/log(2) - log(l2->block_size)/log(2);
+		l2->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l2->block_size)/log(2);
 		l2->next_level = main_mem;
 
 		main_mem->next_level = NULL;
@@ -97,29 +97,51 @@ int parse_config(char* filename, struct cache* l1_data, struct cache* l1_inst, s
 
 void allocate_blocks(struct cache* l1_data, struct cache* l1_inst, struct cache* l2){
 	uint i = 0;
-	//The cache has to have enough space to store the pointers to each set (which is a number of blocks)
-	l1_data->cache_set = (struct cache_set*) malloc(l1_data->num_sets * sizeof(struct cache_block*));
-	printf("%u\n", l1_data->assoc);
-	
-	//the set must have a pointer to each block
+	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set*));
+	// printf("%u\n", l1_data->assoc);
 	for(i = 0; i < l1_data->num_sets; i++){
-		l1_data->cache_set[i].cache_block = (struct cache_block*) malloc(l1_data->assoc * sizeof(struct cache_block));
-		// l1_data->cache_set[i].lru = 
-		LRU_Construct(l1_data->assoc);
+		l1_data->cache_set[i] = malloc(l1_data->assoc * sizeof(cache_set));
 	}
-
-
-	l1_inst->cache_set = (struct cache_set*)malloc(l1_inst->num_sets * sizeof(struct cache_block*));
-	// l1_inst->cache_set->lru = LRU_Const(l1_inst->assoc);
+	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
 	for(i = 0; i < l1_inst->num_sets; i++){
-         l1_inst->cache_set[i].cache_block = (struct cache_block*) malloc(l1_inst->assoc * sizeof(struct cache_block));
+		l1_inst->cache_set[i] = malloc(l1_inst->assoc * sizeof(cache_set));
 	}
-
-	l2->cache_set = (struct cache_set*)malloc(l2->num_sets * sizeof(struct cache_block*));
-	// l2->cache_set->lru = LRU_Const(l2->assoc);
+	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
 	for(i = 0; i < l2->num_sets; i++){
-		l2->cache_set[i].cache_block = (struct cache_block*) malloc(l2->assoc * sizeof(struct cache_block));
+		l2->cache_set[i] = malloc(l2->assoc * sizeof(cache_set));
 	}
+	//The cache has to have enough space to store the pointers to each set (which is a number of blocks)
+	// l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set));
+	// // printf("%u\n", l1_data->assoc);
+	// for(i = 0; i < l1_data->num_sets; i++){
+	// 	l1_data->cache_set[i] = malloc(l1_data->assoc * sizeof(struct cache_set));
+	// }
+	// for(i = 0; i < l1_inst->num_sets; i++){
+	// 	l1_inst->cache_set[i] = (struct cache_set*) malloc(l1_inst->assoc * sizeof(struct cache_set));
+	// }
+	// for(i = 0; i < l2->num_sets; i++){
+	// 	l2->cache_set[i] = (struct cache_set*) malloc(l2->assoc * sizeof(struct cache_set));
+	// }
+
+
+	//the set must have a pointer to each block
+	// for(i = 0; i < l1_data->num_sets; i++){
+	// 	l1_data->cache_set[i].cache_block = (struct cache_block*) malloc(l1_data->assoc * sizeof(struct cache_block));
+	// 	// LRU_Construct(l1_data->assoc);
+	// }
+
+
+	// l1_inst->cache_set = (struct cache_set*)malloc(l1_inst->num_sets * sizeof(struct cache_block*));
+	// l1_inst->cache_set->lru = LRU_Const(l1_inst->assoc);
+	// for(i = 0; i < l1_inst->num_sets; i++){
+ //         l1_inst->cache_set[i].cache_block = (struct cache_block*) malloc(l1_inst->assoc * sizeof(struct cache_block));
+	// }
+
+	// l2->cache_set = (struct cache_set*)malloc(l2->num_sets * sizeof(struct cache_block*));
+	// l2->cache_set->lru = LRU_Const(l2->assoc);
+	// for(i = 0; i < l2->num_sets; i++){
+	// 	l2->cache_set[i].cache_block = (struct cache_block*) malloc(l2->assoc * sizeof(struct cache_block));
+	// }
 }
 
 void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes){
@@ -147,14 +169,14 @@ void read_trace(struct cache* l1_data, struct cache* l1_inst, ull* num_inst, ull
 	#endif 
 }
 
-void look_through_cache(struct cache* cache_level, unsigned long long int address){
+void look_through_cache(struct cache* cache_level, ulli address){
 	
 	uint i;
 	// uint new_address = 
-	struct cache_block block;
+	// struct cache_block block;
 
 	if (cache_level->next_level != NULL){
-		unsigned long long int index, tag;
+		ulli index, tag;
 		tag 	= (address >> (64 - cache_level->tag_size));
 		index 	= address << cache_level->tag_size;
 		// printf("%llx\n", index);
@@ -163,22 +185,18 @@ void look_through_cache(struct cache* cache_level, unsigned long long int addres
 		index 	= index   >> (uint)(log(cache_level->block_size)/log(2));
 		#ifdef DEBUG
 			printf("sizes: %u %u\n", cache_level->tag_size, cache_level->num_sets);
-			printf("address: %llx %llx\n", tag, index);
+			printf("address: %llx %llu\n", tag, index);
 		#endif	
 
-	// {
-	// 	for(i = 0; i < cache_level->assoc; i++){
-	// 		if(cache_level->cache_set[index].cache_block[i].valid && cache_level->cache_set[index].cache_block[i].tag == tag){
-	// 			//We found a match, and it's valid! lets count it as a hit!
-	// 			cache_level->num_hits = cache_level->num_hits + 1;
-	// 			//Return the block to the previous level
-	// 			block.tag = tag;
-	// 			block.valid = true;
-	// 			return block;
-	// 		}
-	// 	}
-	// 	//didn't find the stuff, def a miss
-	// 	cache_level->num_misses = cache_level->num_misses + 1;
+		for(i = 0; i < cache_level->assoc; i++){
+			if(cache_level->cache_set[index][i].valid == true && cache_level->cache_set[index][i].tag == tag){
+				//We found a match, and it's valid! lets count it as a hit!
+				cache_level->num_hits = cache_level->num_hits + 1;
+				return;
+			}
+		}
+		//didn't find the stuff, def a miss
+		cache_level->num_misses = cache_level->num_misses + 1;
 
 	// 	//Recursive search through the cache, not in main memory
 	 	look_through_cache(cache_level->next_level, address);
@@ -249,7 +267,7 @@ void LRU_Update(struct cache* cache_level, unsigned int set, unsigned int index)
 	struct node* cur_ptr;
 	struct node* i_ptr;
 
-	cur_ptr = cache_level->cache_set[set].lru->head;
+	cur_ptr = cache_level->cache_set[set][index].lru->head;
 
 	for (unsigned int i = 0; i < index - 1; i++)
 	{
@@ -264,12 +282,12 @@ void LRU_Update(struct cache* cache_level, unsigned int set, unsigned int index)
 		cur_ptr = cur_ptr->next->next;
 	}
 
-	i_ptr->next = cache_level->cache_set[set].lru->head;
-	cache_level->cache_set[set].lru->head = i_ptr;
+	i_ptr->next = cache_level->cache_set[set][index].lru->head;
+	cache_level->cache_set[set][index].lru->head = i_ptr;
 
 	while(cur_ptr->next) cur_ptr = cur_ptr->next;
 
-	cache_level->cache_set[set].lru->tail = cur_ptr;
+	cache_level->cache_set[set][index].lru->tail = cur_ptr;
 }
 
 LRU* LRU_getLRU(struct LRU *lru){
