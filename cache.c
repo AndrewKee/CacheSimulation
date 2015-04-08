@@ -141,7 +141,7 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 		}
 		look_through_cache(l1_inst, address, op);
 		if((*num_inst + *num_reads + *num_writes) % 380000 == 0){
-			//must flush and invalidate all caches
+			//write all dirty blocks to the next level of cache.  do this all the way down to main memory
 		}
 	}
 	#ifdef DEBUG
@@ -183,7 +183,11 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 		cache_level->num_misses = cache_level->num_misses + 1;
 		//must fetch the data from the next level in the cache, I don't think we need this function.  should be able to do this based off the recursiveness.
 		//need to return the tag, index, assoc_level from the next level.  and put the values from that into the first cache/set it to valid
-		fetch_from_next_cache(cache_level->next_level, tag, index, i - 1);
+		//should return an array of these values.  which in sense is a pointer to an array. which means we need to malloc an array for each recursive call of 
+		//this function.
+		// fetch_from_next_cache(cache_level->next_level, tag, index, i - 1);
+		//after we bring data from the next cache, we write it to the LRU block in the first cache.  If what was in there is dirty, 
+		//then we then need to write it to the next cache.
 
 	// 	//Recursive search through the cache, not in main memory
 	 	look_through_cache(cache_level->next_level, address, type);
