@@ -48,6 +48,7 @@ typedef struct cache_set {
 	struct LRU* lru;
 	ulli tag;
 	bool valid;
+	bool dirty;
 } cache_set;
 
 // typedef struct cache_block {
@@ -65,15 +66,12 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2);
 //loops through the traces and does the trace
 void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes);
 
-void look_through_cache(cache* cache_level, ulli address);
+void look_through_cache(cache* cache_level, ulli address, char type);
+
+void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_level);
 
 //outputs the results into a file
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
-
-
-
-
-
 
 
 
@@ -87,8 +85,11 @@ typedef struct LRU {
 	struct node* tail;
 } LRU;
 
+// Initializes an LRU structure to hold the least recently used block
 LRU* LRU_Construct(unsigned int num_block);
 
+//reorganizes the LRU to put the most recently used block at the top
 void LRU_Update(cache* cache_level, uint set, uint index);
 
-LRU* LRU_getLRU(LRU *lru);
+//return the least recently used block
+node* LRU_getLRU(LRU *lru);

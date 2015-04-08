@@ -95,20 +95,33 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 
 void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 	uint i = 0;
+	uint j = 0;
 	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set*));
 	for(i = 0; i < l1_data->num_sets; i++){
 		l1_data->cache_set[i] = malloc(l1_data->assoc * sizeof(cache_set));
-		l1_data->cache_set[i]->lru = LRU_Construct(l1_data->assoc);
+		for(j = 0; j < l1_data->assoc; j++){
+			l1_data->cache_set[i][j].valid = 0;
+			l1_data->cache_set[i][j].dirty = 0;
+			l1_data->cache_set[i][j].lru = LRU_Construct(l1_data->assoc);
+		}
 	}
 	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
 	for(i = 0; i < l1_inst->num_sets; i++){
 		l1_inst->cache_set[i] = malloc(l1_inst->assoc * sizeof(cache_set));
-		l1_inst->cache_set[i]->lru = LRU_Construct(l1_inst->assoc);
+		for(j = 0; j < l1_inst->assoc; j++){
+			l1_inst->cache_set[i][j].valid = 0;
+			l1_inst->cache_set[i][j].dirty = 0;
+			l1_inst->cache_set[i][j].lru = LRU_Construct(l1_inst->assoc);
+		}
 	}
 	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
 	for(i = 0; i < l2->num_sets; i++){
 		l2->cache_set[i] = malloc(l2->assoc * sizeof(cache_set));
-		l2->cache_set[i]->lru = LRU_Construct(l2->assoc);
+		for(j = 0; j < l2->assoc; j++){
+			l2->cache_set[i][j].valid = 0;
+			l2->cache_set[i][j].dirty = 0;
+			l2->cache_set[i][j].lru = LRU_Construct(l2->assoc);
+		}
 	}
 }
 
@@ -121,13 +134,14 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 		// printf("%c %llx %d\n", op, address, bytesize);
 		if(op == 'I'){
 			*num_inst = *num_inst + 1;
-			look_through_cache(l1_inst, address);
 		} else if (op == 'R'){
 			*num_reads = *num_reads + 1;
-			look_through_cache(l1_data, address);
 		} else if (op == 'W'){
 			*num_writes = *num_writes + 1;
-			look_through_cache(l1_data, address);
+		}
+		look_through_cache(l1_inst, address, op);
+		if((*num_inst + *num_reads + *num_writes) % 380000 == 0){
+			//must flush and invalidate all caches
 		}
 	}
 	#ifdef DEBUG
@@ -137,7 +151,7 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 	#endif 
 }
 
-void look_through_cache(cache* cache_level, ulli address){
+void look_through_cache(cache* cache_level, ulli address, char type){
 	
 	uint i;
 	// uint new_address = 
@@ -158,16 +172,23 @@ void look_through_cache(cache* cache_level, ulli address){
 			if(cache_level->cache_set[index][i].valid == true && cache_level->cache_set[index][i].tag == tag){
 				//We found a match, and it's valid! lets count it as a hit!
 				cache_level->num_hits = cache_level->num_hits + 1;
+				if(type == 'W'){
+					cache_level->cache_set[index][i].dirty = true;
+				}
 				return;
 			}
 		}
+		
 		//didn't find the stuff, def a miss
 		cache_level->num_misses = cache_level->num_misses + 1;
+		//must fetch the data from the next level in the cache, I don't think we need this function.  should be able to do this based off the recursiveness.
+		//need to return the tag, index, assoc_level from the next level.  and put the values from that into the first cache/set it to valid
+		fetch_from_next_cache(cache_level->next_level, tag, index, i - 1);
 
 	// 	//Recursive search through the cache, not in main memory
-	 	look_through_cache(cache_level->next_level, address);
+	 	look_through_cache(cache_level->next_level, address, type);
+	 	LRU_Update(cache_level, index, i - 1);
 	 	return;
-	 	LRU_Update(cache_level, index, i);
 		//We returned the block, now update the block using an LRU
 
 		/*TODO!!*/
@@ -177,6 +198,12 @@ void look_through_cache(cache* cache_level, ulli address){
 	//We are in main memory
 	cache_level->num_hits = cache_level->num_hits + 1;
 	return;
+}
+
+void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_level){
+	if(next_level->next_level == NULL)
+		return;
+
 }
 
 LRU* LRU_Construct(unsigned int num_block)
@@ -206,8 +233,9 @@ LRU* LRU_Construct(unsigned int num_block)
 	return NULL;
 }
 
-void LRU_Update(cache* cache_level, uint set, uint index){
-	if (!index)
+void LRU_Update(cache* cache_level, uint set, uint assoc_level){
+	// printf("%u %u\n", set, index);
+	if (!assoc_level)
 	{
 		return;
 	}
@@ -215,9 +243,9 @@ void LRU_Update(cache* cache_level, uint set, uint index){
 	struct node* cur_ptr;
 	struct node* i_ptr;
 
-	cur_ptr = cache_level->cache_set[set][index].lru->head;
+	cur_ptr = cache_level->cache_set[set][assoc_level].lru->head;
 
-	for (unsigned int i = 0; i < index - 1; i++)
+	for (unsigned int i = 0; i < assoc_level - 1; i++)
 	{
 		cur_ptr = cur_ptr->next;
 		if (!cur_ptr && !cur_ptr->next) return; //Bad error checking
@@ -230,16 +258,20 @@ void LRU_Update(cache* cache_level, uint set, uint index){
 		cur_ptr = cur_ptr->next->next;
 	}
 
-	i_ptr->next = cache_level->cache_set[set][index].lru->head;
-	cache_level->cache_set[set][index].lru->head = i_ptr;
+	i_ptr->next = cache_level->cache_set[set][assoc_level].lru->head;
+	cache_level->cache_set[set][assoc_level].lru->head = i_ptr;
 
 	while(cur_ptr->next) cur_ptr = cur_ptr->next;
 
-	cache_level->cache_set[set][index].lru->tail = cur_ptr;
+	cache_level->cache_set[set][assoc_level].lru->tail = cur_ptr;
 }
 
-LRU* LRU_getLRU(struct LRU *lru){
-	return NULL;
+node* LRU_getLRU(struct LRU *lru){
+	struct node* cur_ptr = lru->head;
+	while(cur_ptr->next != NULL){
+		cur_ptr = cur_ptr->next;
+	}
+	return cur_ptr;
 }
 
 
