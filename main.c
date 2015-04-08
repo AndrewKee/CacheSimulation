@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 	parse_config(x, &l1_data, &l1_inst, &l2, &main_mem);
 	allocate_blocks(&l1_data, &l1_inst, &l2);
 	read_trace(&l1_data, &l1_inst, &num_inst, &num_reads, &num_writes);
-	report(&l1_data, &l1_inst, &l2, &main_mem, &num_inst, &num_reads, &num_writes);
+	//report(&l1_data, &l1_inst, &l2, &main_mem, &num_inst, &num_reads, &num_writes);
 
 	return 0;
 }

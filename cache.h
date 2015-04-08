@@ -17,7 +17,7 @@ typedef struct cache {
 	uint tag_size;
 
 	//cache set points to array of sets
-	struct cache_set** cache_set;
+	struct cache_set* cache_set;
 
 	//must know where to go next if we get a miss
 	struct cache* next_level;
@@ -44,16 +44,18 @@ typedef struct cache {
 
 //Cache set structure
 typedef struct cache_set {
-	// struct cache_block* cache_block;
+	struct cache_block* block;
 	struct LRU* lru;
+	//ulli tag;
+	//bool valid;
+	//bool dirty;
+} cache_set;
+
+ typedef struct cache_block {
 	ulli tag;
 	bool valid;
 	bool dirty;
-} cache_set;
-
-// typedef struct cache_block {
-	
-// } cache_block;
+ } cache_block;
 
 
 //parse through the config file.
@@ -82,14 +84,10 @@ typedef struct node {
 
 typedef struct LRU {
 	struct node* head;
-	struct node* tail;
 } LRU;
 
 // Initializes an LRU structure to hold the least recently used block
 LRU* LRU_Construct(unsigned int num_block);
 
-//reorganizes the LRU to put the most recently used block at the top
-void LRU_Update(cache* cache_level, uint set, uint index);
-
-//return the least recently used block
-node* LRU_getLRU(LRU *lru);
+//reorganizes the LRU to put the least recently used block at the top and return that node
+node* LRU_Update(cache* cache_level, uint set);
