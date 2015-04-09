@@ -1,4 +1,4 @@
-main.o : main.c cache.c
+main.o : main.c cache.c LRU.c
 	gcc -Wall -o main.o main.c cache.c LRU.c -lm
 
 clean:

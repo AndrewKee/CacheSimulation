@@ -1,6 +1,6 @@
 //LRU Linked List
 #include "LRU.h"
-#include "cache.h"
+// #include "cache.h"
 #include <stdio.h>
 #include <stdlib.h>
 

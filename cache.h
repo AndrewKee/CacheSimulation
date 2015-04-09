@@ -1,3 +1,6 @@
+#ifndef CACHE_H
+#define CACHE_H
+
 typedef unsigned int uint;
 typedef enum { false, true } bool;
 typedef unsigned long long ull;
@@ -51,11 +54,11 @@ typedef struct cache_set {
 	//bool dirty;
 } cache_set;
 
- typedef struct cache_block {
+typedef struct cache_block {
 	ulli tag;
 	bool valid;
 	bool dirty;
- } cache_block;
+} cache_block;
 
 
 //parse through the config file.
@@ -75,7 +78,7 @@ void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_l
 //outputs the results into a file
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
 
-
+void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem);
 
 // typedef struct node {
 // 	struct node* next;
@@ -89,5 +92,9 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 // // Initializes an LRU structure to hold the least recently used block
 // LRU* LRU_Construct(unsigned int num_block);
 
-// //reorganizes the LRU to put the least recently used block at the top and return that node
+// void LRU_Destruct(cache* cache_level);
+
+//reorganizes the LRU to put the least recently used block at the top and return that node
 // node* LRU_Update(cache* cache_level, uint set);
+
+#endif
