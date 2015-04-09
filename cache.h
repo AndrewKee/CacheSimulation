@@ -44,16 +44,11 @@ typedef struct cache {
 
 //Cache set structure
 typedef struct cache_set {
-	// struct cache_block* cache_block;
 	struct LRU* lru;
 	ulli tag;
 	bool valid;
 	bool dirty;
 } cache_set;
-
-// typedef struct cache_block {
-	
-// } cache_block;
 
 
 //parse through the config file.
@@ -73,7 +68,7 @@ void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_l
 //outputs the results into a file
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
 
-
+void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem);
 
 typedef struct node {
 	struct node* next;
@@ -87,6 +82,8 @@ typedef struct LRU {
 
 // Initializes an LRU structure to hold the least recently used block
 LRU* LRU_Construct(unsigned int num_block);
+
+// void LRU_Destruct(cache* cache_level);
 
 //reorganizes the LRU to put the most recently used block at the top
 void LRU_Update(cache* cache_level, uint set, uint index);
