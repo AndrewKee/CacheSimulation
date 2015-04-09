@@ -99,13 +99,13 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 
 	//Malloc the cache set pointers
 	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set*));
+	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
+	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
 
 	//For every cache set, malloc all blocks
 	for(i = 0; i < l1_data->num_sets; i++){
-
 		//Construct an lru and return the pointer 
 		l1_data->cache_set[i].lru = LRU_Construct(l1_data->assoc);
-
 		//Malloc the blocks at the index
 		l1_data->cache_set[i].block = malloc(l1_data->assoc * sizeof(cache_block));
 
@@ -116,19 +116,14 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 			l1_data->cache_set[i].block[j].dirty = 0;
 		}
 	}
-
 	//Malloc the cache set pointers
-	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
-
+	
 	//For every cache set, malloc all blocks
 	for(i = 0; i < l1_inst->num_sets; i++){
-
 		//Construct an lru and return the pointer 
 		l1_inst->cache_set[i].lru = LRU_Construct(l1_inst->assoc);
-
 		//Malloc the blocks at the index
 		l1_inst->cache_set[i].block = malloc(l1_inst->assoc * sizeof(cache_block));
-
 		for (j = 0; j < l1_inst->assoc; j++)
 		{
 			//Set the valid and dirty bits
@@ -138,7 +133,7 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 	}
 
 	//Malloc the cache set pointers
-	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
+	
 
 	//For every cache set, malloc all blocks
 	for(i = 0; i < l2->num_sets; i++){
@@ -277,8 +272,8 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 
 	 	//Recursive search through the cache, not in main memory
 	 	//look_through_cache(cache_level->next_level, address, type);
-	 	unsigned int b = LRU_Get_LRU(cache_level, index);
-	 	LRU_Update(cache_level, index, b);
+	 	// unsigned int b = LRU_Get_LRU(cache_level, index);
+	 	// LRU_Update(cache_level, index, b);
 	 	return;
 		//We returned the block, now update the block using an LRU
 
@@ -295,63 +290,6 @@ void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_l
 		return;
 
 }
-
-
-// LRU* LRU_Construct(unsigned int num_block)
-// {
-// 	if (num_block)
-// 	{
-// 		struct LRU* lru = (struct LRU*)malloc( sizeof(struct LRU));
-
-// 		struct node* n_ptr = NULL;
-
-// 		unsigned int i;
-// 		for (i = 0; i < num_block; i++)
-// 		{
-// 			n_ptr = (struct node*)malloc( sizeof(struct node));
-// 			if(i) {
-// 				struct node* l_ptr = n_ptr;
-// 				l_ptr--;
-// 				l_ptr->next = n_ptr;
-// 			}
-
-// 			if (!i) lru->head = n_ptr;
-
-// 			n_ptr++;
-// 		}
-// 		return lru;
-// 	}
-// 	return NULL;
-// }
-
-// node* LRU_Update(cache* cache_level, uint set){
-// 	// printf("%u %u\n", set, index);
-// 	struct node* cur_ptr;
-// 	struct node* i_ptr;
-
-// 	cur_ptr = cache_level->cache_set[set].lru->head;
-
-// 	unsigned int i;
-// 	for (i = 0; i < cache_level->assoc - 1; i++)
-// 	{
-// 		cur_ptr = cur_ptr->next;
-// 		if (!cur_ptr && !cur_ptr->next) return NULL; //Bad error checking
-// 	}
-
-// 	i_ptr = cur_ptr->next;
-
-// 	if (cur_ptr->next) 
-// 	{
-// 		//The next pointer should skip i_ptr
-// 		cur_ptr->next = cur_ptr->next->next;
-// 	}
-
-// 	i_ptr->next = cache_level->cache_set[set].lru->head;
-// 	cache_level->cache_set[set].lru->head = i_ptr;
-
-// 	return i_ptr;
-// }
-
 
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
 
