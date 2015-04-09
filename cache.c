@@ -106,11 +106,11 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 		//Construct an lru and return the pointer 
 		l1_data->cache_set[i].lru = LRU_Construct(l1_data->assoc);
 
+		//Malloc the blocks at the index
+		l1_data->cache_set[i].block = malloc(l1_data->assoc * sizeof(cache_block));
+
 		for (j = 0; j < l1_data->assoc; j++)
 		{
-			//Malloc the block at the index
-			l1_data->cache_set[i].block = malloc( sizeof(cache_block));
-
 			//Set the valid and dirty bits
 			l1_data->cache_set[i].block[j].valid = 0;
 			l1_data->cache_set[i].block[j].dirty = 0;
@@ -126,14 +126,14 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 		//Construct an lru and return the pointer 
 		l1_inst->cache_set[i].lru = LRU_Construct(l1_inst->assoc);
 
+		//Malloc the blocks at the index
+		l1_inst->cache_set[i].block = malloc(l1_inst->assoc * sizeof(cache_block));
+
 		for (j = 0; j < l1_inst->assoc; j++)
 		{
-			//Malloc the block at the index
-			//l1_inst->cache_set[i].block = malloc( sizeof(cache_block));
-
 			//Set the valid and dirty bits
-			//l1_inst->cache_set[i].block[j].valid = 0;
-			//l1_inst->cache_set[i].block[j].dirty = 0;
+			l1_inst->cache_set[i].block[j].valid = 0;
+			l1_inst->cache_set[i].block[j].dirty = 0;
 		}
 	}
 
@@ -146,11 +146,11 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 		//Construct an lru and return the pointer 
 		l2->cache_set[i].lru = LRU_Construct(l2->assoc);
 
+		//Malloc the blocks at the index
+		l2->cache_set[i].block = malloc(l2->assoc * sizeof(cache_block));
+
 		for (j = 0; j < l2->assoc; j++)
 		{
-			//Malloc the block at the index
-			l2->cache_set[i].block = malloc( sizeof(cache_block));
-
 			//Set the valid and dirty bits
 			l2->cache_set[i].block[j].valid = 0;
 			l2->cache_set[i].block[j].dirty = 0;
@@ -227,17 +227,14 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 				printf("%llu index \n\n", index);
 			#endif
 
-			struct cache_block* block;
-			cache_level->cache_set[0]= block;
-
-			//if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
+			if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
 				//We found a match, and it's valid! lets count it as a hit!
-			//	cache_level->num_hits = cache_level->num_hits + 1;
-			//	if(type == 'W'){
-			//		cache_level->cache_set[index].block[i].dirty = true;
-			//	}
-			//	return;
-			//}
+				cache_level->num_hits = cache_level->num_hits + 1;
+				if(type == 'W'){
+					cache_level->cache_set[index].block[i].dirty = true;
+				}
+				return;
+			}
 		}
 		
 		//didn't find the stuff, def a miss
