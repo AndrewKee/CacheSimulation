@@ -96,15 +96,68 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 	uint i = 0;
 	uint j = 0;
+
+	//Malloc the cache set pointers
 	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set*));
+
+	//For every cache set, malloc all blocks
 	for(i = 0; i < l1_data->num_sets; i++){
-		l1_data->cache_set[i] = malloc(l1_data->assoc * sizeof(cache_set));
-		for(j = 0; j < l1_data->assoc; j++){
-			l1_data->cache_set[i][j].valid = 0;
-			l1_data->cache_set[i][j].dirty = 0;
-			l1_data->cache_set[i][j].lru = LRU_Construct(l1_data->assoc);
+
+		//Construct an lru and return the pointer 
+		l1_data->cache_set[i].lru = LRU_Construct(l1_data->assoc);
+
+		//Malloc the blocks at the index
+		l1_data->cache_set[i].block = malloc(l1_data->assoc * sizeof(cache_block));
+
+		for (j = 0; j < l1_data->assoc; j++)
+		{
+			//Set the valid and dirty bits
+			l1_data->cache_set[i].block[j].valid = 0;
+			l1_data->cache_set[i].block[j].dirty = 0;
 		}
 	}
+
+	//Malloc the cache set pointers
+	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
+
+	//For every cache set, malloc all blocks
+	for(i = 0; i < l1_inst->num_sets; i++){
+
+		//Construct an lru and return the pointer 
+		l1_inst->cache_set[i].lru = LRU_Construct(l1_inst->assoc);
+
+		//Malloc the blocks at the index
+		l1_inst->cache_set[i].block = malloc(l1_inst->assoc * sizeof(cache_block));
+
+		for (j = 0; j < l1_inst->assoc; j++)
+		{
+			//Set the valid and dirty bits
+			l1_inst->cache_set[i].block[j].valid = 0;
+			l1_inst->cache_set[i].block[j].dirty = 0;
+		}
+	}
+
+	//Malloc the cache set pointers
+	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
+
+	//For every cache set, malloc all blocks
+	for(i = 0; i < l2->num_sets; i++){
+
+		//Construct an lru and return the pointer 
+		l2->cache_set[i].lru = LRU_Construct(l2->assoc);
+
+		//Malloc the blocks at the index
+		l2->cache_set[i].block = malloc(l2->assoc * sizeof(cache_block));
+
+		for (j = 0; j < l2->assoc; j++)
+		{
+			//Set the valid and dirty bits
+			l2->cache_set[i].block[j].valid = 0;
+			l2->cache_set[i].block[j].dirty = 0;
+		}
+	}
+
+	/* MULTIDIMENSIONAL ARRAY
 	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
 	for(i = 0; i < l1_inst->num_sets; i++){
 		l1_inst->cache_set[i] = malloc(l1_inst->assoc * sizeof(cache_set));
@@ -123,6 +176,7 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 			l2->cache_set[i][j].lru = LRU_Construct(l2->assoc);
 		}
 	}
+	*/
 }
 
 void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem){
@@ -195,12 +249,18 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 			printf("address: %llx %llu\n", tag, index);
 		#endif	
 
+
 		for(i = 0; i < cache_level->assoc; i++){
-			if(cache_level->cache_set[index][i].valid == true && cache_level->cache_set[index][i].tag == tag){
+			#ifdef DEBUG
+				printf("%llu cache_level \n", cache_level->num_sets);
+				printf("%llu index \n\n", index);
+			#endif
+
+			if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
 				//We found a match, and it's valid! lets count it as a hit!
 				cache_level->num_hits = cache_level->num_hits + 1;
 				if(type == 'W'){
-					cache_level->cache_set[index][i].dirty = true;
+					cache_level->cache_set[index].block[i].dirty = true;
 				}
 				return;
 			}
@@ -216,9 +276,9 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 		//after we bring data from the next cache, we write it to the LRU block in the first cache.  If what was in there is dirty, 
 		//then we then need to write it to the next cache.
 
-	// 	//Recursive search through the cache, not in main memory
-	 	look_through_cache(cache_level->next_level, address, type);
-	 	LRU_Update(cache_level, index, i - 1);
+	 	//Recursive search through the cache, not in main memory
+	 	//look_through_cache(cache_level->next_level, address, type);
+	 	//LRU_Update(cache_level, index);
 	 	return;
 		//We returned the block, now update the block using an LRU
 
@@ -244,11 +304,10 @@ LRU* LRU_Construct(unsigned int num_block)
 		struct LRU* lru = (struct LRU*)malloc( sizeof(struct LRU));
 
 		struct node* n_ptr = NULL;
-
-		 for (unsigned int i = 0; i < num_block; i++)
-		 {
-		 	n_ptr = (struct node*)malloc( sizeof(struct node));
-		 	n_ptr->index = i;
+		unsigned int i;
+		for (i = 0; i < num_block; i++)
+		{
+			n_ptr = (struct node*)malloc( sizeof(struct node));
 			if(i) {
 				struct node* l_ptr = n_ptr;
 				l_ptr--;
@@ -256,54 +315,40 @@ LRU* LRU_Construct(unsigned int num_block)
 			}
 
 			if (!i) lru->head = n_ptr;
-			if (i == num_block-1) lru->tail = n_ptr;
 
 			n_ptr++;
-		 }
+		}
 		return lru;
 	}
 	return NULL;
 }
 
-void LRU_Update(cache* cache_level, uint set, uint assoc_level){
+node* LRU_Update(cache* cache_level, uint set){
 	// printf("%u %u\n", set, index);
-	if (!assoc_level)
-	{
-		return;
-	}
-
 	struct node* cur_ptr;
 	struct node* i_ptr;
 
-	cur_ptr = cache_level->cache_set[set][assoc_level].lru->head;
+	cur_ptr = cache_level->cache_set[set].lru->head;
 
-	for (unsigned int i = 0; i < assoc_level - 1; i++)
+	unsigned int i;
+	for (i = 0; i < cache_level->assoc - 1; i++)
 	{
 		cur_ptr = cur_ptr->next;
-		if (!cur_ptr && !cur_ptr->next) return; //Bad error checking
+		if (!cur_ptr && !cur_ptr->next) return NULL; //Bad error checking
 	}
 
 	i_ptr = cur_ptr->next;
 
 	if (cur_ptr->next) 
 	{
-		cur_ptr = cur_ptr->next->next;
+		//The next pointer should skip i_ptr
+		cur_ptr->next = cur_ptr->next->next;
 	}
 
-	i_ptr->next = cache_level->cache_set[set][assoc_level].lru->head;
-	cache_level->cache_set[set][assoc_level].lru->head = i_ptr;
+	i_ptr->next = cache_level->cache_set[set].lru->head;
+	cache_level->cache_set[set].lru->head = i_ptr;
 
-	while(cur_ptr->next) cur_ptr = cur_ptr->next;
-
-	cache_level->cache_set[set][assoc_level].lru->tail = cur_ptr;
-}
-
-node* LRU_getLRU(struct LRU *lru){
-	struct node* cur_ptr = lru->head;
-	while(cur_ptr->next != NULL){
-		cur_ptr = cur_ptr->next;
-	}
-	return cur_ptr;
+	return i_ptr;
 }
 
 
@@ -396,11 +441,3 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 
 	// fclose(outputFile);
 }
-
-
-
-
-
-
-
-
