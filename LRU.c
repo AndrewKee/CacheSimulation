@@ -34,7 +34,7 @@ LRU* LRU_Construct(unsigned int num_block)
 }
 
 node* LRU_Update(cache* cache_level, uint set, uint block){
-	// printf("%u %u\n", set, index);
+	//printf("%u %u\n", set, block);
 	if (block > cache_level->assoc) 
 	{
 		printf("Block index exceeds associativity: ERROR");
@@ -50,7 +50,6 @@ node* LRU_Update(cache* cache_level, uint set, uint block){
 	//Check for single element list, or if the way is already most recently used
 	if (!cur_ptr->next || cur_ptr->index == block) return cur_ptr;
 	
-	//unsigned int i;
 	while(cur_ptr->next)
 	{
 		//Stop when cur_ptr is equal to the prior element than the block
@@ -65,14 +64,20 @@ node* LRU_Update(cache* cache_level, uint set, uint block){
 		}
 	}
 
+	printf("We made it\n");
+
 	//i_ptr becomes a pointer to the block that needs to be moved to the top
 	i_ptr = cur_ptr->next;
-
+	printf("cur index: %u \n", cur_ptr->index);
+	printf("i index: %u \n", i_ptr->index);
 	//If we are not at the final element, we should link cur_ptr to the element after i_ptr
 	if (cur_ptr->next->next) 
 	{
 		//The next pointer should skip i_ptr
 		cur_ptr->next = cur_ptr->next->next;
+	}
+	else{
+		cur_ptr->next = NULL;
 	}
 
 	//Point i_ptr to the current head

@@ -271,9 +271,10 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 		//then we then need to write it to the next cache.
 
 	 	//Recursive search through the cache, not in main memory
-	 	//look_through_cache(cache_level->next_level, address, type);
-	 	// unsigned int b = LRU_Get_LRU(cache_level, index);
-	 	// LRU_Update(cache_level, index, b);
+	 	look_through_cache(cache_level->next_level, address, type);
+	 	unsigned int b = LRU_Get_LRU(cache_level, index);
+	 	 // printf("%u b\n", b);
+	 	LRU_Update(cache_level, index, b);
 	 	return;
 		//We returned the block, now update the block using an LRU
 
