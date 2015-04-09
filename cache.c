@@ -180,31 +180,31 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 }
 
 void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem){
-	uint i = 0;
-	uint j = 0;
-	for(i = 0; i < l1_data->num_sets; i++){
-		for(j = 0; j < l1_data->assoc; j++){
-			// l1_data->cache_set[i][j].lru = LRU_Destruct(l1_data->assoc);
-		}
-		free(l1_data->cache_set[i]);
-	}
-	free(l1_data->cache_set);
+	// uint i = 0;
+	// uint j = 0;
+	// for(i = 0; i < l1_data->num_sets; i++){
+	// 	for(j = 0; j < l1_data->assoc; j++){
+	// 		// l1_data->cache_set[i][j].lru = LRU_Destruct(l1_data->assoc);
+	// 	}
+	// 	free(l1_data->cache_set[i]);
+	// }
+	// free(l1_data->cache_set);
 	
-	for(i = 0; i < l1_inst->num_sets; i++){
-		for(j = 0; j < l1_inst->assoc; j++){
-			// l1_inst->cache_set[i][j].lru = LRU_Destruct(l1_inst->assoc);
-		}
-		free(l1_inst->cache_set[i]);
-	}
-	free(l1_inst->cache_set);
+	// for(i = 0; i < l1_inst->num_sets; i++){
+	// 	for(j = 0; j < l1_inst->assoc; j++){
+	// 		// l1_inst->cache_set[i][j].lru = LRU_Destruct(l1_inst->assoc);
+	// 	}
+	// 	free(l1_inst->cache_set[i]);
+	// }
+	// free(l1_inst->cache_set);
 	
-	for(i = 0; i < l2->num_sets; i++){
-		for(j = 0; j < l2->assoc; j++){
-			// l2->cache_set[i][j].lru = LRU_Destruct(l2->assoc);
-		}		
-		free(l2->cache_set[i]);
-	}
-	free(l2->cache_set);
+	// for(i = 0; i < l2->num_sets; i++){
+	// 	for(j = 0; j < l2->assoc; j++){
+	// 		// l2->cache_set[i][j].lru = LRU_Destruct(l2->assoc);
+	// 	}		
+	// 	free(l2->cache_set[i]);
+	// }
+	// free(l2->cache_set);
 	
 }
 
