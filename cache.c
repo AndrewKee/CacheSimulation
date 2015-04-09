@@ -122,12 +122,8 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 			l1_data->cache_set[i].block[j].dirty = 0;
 		}
 	}
-<<<<<<< HEAD
-
-=======
 	//Malloc the cache set pointers
 	
->>>>>>> 8b278c62f9488094146a06a8db7faa67e8db973a
 	//For every cache set, malloc all blocks
 	for(i = 0; i < l1_inst->num_sets; i++){
 		//Construct an lru and return the pointer 
@@ -142,12 +138,9 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	//Malloc the cache set pointers
 	
 
->>>>>>> 8b278c62f9488094146a06a8db7faa67e8db973a
 	//For every cache set, malloc all blocks
 	for(i = 0; i < l2->num_sets; i++){
 
@@ -283,10 +276,6 @@ void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_l
 
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 8b278c62f9488094146a06a8db7faa67e8db973a
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
 
 	// FILE * outputFile;
