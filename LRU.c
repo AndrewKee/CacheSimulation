@@ -64,12 +64,10 @@ node* LRU_Update(cache* cache_level, uint set, uint block){
 		}
 	}
 
-	printf("We made it\n");
-
 	//i_ptr becomes a pointer to the block that needs to be moved to the top
 	i_ptr = cur_ptr->next;
-	printf("cur index: %u \n", cur_ptr->index);
-	printf("i index: %u \n", i_ptr->index);
+	// printf("cur index: %u \n", cur_ptr->index);
+	// printf("i index: %u \n", i_ptr->index);
 	//If we are not at the final element, we should link cur_ptr to the element after i_ptr
 	if (cur_ptr->next->next) 
 	{
