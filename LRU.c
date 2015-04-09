@@ -6,10 +6,10 @@
 
 LRU* LRU_Construct(unsigned int num_block)
 {
+	
 	if (num_block)
 	{
-		struct LRU* lru = (struct LRU*)malloc( sizeof(struct LRU));
-
+		struct LRU* lru = malloc( sizeof(struct LRU));
 		struct node* n_ptr = NULL;
 		n_ptr = malloc(num_block * sizeof(struct node));
 
