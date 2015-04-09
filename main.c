@@ -9,9 +9,6 @@
 #include <stdlib.h>
 #include "cache.h"
 
-
-
-
 int main(int argc, char *argv[]){
 	struct cache l1_data, l1_inst, l2, main_mem;
 	ull num_inst 	= 0;

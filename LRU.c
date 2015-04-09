@@ -1,67 +1,98 @@
 //LRU Linked List
-
-// #include "LRU.h"
+#include "LRU.h"
 #include "cache.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-LRU* LRU_Const(unsigned int num_block)
+LRU* LRU_Construct(unsigned int num_block)
 {
 	if (num_block)
 	{
-		struct LRU* lru = (struct LRU)malloc(sizeof(struct LRU));
+		struct LRU* lru = (struct LRU*)malloc( sizeof(struct LRU));
 
-		struct node* n_ptr;
+		struct node* n_ptr = NULL;
+		n_ptr = malloc(num_block * sizeof(struct node));
+
 		unsigned int i;
 		for (i = 0; i < num_block; i++)
 		{
-			n_ptr[i] = (struct node)malloc(sizeof(struct node));
-			n_ptr[i].index = i;
-			if(i)
-				n_ptr[i-1].next = n_ptr[i];
+			n_ptr->index = i;
+
+			if(i) {
+				struct node* l_ptr = n_ptr;
+				l_ptr--;
+				l_ptr->next = n_ptr;
+			}
+
+			if (!i) lru->head = n_ptr;
+
+			n_ptr++;
 		}
-		lru->head = n_ptr[0];
-		lru->tail = n_ptr[num_block-1];
 		return lru;
 	}
-
-	else
-	{
-		return NULL;
-	}
+	return NULL;
 }
 
-void LRU_Update(struct cache* cache_level, unsigned int set, unsigned int index){
-	if (!index)
+node* LRU_Update(cache* cache_level, uint set, uint block){
+	// printf("%u %u\n", set, index);
+	if (block > cache_level->assoc) 
 	{
-		return;
+		printf("Block index exceeds associativity: ERROR");
+		return NULL;
 	}
 
 	struct node* cur_ptr;
 	struct node* i_ptr;
 
+	//Set the pointer equal to the head
 	cur_ptr = cache_level->cache_set[set].lru->head;
 
-	unsigned int i;
-	for (i = 0; i < index - 1; i++)
+	//Check for single element list, or if the way is already most recently used
+	if (!cur_ptr->next || cur_ptr->index == block) return cur_ptr;
+	
+	//unsigned int i;
+	while(cur_ptr->next)
 	{
-		cur_ptr = cur_ptr->next;
-		if (!cur_ptr && !cur_ptr->next) return; //Bad error checking
+		//Stop when cur_ptr is equal to the prior element than the block
+		if (cur_ptr->next->index == block)
+		{
+			break;
+		}
+		else
+		{
+			//Move on to the next element
+			cur_ptr = cur_ptr->next;
+		}
 	}
 
+	//i_ptr becomes a pointer to the block that needs to be moved to the top
 	i_ptr = cur_ptr->next;
 
-	if (cur_ptr->next) 
+	//If we are not at the final element, we should link cur_ptr to the element after i_ptr
+	if (cur_ptr->next->next) 
 	{
-		cur_ptr = cur_ptr->next->next;
+		//The next pointer should skip i_ptr
+		cur_ptr->next = cur_ptr->next->next;
 	}
 
+	//Point i_ptr to the current head
 	i_ptr->next = cache_level->cache_set[set].lru->head;
+
+	//Link the head to i_ptr
 	cache_level->cache_set[set].lru->head = i_ptr;
-
-	while(cur_ptr->next) cur_ptr = cur_ptr->next;
-
-	cache_level->cache_set[set].lru->tail = cur_ptr;
+	
+	return i_ptr;
 }
 
-LRU* LRU_getLRU(struct LRU *lru){
+unsigned int LRU_Get_LRU(cache* cache_level, uint set)
+{
+	struct node* cur_ptr = cache_level->cache_set[set].lru->head;
 
+	//Stuck in an infinite loop here, why?
+	while (cur_ptr->next)
+	{
+		cur_ptr = cur_ptr->next;
+	}
+
+	return cur_ptr->index;
 }

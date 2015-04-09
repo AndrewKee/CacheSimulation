@@ -1,5 +1,5 @@
 #include "cache.h"
-// #include "LRU.h"
+#include "LRU.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -235,7 +235,6 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 }
 
 void look_through_cache(cache* cache_level, ulli address, char type){
-	
 	uint i;
 
 	if (cache_level->next_level != NULL){
@@ -278,7 +277,8 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 
 	 	//Recursive search through the cache, not in main memory
 	 	//look_through_cache(cache_level->next_level, address, type);
-	 	//LRU_Update(cache_level, index);
+	 	unsigned int b = LRU_Get_LRU(cache_level, index);
+	 	LRU_Update(cache_level, index, b);
 	 	return;
 		//We returned the block, now update the block using an LRU
 
@@ -297,59 +297,61 @@ void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_l
 
 }
 
-LRU* LRU_Construct(unsigned int num_block)
-{
-	if (num_block)
-	{
-		struct LRU* lru = (struct LRU*)malloc( sizeof(struct LRU));
 
-		struct node* n_ptr = NULL;
-		unsigned int i;
-		for (i = 0; i < num_block; i++)
-		{
-			n_ptr = (struct node*)malloc( sizeof(struct node));
-			if(i) {
-				struct node* l_ptr = n_ptr;
-				l_ptr--;
-				l_ptr->next = n_ptr;
-			}
+// LRU* LRU_Construct(unsigned int num_block)
+// {
+// 	if (num_block)
+// 	{
+// 		struct LRU* lru = (struct LRU*)malloc( sizeof(struct LRU));
 
-			if (!i) lru->head = n_ptr;
+// 		struct node* n_ptr = NULL;
 
-			n_ptr++;
-		}
-		return lru;
-	}
-	return NULL;
-}
+// 		unsigned int i;
+// 		for (i = 0; i < num_block; i++)
+// 		{
+// 			n_ptr = (struct node*)malloc( sizeof(struct node));
+// 			if(i) {
+// 				struct node* l_ptr = n_ptr;
+// 				l_ptr--;
+// 				l_ptr->next = n_ptr;
+// 			}
 
-node* LRU_Update(cache* cache_level, uint set){
-	// printf("%u %u\n", set, index);
-	struct node* cur_ptr;
-	struct node* i_ptr;
+// 			if (!i) lru->head = n_ptr;
 
-	cur_ptr = cache_level->cache_set[set].lru->head;
+// 			n_ptr++;
+// 		}
+// 		return lru;
+// 	}
+// 	return NULL;
+// }
 
-	unsigned int i;
-	for (i = 0; i < cache_level->assoc - 1; i++)
-	{
-		cur_ptr = cur_ptr->next;
-		if (!cur_ptr && !cur_ptr->next) return NULL; //Bad error checking
-	}
+// node* LRU_Update(cache* cache_level, uint set){
+// 	// printf("%u %u\n", set, index);
+// 	struct node* cur_ptr;
+// 	struct node* i_ptr;
 
-	i_ptr = cur_ptr->next;
+// 	cur_ptr = cache_level->cache_set[set].lru->head;
 
-	if (cur_ptr->next) 
-	{
-		//The next pointer should skip i_ptr
-		cur_ptr->next = cur_ptr->next->next;
-	}
+// 	unsigned int i;
+// 	for (i = 0; i < cache_level->assoc - 1; i++)
+// 	{
+// 		cur_ptr = cur_ptr->next;
+// 		if (!cur_ptr && !cur_ptr->next) return NULL; //Bad error checking
+// 	}
 
-	i_ptr->next = cache_level->cache_set[set].lru->head;
-	cache_level->cache_set[set].lru->head = i_ptr;
+// 	i_ptr = cur_ptr->next;
 
-	return i_ptr;
-}
+// 	if (cur_ptr->next) 
+// 	{
+// 		//The next pointer should skip i_ptr
+// 		cur_ptr->next = cur_ptr->next->next;
+// 	}
+
+// 	i_ptr->next = cache_level->cache_set[set].lru->head;
+// 	cache_level->cache_set[set].lru->head = i_ptr;
+
+// 	return i_ptr;
+// }
 
 
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
