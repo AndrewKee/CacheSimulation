@@ -1,3 +1,6 @@
+#ifndef CACHE_H
+#define CACHE_H
+
 typedef unsigned int uint;
 typedef enum { false, true } bool;
 typedef unsigned long long ull;
@@ -93,3 +96,5 @@ void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_me
 
 //reorganizes the LRU to put the least recently used block at the top and return that node
 // node* LRU_Update(cache* cache_level, uint set);
+
+#endif

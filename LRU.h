@@ -1,6 +1,9 @@
-struct cache;
-typedef struct cache cache; 
-typedef unsigned int uint;
+// struct cache;
+// typedef struct cache cache; 
+// typedef unsigned int uint;
+#ifndef LRU_H
+#define LRU_H
+#include "cache.h"
 
 typedef struct node {
 	struct node* next;
@@ -18,3 +21,5 @@ LRU* LRU_Construct(unsigned int num_block);
 node* LRU_Update(cache* cache_level, uint set, uint block);
 
 unsigned int LRU_Get_LRU(cache* cache_level, uint set);
+
+#endif
