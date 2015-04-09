@@ -1,3 +1,7 @@
+struct cache;
+typedef struct cache cache; 
+typedef unsigned int uint;
+
 typedef struct node {
 	struct node* next;
 	unsigned int index;
@@ -5,11 +9,12 @@ typedef struct node {
 
 typedef struct LRU {
 	struct node* head;
-	struct node* tail;
 } LRU;
 
-LRU* LRU_Const(unsigned int num_block);
+// Initializes an LRU structure to hold the least recently used block
+LRU* LRU_Construct(unsigned int num_block);
 
-void LRU_Update(struct cache* cache_level, unsigned int set, unsigned int index);
+//reorganizes the LRU to put the least recently used block at the top and return that node
+node* LRU_Update(cache* cache_level, uint set, uint block);
 
-LRU* LRU_getLRU(struct LRU *lru);
+unsigned int LRU_Get_LRU(cache* cache_level, uint set);

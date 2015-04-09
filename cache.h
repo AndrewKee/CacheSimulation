@@ -77,17 +77,17 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 
 
 
-typedef struct node {
-	struct node* next;
-	unsigned int index;
-} node;
+// typedef struct node {
+// 	struct node* next;
+// 	unsigned int index;
+// } node;
 
-typedef struct LRU {
-	struct node* head;
-} LRU;
+// typedef struct LRU {
+// 	struct node* head;
+// } LRU;
 
-// Initializes an LRU structure to hold the least recently used block
-LRU* LRU_Construct(unsigned int num_block);
+// // Initializes an LRU structure to hold the least recently used block
+// LRU* LRU_Construct(unsigned int num_block);
 
-//reorganizes the LRU to put the least recently used block at the top and return that node
-node* LRU_Update(cache* cache_level, uint set);
+// //reorganizes the LRU to put the least recently used block at the top and return that node
+// node* LRU_Update(cache* cache_level, uint set);
