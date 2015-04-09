@@ -285,7 +285,6 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 		/*TODO!!*/
 	}
 	// printf("2\n");
-
 	//We are in main memory
 	cache_level->num_hits = cache_level->num_hits + 1;
 	return;

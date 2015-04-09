@@ -92,5 +92,4 @@ void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_me
 // void LRU_Destruct(cache* cache_level);
 
 //reorganizes the LRU to put the least recently used block at the top and return that node
-node* LRU_Update(cache* cache_level, uint set);
-
+// node* LRU_Update(cache* cache_level, uint set);
