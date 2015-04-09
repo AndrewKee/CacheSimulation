@@ -81,12 +81,16 @@ node* LRU_Update(cache* cache_level, uint set, uint block){
 	//Link the head to i_ptr
 	cache_level->cache_set[set].lru->head = i_ptr;
 	
+	printf("asdf");
+
 	return i_ptr;
 }
 
 unsigned int LRU_Get_LRU(cache* cache_level, uint set)
 {
 	struct node* cur_ptr = cache_level->cache_set[set].lru->head;
+
+	printf("asdf");
 
 	//Stuck in an infinite loop here, why?
 	while (cur_ptr->next)
