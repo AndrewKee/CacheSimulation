@@ -100,6 +100,12 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 	//Malloc the cache set pointers
 	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set*));
 
+	//Malloc the cache set pointers
+	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
+
+	//Malloc the cache set pointers
+	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
+
 	//For every cache set, malloc all blocks
 	for(i = 0; i < l1_data->num_sets; i++){
 
@@ -116,9 +122,6 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 			l1_data->cache_set[i].block[j].dirty = 0;
 		}
 	}
-
-	//Malloc the cache set pointers
-	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
 
 	//For every cache set, malloc all blocks
 	for(i = 0; i < l1_inst->num_sets; i++){
@@ -137,9 +140,6 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 		}
 	}
 
-	//Malloc the cache set pointers
-	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
-
 	//For every cache set, malloc all blocks
 	for(i = 0; i < l2->num_sets; i++){
 
@@ -156,27 +156,6 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 			l2->cache_set[i].block[j].dirty = 0;
 		}
 	}
-
-	/* MULTIDIMENSIONAL ARRAY
-	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
-	for(i = 0; i < l1_inst->num_sets; i++){
-		l1_inst->cache_set[i] = malloc(l1_inst->assoc * sizeof(cache_set));
-		for(j = 0; j < l1_inst->assoc; j++){
-			l1_inst->cache_set[i][j].valid = 0;
-			l1_inst->cache_set[i][j].dirty = 0;
-			l1_inst->cache_set[i][j].lru = LRU_Construct(l1_inst->assoc);
-		}
-	}
-	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
-	for(i = 0; i < l2->num_sets; i++){
-		l2->cache_set[i] = malloc(l2->assoc * sizeof(cache_set));
-		for(j = 0; j < l2->assoc; j++){
-			l2->cache_set[i][j].valid = 0;
-			l2->cache_set[i][j].dirty = 0;
-			l2->cache_set[i][j].lru = LRU_Construct(l2->assoc);
-		}
-	}
-	*/
 }
 
 void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem){
@@ -295,62 +274,6 @@ void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_l
 		return;
 
 }
-
-
-// LRU* LRU_Construct(unsigned int num_block)
-// {
-// 	if (num_block)
-// 	{
-// 		struct LRU* lru = (struct LRU*)malloc( sizeof(struct LRU));
-
-// 		struct node* n_ptr = NULL;
-
-// 		unsigned int i;
-// 		for (i = 0; i < num_block; i++)
-// 		{
-// 			n_ptr = (struct node*)malloc( sizeof(struct node));
-// 			if(i) {
-// 				struct node* l_ptr = n_ptr;
-// 				l_ptr--;
-// 				l_ptr->next = n_ptr;
-// 			}
-
-// 			if (!i) lru->head = n_ptr;
-
-// 			n_ptr++;
-// 		}
-// 		return lru;
-// 	}
-// 	return NULL;
-// }
-
-// node* LRU_Update(cache* cache_level, uint set){
-// 	// printf("%u %u\n", set, index);
-// 	struct node* cur_ptr;
-// 	struct node* i_ptr;
-
-// 	cur_ptr = cache_level->cache_set[set].lru->head;
-
-// 	unsigned int i;
-// 	for (i = 0; i < cache_level->assoc - 1; i++)
-// 	{
-// 		cur_ptr = cur_ptr->next;
-// 		if (!cur_ptr && !cur_ptr->next) return NULL; //Bad error checking
-// 	}
-
-// 	i_ptr = cur_ptr->next;
-
-// 	if (cur_ptr->next) 
-// 	{
-// 		//The next pointer should skip i_ptr
-// 		cur_ptr->next = cur_ptr->next->next;
-// 	}
-
-// 	i_ptr->next = cache_level->cache_set[set].lru->head;
-// 	cache_level->cache_set[set].lru->head = i_ptr;
-
-// 	return i_ptr;
-// }
 
 
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
