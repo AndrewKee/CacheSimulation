@@ -78,6 +78,12 @@ void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_l
 //outputs the results into a file
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
 
+//Flushes the cache
+void flush(cache* cache_level);
+
+//Allocate a cache's contents
+void cache_alloc(cache* cache_level);
+
 void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem);
 
 // typedef struct node {
