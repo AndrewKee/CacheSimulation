@@ -94,67 +94,38 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 }
 
 void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
-	uint i = 0;
-	uint j = 0;
+	//uint i = 0;
+	//uint j = 0;
 
 	//Malloc the cache set pointers
 	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set*));
 	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
 	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
 
-	//Malloc the cache set pointers
-	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
 
-	//Malloc the cache set pointers
-	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
+	cache_alloc(l1_data);
+	cache_alloc(l1_inst);
+	cache_alloc(l2);
+}
 
-	//For every cache set, malloc all blocks
-	for(i = 0; i < l1_data->num_sets; i++){
-		//Construct an lru and return the pointer 
-		l1_data->cache_set[i].lru = LRU_Construct(l1_data->assoc);
-		//Malloc the blocks at the index
-		l1_data->cache_set[i].block = malloc(l1_data->assoc * sizeof(cache_block));
-
-		for (j = 0; j < l1_data->assoc; j++)
-		{
-			//Set the valid and dirty bits
-			l1_data->cache_set[i].block[j].valid = 0;
-			l1_data->cache_set[i].block[j].dirty = 0;
-		}
-	}
-	//Malloc the cache set pointers
-	
-	//For every cache set, malloc all blocks
-	for(i = 0; i < l1_inst->num_sets; i++){
-		//Construct an lru and return the pointer 
-		l1_inst->cache_set[i].lru = LRU_Construct(l1_inst->assoc);
-		//Malloc the blocks at the index
-		l1_inst->cache_set[i].block = malloc(l1_inst->assoc * sizeof(cache_block));
-		for (j = 0; j < l1_inst->assoc; j++)
-		{
-			//Set the valid and dirty bits
-			l1_inst->cache_set[i].block[j].valid = 0;
-			l1_inst->cache_set[i].block[j].dirty = 0;
-		}
-	}
-
-	//Malloc the cache set pointers
-	
+void cache_alloc(cache* cache_level)
+{
+	//cache_level->cache_set = malloc(cache_level->num_sets * sizeof(cache_set*));
+	uint i = 0;
+	uint j = 0;
 
 	//For every cache set, malloc all blocks
-	for(i = 0; i < l2->num_sets; i++){
-
+	for(i = 0; i < cache_level->num_sets; i++){
 		//Construct an lru and return the pointer 
-		l2->cache_set[i].lru = LRU_Construct(l2->assoc);
-
+		cache_level->cache_set[i].lru = LRU_Construct(cache_level->assoc);
 		//Malloc the blocks at the index
-		l2->cache_set[i].block = malloc(l2->assoc * sizeof(cache_block));
+		cache_level->cache_set[i].block = malloc(cache_level->assoc * sizeof(cache_block));
 
-		for (j = 0; j < l2->assoc; j++)
+		for (j = 0; j < cache_level->assoc; j++)
 		{
 			//Set the valid and dirty bits
-			l2->cache_set[i].block[j].valid = 0;
-			l2->cache_set[i].block[j].dirty = 0;
+			cache_level->cache_set[i].block[j].valid = 0;
+			cache_level->cache_set[i].block[j].dirty = 0;
 		}
 	}
 }
@@ -205,6 +176,9 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 		look_through_cache(l1_inst, address, op);
 		if((*num_inst + *num_reads + *num_writes) % 380000 == 0){
 			//write all dirty blocks to the next level of cache.  do this all the way down to main memory
+			//Currently, this flushes l1_data, then l2, then l1_inst, then l2
+			flush(l1_data);
+			flush(l1_inst);
 		}
 	}
 	#ifdef DEBUG
@@ -212,6 +186,27 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 		printf("%llu \n", *num_reads);
 		printf("%llu \n", *num_writes);
 	#endif 
+}
+
+void flush(cache* cache_level)
+{
+	uint i;
+	for (i = 0; i < cache_level->num_sets; i++)
+	{
+		uint j;
+		for (j = 0; j < cache_level->assoc; j++)
+		if (cache_level->cache_set[i].block[j].dirty)
+		{
+			//Write this through, increment kickouts
+			cache_level->dirty_kickouts++;
+
+			ulli dirty_addr = (cache_level->cache_set[i].block[j].tag << (64 -cache_level->tag_size));
+			dirty_addr |= i << cache_level->block_size;
+
+			cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
+			look_through_cache(cache_level->next_level, dirty_addr, 'W');
+		}
+	}
 }
 
 void look_through_cache(cache* cache_level, ulli address, char type){
@@ -254,24 +249,30 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 	 	LRU_Update(cache_level, index, b);
 
 	 	if(cache_level->cache_set[index].block[b].dirty == true){
-	 		//write through to next level
+	 		//write through to next level, dirty kickout of a block
+	 		//Same index as current address, also need to extract tag and reconstruct address to pass
+	 		ulli dirty_addr = address;
+
+	 		//Clear the tag, and replace with the dirty tag.  Also, clear the byte index?
+	 		dirty_addr &= (0xFFFFFFFFFFFFFFFF >> cache_level->tag_size);
+	 		dirty_addr |= (cache_level->cache_set[index].block[b].tag << (64 -cache_level->tag_size));
+
+	 		cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
+	 		look_through_cache(cache_level->next_level, dirty_addr, 'W');
 	 	}
 
 	 	cache_level->cache_set[index].block[b].tag 		= tag;
 	 	cache_level->cache_set[index].block[b].valid 	= true;
 	 	cache_level->cache_set[index].block[b].dirty 	= false;
 
-
 	 	return;
-		//We returned the block, now update the block using an LRU
-
-		/*TODO!!*/
 	}
-	// printf("2\n");
+
 	//We are in main memory
 	cache_level->num_hits = cache_level->num_hits + 1;
 	return;
 }
+
 
 void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_level){
 	if(next_level->next_level == NULL)
