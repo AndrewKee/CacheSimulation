@@ -247,19 +247,21 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 		
 		//didn't find the stuff, def a miss
 		cache_level->num_misses = cache_level->num_misses + 1;
-		//must fetch the data from the next level in the cache, I don't think we need this function.  should be able to do this based off the recursiveness.
-		//need to return the tag, index, assoc_level from the next level.  and put the values from that into the first cache/set it to valid
-		//should return an array of these values.  which in sense is a pointer to an array. which means we need to malloc an array for each recursive call of 
-		//this function.
-		// fetch_from_next_cache(cache_level->next_level, tag, index, i - 1);
-		//after we bring data from the next cache, we write it to the LRU block in the first cache.  If what was in there is dirty, 
-		//then we then need to write it to the next cache.
 
 	 	//Recursive search through the cache, not in main memory
 	 	look_through_cache(cache_level->next_level, address, type);
 	 	unsigned int b = LRU_Get_LRU(cache_level, index);
-	 	 // printf("%u b\n", b);
 	 	LRU_Update(cache_level, index, b);
+
+	 	if(cache_level->cache_set[index].block[b].dirty == true){
+	 		//write through to next level
+	 	}
+
+	 	cache_level->cache_set[index].block[b].tag 		= tag;
+	 	cache_level->cache_set[index].block[b].valid 	= true;
+	 	cache_level->cache_set[index].block[b].dirty 	= false;
+
+
 	 	return;
 		//We returned the block, now update the block using an LRU
 
