@@ -71,7 +71,7 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2);
 //loops through the traces and does the trace
 void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes);
 
-void look_through_cache(cache* cache_level, ulli address, char type);
+void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes);
 
 void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_level);
 

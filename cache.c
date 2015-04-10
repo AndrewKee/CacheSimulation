@@ -168,13 +168,13 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 		printf("%c %llx %d\n", op, address, bytesize);
 		if(op == 'I'){
 			*num_inst = *num_inst + 1;
-			look_through_cache(l1_inst, address, op);
+			look_through_cache(l1_inst, address, op, bytesize);
 		} else if (op == 'R'){
 			*num_reads = *num_reads + 1;
-			look_through_cache(l1_data, address, op);
+			look_through_cache(l1_data, address, op, bytesize);
 		} else if (op == 'W'){
 			*num_writes = *num_writes + 1;
-			look_through_cache(l1_data, address, op);
+			look_through_cache(l1_data, address, op, bytesize);
 		}
 		
 		if((*num_inst + *num_reads + *num_writes) % 380000 == 0){
@@ -207,25 +207,28 @@ void flush(cache* cache_level)
 			dirty_addr |= i << cache_level->block_size;
 
 			cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
-			look_through_cache(cache_level->next_level, dirty_addr, 'W');
+			look_through_cache(cache_level->next_level, dirty_addr, 'W', 0);
 		}
 	}
 }
 
-void look_through_cache(cache* cache_level, ulli address, char type){
+void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	uint i;
-
+	printf("num_bytes: %llu\n", num_bytes);
 	if (cache_level->next_level != NULL){
-		ulli index, tag;
+		ulli index, tag, byte_offset;
 		tag 	= (address >> (64 - cache_level->tag_size));
 		index 	= address << cache_level->tag_size;
 		index 	= index   >> (cache_level->tag_size);
 		index 	= index   >> (uint)(log(cache_level->block_size)/log(2));
+		byte_offset = address << (64 - (uint)(log(cache_level->block_size)/log(2)));
+		byte_offset = byte_offset >> (64 - (uint)(log(cache_level->block_size)/log(2)));
+		// printf("byte_offset: %llu\n", byte_offset);
+		 // printf("address: %llx %llu\n", tag, index);
 		#ifdef DEBUG
 			printf("sizes: %u %u\n", cache_level->tag_size, cache_level->num_sets);
-			printf("address: %llx %llu\n", tag, index);
+			
 		#endif	
-
 
 		for(i = 0; i < cache_level->assoc; i++){
 			#ifdef DEBUG
@@ -235,7 +238,20 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 
 			if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
 				//We found a match, and it's valid! lets count it as a hit!
-				cache_level->num_hits = cache_level->num_hits + 1;
+				uint word_offset = byte_offset % 4;
+				if(word_offset + num_bytes > 4){
+					
+					printf("byte_offset: %llu\n", byte_offset);
+					printf("word_offset: %u\n", word_offset);
+					uint i = 0;
+					while(i < (num_bytes + word_offset)){
+						cache_level->num_hits = cache_level->num_hits + 1;
+						i += 4;
+					}
+				}
+				else{
+					cache_level->num_hits = cache_level->num_hits + 1;
+				}
 				if(type == 'W'){
 					cache_level->cache_set[index].block[i].dirty = true;
 				}
@@ -247,7 +263,7 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 		cache_level->num_misses = cache_level->num_misses + 1;
 
 	 	//Recursive search through the cache, not in main memory
-	 	look_through_cache(cache_level->next_level, address, type);
+	 	look_through_cache(cache_level->next_level, address, type, num_bytes);
 	 	unsigned int b = LRU_Get_LRU(cache_level, index);
 	 	LRU_Update(cache_level, index, b);
 
@@ -261,7 +277,7 @@ void look_through_cache(cache* cache_level, ulli address, char type){
 	 		dirty_addr |= (cache_level->cache_set[index].block[b].tag << (64 -cache_level->tag_size));
 
 	 		cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
-	 		look_through_cache(cache_level->next_level, dirty_addr, 'W');
+	 		look_through_cache(cache_level->next_level, dirty_addr, 'W', num_bytes);
 	 	}
 
 	 	cache_level->cache_set[index].block[b].tag 		= tag;
@@ -306,9 +322,9 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 
     //Calculate percent of reference types
     ull total_traces 		= *num_inst + *num_reads + *num_writes;
-    double inst_percent 	= *num_inst 	/ total_traces 	* 100;
-    double read_precent 	= *num_reads 	/ total_traces 	* 100;
-    double write_percent 	= *num_writes 	/ total_traces 	* 100;
+    double inst_percent 	= ((double)*num_inst 	/ (double)total_traces) * 100;
+    double read_precent 	= ((double)*num_reads 	/ (double)total_traces)	* 100;
+    double write_percent 	= ((double)*num_writes 	/ (double)total_traces) * 100;
 
 	fprintf(outputFile, "Memory System: \n");
 	fprintf(outputFile, "	Dcache size = %u  :  ways = %u  :  block size = %u \n", l1_data->cache_size, l1_data->assoc, l1_data->block_size);
