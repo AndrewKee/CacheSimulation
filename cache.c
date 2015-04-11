@@ -165,7 +165,7 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 	// printf("%lu\n", sizeof(unsigned long long int));
 	uint bytesize = 0;
 	while(scanf("%c %llx %d\n", &op, &address, &bytesize) == 3){
-		printf("%c %llx %d\n", op, address, bytesize);
+		// printf("%c %llx %d\n", op, address, bytesize);
 		if(op == 'I'){
 			*num_inst = *num_inst + 1;
 			look_through_cache(l1_inst, address, op, bytesize);
@@ -214,7 +214,7 @@ void flush(cache* cache_level)
 
 void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	uint i;
-	printf("num_bytes: %llu\n", num_bytes);
+	// printf("num_bytes: %llu\n", num_bytes);
 	if (cache_level->next_level != NULL){
 		ulli index, tag, byte_offset;
 		tag 	= (address >> (64 - cache_level->tag_size));
@@ -224,33 +224,35 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 		byte_offset = address << (64 - (uint)(log(cache_level->block_size)/log(2)));
 		byte_offset = byte_offset >> (64 - (uint)(log(cache_level->block_size)/log(2)));
 		// printf("byte_offset: %llu\n", byte_offset);
-		printf("address: %llx %llu\n", tag, index);
+		// printf("address: %llx %llu\n", tag, index);
+		
+		if(cache_level->next_level->next_level == NULL){
+			
+		}
 		uint num_refs = 0;
 		uint word_offset = byte_offset % 4;
-		if(word_offset + num_bytes > 4){
+		if(word_offset + num_bytes > 4 && cache_level->next_level->next_level != NULL){
 			// printf("byte_offset: %llu\n", byte_offset);
-			printf("word_offset: %u\n", word_offset);
+			// printf("word_offset: %u\n", word_offset);
 			uint i = 0;
 			while(i < (num_bytes + word_offset)){
 				num_refs++;
 				i += 4;
 			}
-			printf("num_refs: %u\n", num_refs);
+			// printf("num_refs: %u\n", num_refs);
 		}else{
 			num_refs = 1;
 		}
-		if(cache_level->next_level->next_level == NULL){
-			printf("L2 Numrefs: %u\n", num_refs);
-		}
+		
 		for(i = 0; i < cache_level->assoc; i++){
 			#ifdef DEBUG
-				printf("%llu cache_level \n", cache_level->num_sets);
-				printf("%llu index \n\n", index);
+				// printf("%llu cache_level \n", cache_level->num_sets);
+				// printf("%llu index \n\n", index);
 			#endif
 
 			if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
 				//We found a match, and it's valid! lets count it as a hit!
-				printf("hit\n");
+				// printf("hit\n");
 				cache_level->num_hits = cache_level->num_hits + num_refs;
 				if(type == 'W'){
 					cache_level->cache_set[index].block[i].dirty = true;
