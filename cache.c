@@ -144,11 +144,12 @@ void prep_search_cache(cache* cache_level, ulli address, uint bytesize, char op)
 			bytesize = (get_byte_offset(cache_level, address) + bytesize) - cache_level->block_size;
 			address = create_address(cache_level, get_tag(cache_level, address), index, 0);
 		}
+		// search_cache(cache_level, address, op, bytesize, index);
 		if(search_cache(cache_level, address, op, bytesize, index) == false){
 			index = get_index(cache_level->next_level, address);
-			//if we get a miss, we need to go to the second level cache
+			// if we get a miss, we need to go to the second level cache
 			search_cache(cache_level->next_level, address, op, bytesize, index);
-			//still need to implement the main memory look through here.
+			// still need to implement the main memory look through here.
 			// can just check if it's a miss.
 			// --------
 			// Will need to determine how many cycles it takes based off the chunksize of the memory
@@ -211,6 +212,9 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes, u
 		ulli tag, byte_offset;
 		tag 		= get_tag(cache_level, address);
 		byte_offset = get_byte_offset(cache_level, address);
+		// if(cache_level->next_level->next_level == NULL){
+		// 	index 		= get_index(cache_level, address);
+		// }
 		uint num_refs = 0;
 		uint word_offset = byte_offset % 4;
 		if(word_offset + num_bytes > 4 && cache_level->next_level->next_level != NULL){
@@ -238,7 +242,9 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes, u
 		cache_level->num_misses = cache_level->num_misses + 1;
 		cache_level->num_hits = cache_level->num_hits + num_refs - 1;
 
-		unsigned int b = LRU_Get_LRU(cache_level, index);
+		//ulli new_index = get_index(cache_level->next_level, address);
+		// search_cache(cache_level->next_level, address, type, num_bytes, index);
+		uint b = LRU_Get_LRU(cache_level, index);
 	 	LRU_Update(cache_level, index, b);
 
 
