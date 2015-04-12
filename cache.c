@@ -72,40 +72,52 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 				}
 			}
 		}
-
-		uint addres_length = 64;
-
-		l1_data->num_sets = l1_data->cache_size / (l1_data->assoc * l1_data->block_size);
-		l1_data->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l1_data->block_size)/log(2);
-		l1_data->next_level = l2;
-
-		l1_inst->num_sets = l1_inst->cache_size / (l1_inst->assoc * l1_inst->block_size);
-		l1_inst->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l1_inst->block_size)/log(2);
-		l1_inst->next_level = l2;
-
-		l2->num_sets = l2->cache_size / (l2->assoc * l2->block_size);
-		l2->tag_size = addres_length - log(l2->num_sets)/log(2) - log(l2->block_size)/log(2);
-		l2->next_level = main_mem;
-
-		main_mem->next_level = NULL;
 	}
 
 	return 0;
 }
 
-void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
-	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set*));
-	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
-	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
+void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem){
+	 l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set));
+	 l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set));
+	 l2->cache_set = malloc(l2->num_sets * sizeof(cache_set));
 
 	cache_alloc(l1_data);
 	cache_alloc(l1_inst);
 	cache_alloc(l2);
+
+	uint addres_length = 64;
+
+	l1_data->num_sets = l1_data->cache_size / (l1_data->assoc * l1_data->block_size);
+	l1_data->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l1_data->block_size)/log(2);
+	l1_data->next_level = l2;
+
+	if (l1_data->next_level == l2)
+	{
+		printf("I don't get C \n");
+	}
+
+	if (l1_data->next_level->cache_set == NULL)
+	{
+		printf("the fuck");
+	}
+
+	printf("1");
+
+	l1_inst->num_sets = l1_inst->cache_size / (l1_inst->assoc * l1_inst->block_size);
+	l1_inst->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l1_inst->block_size)/log(2);
+	l1_inst->next_level = l2;
+
+	l2->num_sets = l2->cache_size / (l2->assoc * l2->block_size);
+	l2->tag_size = addres_length - log(l2->num_sets)/log(2) - log(l2->block_size)/log(2);
+	l2->next_level = main_mem;
+
+	main_mem->next_level = NULL;
 }
 
 void cache_alloc(cache* cache_level)
 {
-	//cache_level->cache_set = malloc(cache_level->num_sets * sizeof(cache_set*));
+	//cache_level->cache_set = malloc(cache_level->num_sets * sizeof(cache_set));
 	uint i = 0;
 	uint j = 0;
 
@@ -157,6 +169,9 @@ void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_me
 void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes){
 	char op;
 	unsigned long long int address = 0;
+
+	//l1_inst->next_level->cache_set[0].block[0].dirty = true;
+
 	// printf("%lu\n", sizeof(unsigned long long int));
 	uint bytesize = 0;
 	while(scanf("%c %llx %d\n", &op, &address, &bytesize) == 3){
@@ -242,7 +257,7 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 		byte_offset = address << (64 - (uint)(log(cache_level->block_size)/log(2)));
 		byte_offset = byte_offset >> (64 - (uint)(log(cache_level->block_size)/log(2)));
 		// printf("byte_offset: %llu\n", byte_offset);
-		// printf("address: %llx %llu\n", tag, index);
+		printf("address: %llx %llu\n", tag, index);
 		
 		if(cache_level->next_level->next_level == NULL){
 			
@@ -288,6 +303,7 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 	 	unsigned int b = LRU_Get_LRU(cache_level, index);
 	 	LRU_Update(cache_level, index, b);
 
+	 	
 	 	if(cache_level->cache_set[index].block[b].dirty == true){
 	 		cache_level->cache_set[index].block[b].dirty = false;
 	 		//write through to next level, dirty kickout of a block
@@ -304,7 +320,7 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 	 		cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
 	 		look_through_cache(cache_level->next_level, dirty_addr, 'W', 0);
 	 	}
-
+		
 	 	cache_level->cache_set[index].block[b].tag 		= tag;
 	 	cache_level->cache_set[index].block[b].valid 	= true;
 	 	cache_level->cache_set[index].block[b].dirty 	= false;
