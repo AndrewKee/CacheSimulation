@@ -17,7 +17,7 @@ LRU* LRU_Construct(unsigned int num_block)
 		for (i = 0; i < num_block; i++)
 		{
 			n_ptr->index = i;
-
+			n_ptr->next = NULL;
 			if(i) {
 				struct node* l_ptr = n_ptr;
 				l_ptr--;
@@ -28,6 +28,7 @@ LRU* LRU_Construct(unsigned int num_block)
 
 			n_ptr++;
 		}
+
 		return lru;
 	}
 	return NULL;
@@ -48,10 +49,12 @@ node* LRU_Update(cache* cache_level, uint set, uint block){
 	cur_ptr = cache_level->cache_set[set].lru->head;
 
 	//Check for single element list, or if the way is already most recently used
+
 	if (!cur_ptr->next || cur_ptr->index == block) return cur_ptr;
 	
 	while(cur_ptr->next)
 	{
+		printf("should also not be here\n");
 		//Stop when cur_ptr is equal to the prior element than the block
 		if (cur_ptr->next->index == block)
 		{
@@ -88,14 +91,16 @@ node* LRU_Update(cache* cache_level, uint set, uint block){
 }
 
 unsigned int LRU_Get_LRU(cache* cache_level, uint set)
-{
+{	
+	// printf("1\n");
 	struct node* cur_ptr = cache_level->cache_set[set].lru->head;
-
+	// printf("index: %u\n", cur_ptr->index);
 	//Stuck in an infinite loop here, why?
-	while (cur_ptr->next)
-	{
+	while (cur_ptr != NULL && cur_ptr->next != NULL)
+	{	
+		// printf("loop %d\n", cur_ptr->next->index);
 		cur_ptr = cur_ptr->next;
 	}
-
+	// printf("3\n");
 	return cur_ptr->index;
 }

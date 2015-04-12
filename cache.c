@@ -165,7 +165,7 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 	// printf("%lu\n", sizeof(unsigned long long int));
 	uint bytesize = 0;
 	while(scanf("%c %llx %d\n", &op, &address, &bytesize) == 3){
-		printf("%c %llx %d\n", op, address, bytesize);
+		// printf("%c %llx %d\n", op, address, bytesize);
 		if(op == 'I'){
 			*num_inst = *num_inst + 1;
 			look_through_cache(l1_inst, address, op, bytesize);
@@ -214,7 +214,7 @@ void flush(cache* cache_level)
 
 void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	uint i;
-	printf("num_bytes: %llu\n", num_bytes);
+	// printf("num_bytes: %llu\n", num_bytes);
 	if (cache_level->next_level != NULL){
 		ulli index, tag, byte_offset;
 		tag 	= (address >> (64 - cache_level->tag_size));
@@ -224,34 +224,36 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 		byte_offset = address << (64 - (uint)(log(cache_level->block_size)/log(2)));
 		byte_offset = byte_offset >> (64 - (uint)(log(cache_level->block_size)/log(2)));
 		// printf("byte_offset: %llu\n", byte_offset);
-		 // printf("address: %llx %llu\n", tag, index);
-		#ifdef DEBUG
-			printf("sizes: %u %u\n", cache_level->tag_size, cache_level->num_sets);
+		// printf("address: %llx %llu\n", tag, index);
+		
+		if(cache_level->next_level->next_level == NULL){
 			
-		#endif	
-
+		}
+		uint num_refs = 0;
+		uint word_offset = byte_offset % 4;
+		if(word_offset + num_bytes > 4 && cache_level->next_level->next_level != NULL){
+			// printf("byte_offset: %llu\n", byte_offset);
+			// printf("word_offset: %u\n", word_offset);
+			uint i = 0;
+			while(i < (num_bytes + word_offset)){
+				num_refs++;
+				i += 4;
+			}
+			// printf("num_refs: %u\n", num_refs);
+		}else{
+			num_refs = 1;
+		}
+		
 		for(i = 0; i < cache_level->assoc; i++){
 			#ifdef DEBUG
-				printf("%llu cache_level \n", cache_level->num_sets);
-				printf("%llu index \n\n", index);
+				// printf("%llu cache_level \n", cache_level->num_sets);
+				// printf("%llu index \n\n", index);
 			#endif
 
 			if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
 				//We found a match, and it's valid! lets count it as a hit!
-				uint word_offset = byte_offset % 4;
-				if(word_offset + num_bytes > 4){
-					
-					printf("byte_offset: %llu\n", byte_offset);
-					printf("word_offset: %u\n", word_offset);
-					uint i = 0;
-					while(i < (num_bytes + word_offset)){
-						cache_level->num_hits = cache_level->num_hits + 1;
-						i += 4;
-					}
-				}
-				else{
-					cache_level->num_hits = cache_level->num_hits + 1;
-				}
+				// printf("hit\n");
+				cache_level->num_hits = cache_level->num_hits + num_refs;
 				if(type == 'W'){
 					cache_level->cache_set[index].block[i].dirty = true;
 				}
@@ -262,12 +264,14 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 		//didn't find the stuff, def a miss
 		cache_level->num_misses = cache_level->num_misses + 1;
 
+		cache_level->num_hits = cache_level->num_hits + num_refs - 1;
 	 	//Recursive search through the cache, not in main memory
 	 	look_through_cache(cache_level->next_level, address, type, num_bytes);
 	 	unsigned int b = LRU_Get_LRU(cache_level, index);
 	 	LRU_Update(cache_level, index, b);
 
 	 	if(cache_level->cache_set[index].block[b].dirty == true){
+	 		cache_level->cache_set[index].block[b].dirty = false;
 	 		//write through to next level, dirty kickout of a block
 	 		//Same index as current address, also need to extract tag and reconstruct address to pass
 	 		ulli dirty_addr = address;
@@ -276,8 +280,11 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 	 		dirty_addr &= (0xFFFFFFFFFFFFFFFF >> cache_level->tag_size);
 	 		dirty_addr |= (cache_level->cache_set[index].block[b].tag << (64 -cache_level->tag_size));
 
+	 		//CLEAR BYTE INDEX
+	 		dirty_addr &= (0xFFFFFFFFFFFFFFFF << (uint)(log(cache_level->block_size)/log(2)));
+
 	 		cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
-	 		look_through_cache(cache_level->next_level, dirty_addr, 'W', num_bytes);
+	 		look_through_cache(cache_level->next_level, dirty_addr, 'W', 0);
 	 	}
 
 	 	cache_level->cache_set[index].block[b].tag 		= tag;
@@ -285,8 +292,7 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 	 	cache_level->cache_set[index].block[b].dirty 	= false;
 
 	 	return;
-	}
-
+	} 
 	//We are in main memory
 	cache_level->num_hits = cache_level->num_hits + 1;
 	return;
@@ -339,16 +345,16 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 	// fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Number of reference types : 	[Percentage]\n");
-	fprintf(outputFile, "	Reads 	= 	%llu 			[%.1f%%]\n", *num_reads, 	read_precent);
-	fprintf(outputFile, "	Writes 	= 	%llu 			[%.1f%%]\n", *num_writes, 	write_percent);
-	fprintf(outputFile, "	Inst. 	= 	%llu			[%.1f%%]\n", *num_inst, 	inst_percent);
+	fprintf(outputFile, "	Reads 	= 	%llu 	[%.1f%%]\n", *num_reads, 	read_precent);
+	fprintf(outputFile, "	Writes 	= 	%llu 	[%.1f%%]\n", *num_writes, 	write_percent);
+	fprintf(outputFile, "	Inst. 	= 	%llu	[%.1f%%]\n", *num_inst, 	inst_percent);
 	fprintf(outputFile, "	Total 	= 	%llu\n ", total_traces);
 	fprintf(outputFile, "\n");
 
 	// fprintf(outputFile, "Total cycles for activities: 	[Percentage]\n");
-	// fprintf(outputFile, "	Reads 	= 	%llu 			[%.1f%%]\n", , );
-	// fprintf(outputFile, "	Writes 	= 	%llu 			[%.1f%%]\n", , );
-	// fprintf(outputFile, "	Inst. 	= 	%llu 			[%.1f%%]\n", , );
+	// fprintf(outputFile, "	Reads 	= 	%llu 	[%.1f%%]\n", , );
+	// fprintf(outputFile, "	Writes 	= 	%llu 	[%.1f%%]\n", , );
+	// fprintf(outputFile, "	Inst. 	= 	%llu 	[%.1f%%]\n", , );
 	// fprintf(outputFile, "	Total 	= 	%llu\n ", );
 	// fprintf(outputFile, "\n");
 
@@ -360,7 +366,7 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 
 	fprintf(outputFile, "Memory Level: 	L1i\n");
 	fprintf(outputFile, "	Hit Count = %llu 		Miss Count = %llu\n", l1_inst->num_hits, l1_inst->num_misses);
-	fprintf(outputFile, "	Total Requests = %llu", l1_inst->total_requests);
+	fprintf(outputFile, "	Total Requests = %llu\n", l1_inst->total_requests);
 	fprintf(outputFile, " 	Hit Rate = %.1f%% 	Miss Rate = %.1f%%\n", l1_inst->hit_rate, l1_inst->miss_rate);
 	fprintf(outputFile, "	Kickouts = %llu; Dirty Kickouts = %llu; Transfers = %llu\n", l1_inst->kickouts, l1_inst->dirty_kickouts, l1_inst->transfers);
 	fprintf(outputFile, "Flush Kickouts = %llu\n", l1_inst->flush_kickouts);
@@ -368,7 +374,7 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 
 	fprintf(outputFile, "Memory Level: 	L1d\n");
 	fprintf(outputFile, "	Hit Count = %llu 		Miss Count = %llu\n", l1_data->num_hits, l1_data->num_misses);
-	fprintf(outputFile, "	Total Requests = %llu", l1_data->total_requests);
+	fprintf(outputFile, "	Total Requests = %llu\n", l1_data->total_requests);
 	fprintf(outputFile, " 	Hit Rate = %.1f%% 	Miss Rate = %.1f%%\n", l1_data->hit_rate, l1_data->miss_rate);
 	fprintf(outputFile, "	Kickouts = %llu; Dirty Kickouts = %llu; Transfers = %llu\n", l1_data->kickouts, l1_data->dirty_kickouts, l1_data->transfers);
 	fprintf(outputFile, "Flush Kickouts = %llu\n", l1_data->flush_kickouts);
@@ -376,7 +382,7 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 
 	fprintf(outputFile, "Memory Level: 	L2\n");
 	fprintf(outputFile, "	Hit Count = %llu 		Miss Count = %llu\n", l2->num_hits, l2->num_misses);
-	fprintf(outputFile, "	Total Requests = %llu", l2->total_requests);
+	fprintf(outputFile, "	Total Requests = %llu\n", l2->total_requests);
 	fprintf(outputFile, " 	Hit Rate = %.1f%% 	Miss Rate = %.1f%%\n", l2->hit_rate, l2->miss_rate);
 	fprintf(outputFile, "	Kickouts = %llu; Dirty Kickouts = %llu; Transfers = %llu\n", l2->kickouts, l2->dirty_kickouts, l2->transfers);
 	fprintf(outputFile, "Flush Kickouts = %llu\n", l2->flush_kickouts);
