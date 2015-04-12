@@ -5,7 +5,7 @@
 #include <string.h>
 #include <math.h>
 
-// #define DEBUG
+ //#define DEBUG
 
 int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem){
 	FILE *fp;
