@@ -84,7 +84,7 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 		l1_inst->next_level = l2;
 
 		l2->num_sets = l2->cache_size / (l2->assoc * l2->block_size);
-		l2->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l2->block_size)/log(2);
+		l2->tag_size = addres_length - log(l2->num_sets)/log(2) - log(l2->block_size)/log(2);
 		l2->next_level = main_mem;
 
 		main_mem->next_level = NULL;
@@ -94,14 +94,9 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 }
 
 void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
-	//uint i = 0;
-	//uint j = 0;
-
-	//Malloc the cache set pointers
 	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set*));
 	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set*));
 	l2->cache_set = malloc(l2->num_sets * sizeof(cache_set*));
-
 
 	cache_alloc(l1_data);
 	cache_alloc(l1_inst);
@@ -165,7 +160,7 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 	// printf("%lu\n", sizeof(unsigned long long int));
 	uint bytesize = 0;
 	while(scanf("%c %llx %d\n", &op, &address, &bytesize) == 3){
-		// printf("%c %llx %d\n", op, address, bytesize);
+		 printf("%c %llx %d\n", op, address, bytesize);
 		if(op == 'I'){
 			*num_inst = *num_inst + 1;
 			look_through_cache(l1_inst, address, op, bytesize);
@@ -175,6 +170,28 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 		} else if (op == 'W'){
 			*num_writes = *num_writes + 1;
 			look_through_cache(l1_data, address, op, bytesize);
+		}
+
+		printf("Memory Level:  L1i\n");
+		for(ulli i = 0; i < l1_inst->num_sets; i++){
+			if(l1_inst->cache_set[i].block[0].valid == true){
+				printf( "Index: %llx | V:1 D:%d Tag: %llx\n", i, l1_inst->cache_set[i].block[0].dirty, l1_inst->cache_set[i].block[0].tag);
+			}
+		}
+		printf( "\n");
+		printf( "Memory Level:  L1d\n");
+		for(ulli i = 0; i < l1_data->num_sets; i++){
+			if(l1_data->cache_set[i].block[0].valid == true){
+				printf( "Index: %llx | V:1 D:%d Tag: %llx\n", i, l1_data->cache_set[i].block[0].dirty, l1_data->cache_set[i].block[0].tag);
+			}
+		}
+		printf( "\n");
+		printf( "Memory Level:  L2\n");
+		for(ulli i = 0; i < l1_inst->next_level->num_sets; i++){
+			//printf("%llu\n", i);
+			if(l1_inst->next_level->cache_set[i].block[0].valid == 1){
+				printf( "Index: %llx | V:%d D:%d Tag: %llx\n", i, l1_inst->next_level->cache_set[i].block[0].dirty, l1_inst->next_level->cache_set[i].block[0].valid, l1_inst->next_level->cache_set[i].block[0].tag);
+			}
 		}
 		
 		if((*num_inst + *num_reads + *num_writes) % 380000 == 0){
@@ -216,6 +233,7 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 	uint i;
 	// printf("num_bytes: %llu\n", num_bytes);
 	if (cache_level->next_level != NULL){
+
 		ulli index, tag, byte_offset;
 		tag 	= (address >> (64 - cache_level->tag_size));
 		index 	= address << cache_level->tag_size;
@@ -387,6 +405,22 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 	fprintf(outputFile, "	Kickouts = %llu; Dirty Kickouts = %llu; Transfers = %llu\n", l2->kickouts, l2->dirty_kickouts, l2->transfers);
 	fprintf(outputFile, "Flush Kickouts = %llu\n", l2->flush_kickouts);
 	fprintf(outputFile, "\n");
+
+	fprintf(outputFile, "Memory Level:  L1i\n");
+
+	for(ulli i = 0; i < l1_inst->num_sets; i++){
+		if(l1_inst->cache_set[i].block[0].valid == true){
+			fprintf(outputFile, "Index: %llx | V:1 D:%d Tag: %llx\n", i, l1_inst->cache_set[i].block[0].dirty, l1_inst->cache_set[i].block[0].tag);
+		}
+	}
+
+	fprintf(outputFile, "Memory Level:  L2\n");
+
+	for(ulli i = 0; i < l2->num_sets; i++){
+		if(l2->cache_set[i].block[0].valid == true){
+			fprintf(outputFile, "Index: %llx | V:1 D:%d Tag: %llx\n", i, l2->cache_set[i].block[0].dirty, l2->cache_set[i].block[0].tag);
+		}
+	}
 
 	// fprintf(outputFile, "L1 cache cost (Icache $%d) + (Dcache $%d) = $%d", , , );
 	// fprintf(outputFile, "L1 cache cost = $%d; Memory cost = $%d; Total cost = $%d", , , );

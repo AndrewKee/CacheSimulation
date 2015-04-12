@@ -1,6 +1,6 @@
 main.o : main.c cache.c LRU.c
-	gcc -Wall -o main.o main.c cache.c LRU.c -lm
+	gcc -std=c99 -Wall -o main.o main.c cache.c LRU.c -lm
 
 clean:
 	rm main.o
-	gcc -Wall -o main.o main.c cache.c LRU.c -lm
+	gcc -std=c99 -Wall -o main.o main.c cache.c LRU.c -lm
