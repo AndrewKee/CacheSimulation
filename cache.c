@@ -72,15 +72,31 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 				}
 			}
 		}
+
+		uint address_length = 64;
+
+		l1_data->num_sets = l1_data->cache_size / (l1_data->assoc * l1_data->block_size);
+		l1_data->tag_size = address_length - log(l1_data->num_sets)/log(2) - log(l1_data->block_size)/log(2);
+		l1_data->next_level = l2;
+
+		l1_inst->num_sets = l1_inst->cache_size / (l1_inst->assoc * l1_inst->block_size);
+		l1_inst->tag_size = address_length - log(l1_data->num_sets)/log(2) - log(l1_inst->block_size)/log(2);
+		l1_inst->next_level = l2;
+
+		l2->num_sets = l2->cache_size / (l2->assoc * l2->block_size);
+		l2->tag_size = address_length - log(l2->num_sets)/log(2) - log(l2->block_size)/log(2);
+		l2->next_level = main_mem;
+
+		main_mem->next_level = NULL;
 	}
 
 	return 0;
 }
 
-void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem){
-	 l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set));
-	 l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set));
-	 l2->cache_set = malloc(l2->num_sets * sizeof(cache_set));
+void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
+	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set));
+	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set));
+	l2     ->cache_set = malloc(l2->num_sets      * sizeof(cache_set));
 
 	cache_alloc(l1_data);
 	cache_alloc(l1_inst);
@@ -135,35 +151,6 @@ void cache_alloc(cache* cache_level)
 			cache_level->cache_set[i].block[j].dirty = 0;
 		}
 	}
-}
-
-void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem){
-	// uint i = 0;
-	// uint j = 0;
-	// for(i = 0; i < l1_data->num_sets; i++){
-	// 	for(j = 0; j < l1_data->assoc; j++){
-	// 		// l1_data->cache_set[i][j].lru = LRU_Destruct(l1_data->assoc);
-	// 	}
-	// 	free(l1_data->cache_set[i]);
-	// }
-	// free(l1_data->cache_set);
-	
-	// for(i = 0; i < l1_inst->num_sets; i++){
-	// 	for(j = 0; j < l1_inst->assoc; j++){
-	// 		// l1_inst->cache_set[i][j].lru = LRU_Destruct(l1_inst->assoc);
-	// 	}
-	// 	free(l1_inst->cache_set[i]);
-	// }
-	// free(l1_inst->cache_set);
-	
-	// for(i = 0; i < l2->num_sets; i++){
-	// 	for(j = 0; j < l2->assoc; j++){
-	// 		// l2->cache_set[i][j].lru = LRU_Destruct(l2->assoc);
-	// 	}		
-	// 	free(l2->cache_set[i]);
-	// }
-	// free(l2->cache_set);
-	
 }
 
 void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes){
@@ -332,13 +319,6 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 	return;
 }
 
-
-void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_level){
-	if(next_level->next_level == NULL)
-		return;
-
-}
-
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes){
 
 	FILE * outputFile;
@@ -392,11 +372,11 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 	// fprintf(outputFile, "	Total 	= 	%llu\n ", );
 	// fprintf(outputFile, "\n");
 
-	// fprintf(outputFile, "Average cycles per activity:\n");
+	fprintf(outputFile, "Average cycles per activity:\n");
 	// fprintf(outputFile, "	Read = %d; Write = %d; Inst. = %d\n", , , );
-	// fprintf(outputFile, "Ideal: Exec. Time = %llu; CPI = %d\n", , );
-	// fprintf(outputFile, "Ideal mis-aligned: Exec. Time = %llu; CPI = %d\n", , );
-	// fprintf(outputFile, "\n");
+	fprintf(outputFile, "Ideal: Exec. Time = %llu; CPI = %.1f\n", total_traces + *num_inst, round(10*(((double)total_traces + (double)*num_inst)/ (double)*num_inst))/10);
+	fprintf(outputFile, "Ideal mis-aligned: Exec. Time = %llu; CPI = %.1f\n", l1_inst->total_requests + l1_data->total_requests + *num_inst, round(10*((double)l1_inst->total_requests + (double)l1_data->total_requests + (double)*num_inst)/ (double)*num_inst)/10);
+	fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Memory Level: 	L1i\n");
 	fprintf(outputFile, "	Hit Count = %llu 		Miss Count = %llu\n", l1_inst->num_hits, l1_inst->num_misses);
@@ -427,6 +407,14 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 	for(ulli i = 0; i < l1_inst->num_sets; i++){
 		if(l1_inst->cache_set[i].block[0].valid == true){
 			fprintf(outputFile, "Index: %llx | V:1 D:%d Tag: %llx\n", i, l1_inst->cache_set[i].block[0].dirty, l1_inst->cache_set[i].block[0].tag);
+		}
+	}
+
+	fprintf(outputFile, "Memory Level:  L1d\n");
+
+	for(ulli i = 0; i < l1_data->num_sets; i++){
+		if(l1_data->cache_set[i].block[0].valid == true){
+			fprintf(outputFile, "Index: %llx | V:1 D:%d Tag: %llx\n", i, l1_data->cache_set[i].block[0].dirty, l1_data->cache_set[i].block[0].tag);
 		}
 	}
 

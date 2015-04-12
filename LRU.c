@@ -54,7 +54,6 @@ node* LRU_Update(cache* cache_level, uint set, uint block){
 	
 	while(cur_ptr->next)
 	{
-		printf("should also not be here\n");
 		//Stop when cur_ptr is equal to the prior element than the block
 		if (cur_ptr->next->index == block)
 		{

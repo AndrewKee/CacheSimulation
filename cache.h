@@ -73,8 +73,6 @@ void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, u
 
 void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes);
 
-void fetch_from_next_cache(cache* next_level, ulli tag, ulli index, uint assoc_level);
-
 //outputs the results into a file
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
 
@@ -83,24 +81,5 @@ void flush(cache* cache_level);
 
 //Allocate a cache's contents
 void cache_alloc(cache* cache_level);
-
-void free_allocd_space(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem);
-
-// typedef struct node {
-// 	struct node* next;
-// 	unsigned int index;
-// } node;
-
-// typedef struct LRU {
-// 	struct node* head;
-// } LRU;
-
-// // Initializes an LRU structure to hold the least recently used block
-// LRU* LRU_Construct(unsigned int num_block);
-
-// void LRU_Destruct(cache* cache_level);
-
-//reorganizes the LRU to put the least recently used block at the top and return that node
-// node* LRU_Update(cache* cache_level, uint set);
 
 #endif
