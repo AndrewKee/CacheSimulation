@@ -16,7 +16,7 @@ LRU* LRU_Construct(unsigned int num_block)
 		unsigned int i;
 		for (i = 0; i < num_block; i++)
 		{
-			n_ptr->index = i;
+			n_ptr->index = num_block - 1 - i;
 			n_ptr->next = NULL;
 			if(i) {
 				struct node* l_ptr = n_ptr;

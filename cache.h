@@ -1,6 +1,11 @@
 #ifndef CACHE_H
 #define CACHE_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
 typedef unsigned int uint;
 typedef enum { false, true } bool;
 typedef unsigned long long ull;
@@ -69,12 +74,28 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem);
 
 //loops through the traces and does the trace
-void read_trace(cache* l1_data, cache* l1_inst, ull* num_inst, ull* num_reads, ull* num_writes);
+void read_trace(cache* l1_data, cache* l1_inst, cache* l2, ull* num_inst, ull* num_reads, ull* num_writes);
 
-void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes);
+bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes);
+
+void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes, ulli index);
+
+ulli get_tag(cache* cache_level, ulli address);
+
+ulli get_index(cache* cache_level, ulli address);
+
+ulli get_byte_offset(cache* cache_level, ulli address);
+
+ulli create_address(cache* cache_level, ulli tag, ulli index, ulli byte_offset);
+
+void prep_search_cache(cache* cache_level, ulli address, uint bytesize, char op);
+
+int num_indices(cache* cache_level, ulli address, uint bytesize);
 
 //outputs the results into a file
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
+
+void print_cache(cache* cache_level, FILE * outputFile);
 
 //Flushes the cache
 void flush(cache* cache_level);
