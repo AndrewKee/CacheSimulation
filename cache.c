@@ -93,7 +93,7 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 	return 0;
 }
 
-void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
+void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem){
 	l1_data->cache_set = malloc(l1_data->num_sets * sizeof(cache_set));
 	l1_inst->cache_set = malloc(l1_inst->num_sets * sizeof(cache_set));
 	l2     ->cache_set = malloc(l2->num_sets      * sizeof(cache_set));
@@ -107,18 +107,6 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 	l1_data->num_sets = l1_data->cache_size / (l1_data->assoc * l1_data->block_size);
 	l1_data->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l1_data->block_size)/log(2);
 	l1_data->next_level = l2;
-
-	if (l1_data->next_level == l2)
-	{
-		printf("I don't get C \n");
-	}
-
-	if (l1_data->next_level->cache_set == NULL)
-	{
-		printf("the fuck");
-	}
-
-	printf("1");
 
 	l1_inst->num_sets = l1_inst->cache_size / (l1_inst->assoc * l1_inst->block_size);
 	l1_inst->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l1_inst->block_size)/log(2);
