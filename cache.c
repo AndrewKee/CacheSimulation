@@ -1,9 +1,6 @@
 #include "cache.h"
 #include "LRU.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+
 
  //#define DEBUG
 
@@ -224,13 +221,16 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 			
 		}else{
 			num_refs = 1;
+		}	
+		if(type == 'W'){
+			// printf("dirty index: %llx\n", index);
 		}
-
 		//look for the tag in the cache
 		for(uint i = 0; i < cache_level->assoc; i++){
 			if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
 				cache_level->num_hits = cache_level->num_hits + num_refs;
-				if(type == 'W'){
+				if(type == 'W' && cache_level->next_level->next_level != NULL){
+					// printf("dirty index: %llx\n", index);
 					cache_level->cache_set[index].block[i].dirty = true;
 				}
 				return true;
@@ -254,13 +254,18 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	 		//Same index as current address, also need to extract tag and reconstruct address to pass
 	 		ulli dirty_addr = create_address(cache_level, tag, index, 0);
 	 		cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
-	 		search_cache(cache_level->next_level, dirty_addr, 'W', 0);
+	 		search_cache(cache_level->next_level, dirty_addr, 'K', 0);
 	 	}
 
 	 	//bring the stuff into this cache
 		cache_level->cache_set[index].block[b].tag 		= tag;
 	 	cache_level->cache_set[index].block[b].valid 	= true;
-	 	cache_level->cache_set[index].block[b].dirty 	= false;
+
+	 	if((type == 'W' && cache_level->next_level->next_level != NULL) || type == 'K')
+	 		cache_level->cache_set[index].block[b].dirty 	= true;
+	 	else
+	 		cache_level->cache_set[index].block[b].dirty 	= false;
+
 	 	return false;
 	 } else{
 	 	cache_level->num_hits = cache_level->num_hits + 1;
@@ -404,7 +409,7 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 
 	FILE * outputFile;
 
-	outputFile = fopen("results.dat", "w+");
+	outputFile = fopen("results.dat", "wb");
 
 	//Calculate the l1_inst things
 	l1_inst->total_requests = l1_inst->num_hits + l1_inst->num_misses;
@@ -440,17 +445,17 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 	// fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Number of reference types : 	[Percentage]\n");
-	fprintf(outputFile, "	Reads 	= 	%llu 	[%.1f%%]\n", *num_reads, 	read_precent);
-	fprintf(outputFile, "	Writes 	= 	%llu 	[%.1f%%]\n", *num_writes, 	write_percent);
-	fprintf(outputFile, "	Inst. 	= 	%llu	[%.1f%%]\n", *num_inst, 	inst_percent);
-	fprintf(outputFile, "	Total 	= 	%llu\n ", total_traces);
+	fprintf(outputFile, "	Reads 	= 	%10llu 	    [%4.1f%%]\n", *num_reads, 	read_precent);
+	fprintf(outputFile, "	Writes 	= 	%10llu 	    [%4.1f%%]\n", *num_writes, 	write_percent);
+	fprintf(outputFile, "	Inst. 	= 	%10llu	    [%4.1f%%]\n", *num_inst, 	inst_percent);
+	fprintf(outputFile, "	Total 	= 	%10llu\n ", total_traces);
 	fprintf(outputFile, "\n");
 
 	// fprintf(outputFile, "Total cycles for activities: 	[Percentage]\n");
-	// fprintf(outputFile, "	Reads 	= 	%llu 	[%.1f%%]\n", , );
-	// fprintf(outputFile, "	Writes 	= 	%llu 	[%.1f%%]\n", , );
-	// fprintf(outputFile, "	Inst. 	= 	%llu 	[%.1f%%]\n", , );
-	// fprintf(outputFile, "	Total 	= 	%llu\n ", );
+	// fprintf(outputFile, "	Reads 	= 	%10llu 	    [%4.1f%%]\n", , );
+	// fprintf(outputFile, "	Writes 	= 	%10llu 	    [%4.1f%%]\n", , );
+	// fprintf(outputFile, "	Inst. 	= 	%10llu 	    [%4.1f%%]\n", , );
+	// fprintf(outputFile, "	Total 	= 	%10llu\n ", );
 	// fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Average cycles per activity:\n");
@@ -485,31 +490,37 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 
 	fprintf(outputFile, "Memory Level:  L1i\n");
 
-	for(ulli i = 0; i < l1_inst->num_sets; i++){
-		if(l1_inst->cache_set[i].block[0].valid == true){
-			fprintf(outputFile, "Index: %llx | V:1 D:%d Tag: %llx\n", i, l1_inst->cache_set[i].block[0].dirty, l1_inst->cache_set[i].block[0].tag);
-		}
-	}
-	fprintf(outputFile, "\n");
+	print_cache(l1_inst, outputFile);
+	
 	fprintf(outputFile, "Memory Level:  L1d\n");
 
-	for(ulli i = 0; i < l1_data->num_sets; i++){
-		if(l1_data->cache_set[i].block[0].valid == true){
-			fprintf(outputFile, "Index: %llx | V:1 D:%d Tag: %llx\n", i, l1_data->cache_set[i].block[0].dirty, l1_data->cache_set[i].block[0].tag);
-		}
-	}
-	fprintf(outputFile, "\n");
+	print_cache(l1_data, outputFile);
+	
 	fprintf(outputFile, "Memory Level:  L2\n");
 
-	for(ulli i = 0; i < l2->num_sets; i++){
-		if(l2->cache_set[i].block[0].valid == true){
-			fprintf(outputFile, "Index: %llx | V:1 D:%d Tag: %llx\n", i, l2->cache_set[i].block[0].dirty, l2->cache_set[i].block[0].tag);
-		}
-	}
+	print_cache(l2, outputFile);
 
 	// fprintf(outputFile, "L1 cache cost (Icache $%d) + (Dcache $%d) = $%d", , , );
 	// fprintf(outputFile, "L1 cache cost = $%d; Memory cost = $%d; Total cost = $%d", , , );
 	// fprintf(outputFile, "Flushes = %f  :  Invalidates = %f", , );
 
 	fclose(outputFile);
+}
+
+void print_cache(cache* cache_level, FILE * outputFile){
+	for(ulli i = 0; i < cache_level->num_sets; i++){
+		if(cache_level->cache_set[i].block[0].valid == true){
+			fprintf(outputFile, "Index: %5llx | V:1 D:%d Tag: %12llx | ", i, cache_level->cache_set[i].block[0].dirty, cache_level->cache_set[i].block[0].tag);
+			for(ulli j = 1; j < cache_level->assoc; j++){
+				if(cache_level->cache_set[i].block[j].valid == true){
+					fprintf(outputFile,  "V:%d D:%d Tag: %12llx | ", cache_level->cache_set[i].block[j].valid, cache_level->cache_set[i].block[j].dirty, cache_level->cache_set[i].block[j].tag);
+				}
+				else if(cache_level->cache_set[i].block[j].valid == false){
+					fprintf(outputFile,  "V:%d D:%d Tag: - | ", cache_level->cache_set[i].block[j].valid, cache_level->cache_set[i].block[j].dirty);
+				}
+			}
+			fprintf(outputFile, "\n");
+		}	
+	}
+	fprintf(outputFile, "\n");
 }

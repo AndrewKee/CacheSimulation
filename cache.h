@@ -1,6 +1,11 @@
 #ifndef CACHE_H
 #define CACHE_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
 typedef unsigned int uint;
 typedef enum { false, true } bool;
 typedef unsigned long long ull;
@@ -89,6 +94,8 @@ int num_indices(cache* cache_level, ulli address, uint bytesize);
 
 //outputs the results into a file
 void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
+
+void print_cache(cache* cache_level, FILE * outputFile);
 
 //Flushes the cache
 void flush(cache* cache_level);
