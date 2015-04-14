@@ -510,13 +510,13 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 void print_cache(cache* cache_level, FILE * outputFile){
 	for(ulli i = 0; i < cache_level->num_sets; i++){
 		if(cache_level->cache_set[i].block[0].valid == true){
-			fprintf(outputFile, "Index: %5llx | V:1 D:%d Tag: %12llx | ", i, cache_level->cache_set[i].block[0].dirty, cache_level->cache_set[i].block[0].tag);
+			fprintf(outputFile, "Index: %4llx | V:1 D:%d Tag: %12llx | ", i, cache_level->cache_set[i].block[0].dirty, cache_level->cache_set[i].block[0].tag);
 			for(ulli j = 1; j < cache_level->assoc; j++){
 				if(cache_level->cache_set[i].block[j].valid == true){
 					fprintf(outputFile,  "V:%d D:%d Tag: %12llx | ", cache_level->cache_set[i].block[j].valid, cache_level->cache_set[i].block[j].dirty, cache_level->cache_set[i].block[j].tag);
 				}
 				else if(cache_level->cache_set[i].block[j].valid == false){
-					fprintf(outputFile,  "V:%d D:%d Tag: - | ", cache_level->cache_set[i].block[j].valid, cache_level->cache_set[i].block[j].dirty);
+					fprintf(outputFile,  "V:%d D:%d Tag: %12c | ", cache_level->cache_set[i].block[j].valid, cache_level->cache_set[i].block[j].dirty, '-');
 				}
 			}
 			fprintf(outputFile, "\n");
