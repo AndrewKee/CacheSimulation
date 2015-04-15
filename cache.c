@@ -249,6 +249,9 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		if(type == 'W'){
 			// printf("dirty index: %llx\n", index);
 		}
+		if(index == 0x7c && cache_level->next_level->next_level == NULL){
+			printf("its 7c\n");
+		}
 		// if(cache_level->next_level->next_level == NULL && num_refs > 1){
 		// 	printf("byte_offset: %llu\n", byte_offset);
 		// 	printf("word_offset: %u\n", word_offset);
@@ -260,7 +263,8 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 				cache_level->num_hits = cache_level->num_hits + num_refs;
 				
 				if(type == 'W' && (cache_level->next_level->next_level != NULL || type == 'K')){
-					// printf("dirty index: %llx\n", index);
+					if(cache_level->next_level->next_level == NULL)
+						printf("dirty index: %llx\n", index);
 					cache_level->cache_set[index].block[i].dirty = true;
 				}
 				return true;
@@ -277,19 +281,21 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		uint b = LRU_Get_LRU(cache_level, index);
 
 	 	LRU_Update(cache_level, index, b);
-	 	if(index == 0x7c && cache_level->next_level->next_level == NULL){
-			printf("its 7c\n");
-		}
+
 	 	//check if its dirty, push it through
 	 	if(cache_level->cache_set[index].block[b].dirty == true){
 	 		cache_level->cache_set[index].block[b].dirty = false;
-	 		printf("dirty kickout\n");
+	 		// printf("dirty kickout\n");
 	 		//write through to next level, dirty kickout of a block
 	 		//Same index as current address, also need to extract tag and reconstruct address to pass
+<<<<<<< HEAD
 	 		ulli dirty_addr = create_address(cache_level, tag, index, 0);
 
+=======
+	 		ulli dirty_addr = create_address(cache_level, tag, index, byte_offset);
+>>>>>>> ada47e4eed067fbaa7043e5900a2cfc13d007230
 	 		cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
-	 		search_cache(cache_level->next_level, dirty_addr, 'K', 0);
+	 		search_cache(cache_level->next_level, dirty_addr, 'K', num_bytes);
 	 	}
 
 	 	//if we have something valid, and we need to replace it with something new, we have a kickout.
@@ -299,6 +305,7 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	 	//bring the stuff into this cache
 		cache_level->cache_set[index].block[b].tag 		= tag;
 	 	cache_level->cache_set[index].block[b].valid 	= true;
+	 	cache_level->cache_set[index].block[b].address 	= address;
 
 	 	if((type == 'W' && cache_level->next_level->next_level != NULL) || type == 'K'){
 			if(type == 'K')
@@ -307,7 +314,6 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	 	}
 	 	else
 	 		cache_level->cache_set[index].block[b].dirty 	= false;
-
 	 	return false;
 	 } else{
 	 	cache_level->num_hits = cache_level->num_hits + 1;
