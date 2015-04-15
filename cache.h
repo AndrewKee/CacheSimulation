@@ -63,6 +63,7 @@ typedef struct cache_block {
 	ulli tag;
 	bool valid;
 	bool dirty;
+	ulli address;
 } cache_block;
 
 
