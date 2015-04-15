@@ -74,7 +74,7 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 		l1_data->bus_width = 4;
 
 		// uint address_length = 64;
-		uint address_length = 48;
+		uint address_length = 64;
 
 		l1_data->num_sets = l1_data->cache_size / (l1_data->assoc * l1_data->block_size);
 		l1_data->tag_size = address_length - log(l1_data->num_sets)/log(2) - log(l1_data->block_size)/log(2);
@@ -135,7 +135,7 @@ void cache_alloc(cache* cache_level)
 ulli create_address(cache* cache_level, ulli tag, ulli index, ulli byte_offset){
 	ulli address = 0;
 	//This is wrong!
-	address |= (tag << (48 - cache_level->tag_size));
+	address |= (tag << (64 - cache_level->tag_size));
 	//printf("Tag %llx\n", (tag << (48 - cache_level->tag_size)));
 	address |= (index << (uint)(log(cache_level->block_size)/log(2)));
 	address |= byte_offset;
@@ -263,11 +263,11 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 			// printf("dirty index: %llx\n", index);
 		}
 
-		//printf("We got her2e\n");
+		printf("We got her2e\n");
 		//look for the tag in the cache
 		for(uint i = 0; i < cache_level->assoc; i++){
-			//printf("Index %llx\n", index);
-			//printf("tag %llx\n", tag);
+			printf("Index %llx\n", index);
+			printf("tag %llx\n", tag);
 
 			if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
 				cache_level->num_hits = cache_level->num_hits + num_refs;
@@ -337,16 +337,16 @@ ulli get_tag(cache* cache_level, ulli address){
 	//printf("Returned Tag: %llx\n", (address >> (48 - cache_level->tag_size)));
 	//printf("Tag size: %u\n", cache_level->tag_size);
 
-	return (address >> (48 - cache_level->tag_size));
+	return (address >> (64 - cache_level->tag_size));
 }
 
 ulli get_index(cache* cache_level, ulli address){
 	ulli index;
-	//index 	= address << cache_level->tag_size;
+	index 	= address << cache_level->tag_size;
 	//index 	&= 0xFFFFFFFFFFFFFFFF >> (64 - cache_level->tag_size);
-	//index 	= index   >> (cache_level->tag_size);
-	index 	= address   >> (uint)(log(cache_level->block_size)/log(2));
-	index 	&= 0xFFFFFFFFFFFFFFFF >> (64 - (uint)(log(cache_level->num_sets)/log(2)));
+	index 	= index   >> (cache_level->tag_size);
+	//index 	= address   >> (uint)(log(cache_level->block_size)/log(2));
+	//index 	&= 0xFFFFFFFFFFFFFFFF >> (64 - (uint)(log(cache_level->num_sets)/log(2)));
 
 	return index;
 }
