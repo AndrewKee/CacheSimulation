@@ -287,6 +287,7 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	 		ulli dirty_addr = create_address(cache_level, tag, index, byte_offset);
 	 		cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
 	 		search_cache(cache_level->next_level, dirty_addr, 'K', num_bytes);
+	 		// search_cache(cache_level, dirty_addr, 'R', num_bytes);
 	 	}
 
 	 	//if we have something valid, and we need to replace it with something new, we have a kickout.
