@@ -215,9 +215,6 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		index 		= get_index(cache_level, address);
 		uint num_refs = 0;
 		uint word_offset = byte_offset % 4;
-		if(type == 'K'){
-			printf("its a K!!!: %llx\n", index);
-		}
 		
 
 		//find out how many references we need to the cache, since its on 4byte boundaries
@@ -233,20 +230,12 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		}else{
 			num_refs = 1;
 		}	
-		// if(type == 'W'){
-		// 	// printf("dirty index: %llx\n", index);
-		// }
-		if(index == 0x7c && cache_level->next_level->next_level == NULL){
-			printf("its 7c\n");
+		if(cache_level->next_level->next_level == NULL){
+			printf("type: %c\n", type);
 		}
 
-		if(cache_level->next_level->next_level == NULL && index == 0x7c){
-			ulli old_byteoffset = get_byte_offset(cache_level, cache_level->cache_set[index].block[0].address);
-			old_byteoffset = old_byteoffset >> 5;
-			ulli new_byte_offset = byte_offset >> 5;
-			printf("old upper or lower: %llx, type: %c\n", old_byteoffset, type);
-			printf("new upper or lower: %llx\n", new_byte_offset);
-			printf("tag: %llx\n", tag);
+		if(index == 0x7c && cache_level->next_level->next_level == NULL){
+			printf("its 7c\n");
 		}
 		// if(cache_level->next_level->next_level == NULL && num_refs > 1){
 		// 	printf("byte_offset: %llu\n", byte_offset);
@@ -332,9 +321,7 @@ ulli get_byte_offset(cache* cache_level, ulli address){
 
 //finds the number of indexes we need to use for a single instruction
 int num_indices(cache* cache_level, ulli address, uint num_bytes){
-	ulli index, tag, byte_offset;
-	tag 		= get_tag(cache_level, address);
-	index 		= get_index(cache_level, address);
+	ulli byte_offset;
 	byte_offset = get_byte_offset(cache_level, address);
 
 	int num_blocks_requested = 1;
