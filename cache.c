@@ -98,22 +98,6 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2){
 	cache_alloc(l1_data);
 	cache_alloc(l1_inst);
 	cache_alloc(l2);
-
-	uint addres_length = 64;
-
-	l1_data->num_sets = l1_data->cache_size / (l1_data->assoc * l1_data->block_size);
-	l1_data->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l1_data->block_size)/log(2);
-	l1_data->next_level = l2;
-
-	l1_inst->num_sets = l1_inst->cache_size / (l1_inst->assoc * l1_inst->block_size);
-	l1_inst->tag_size = addres_length - log(l1_data->num_sets)/log(2) - log(l1_inst->block_size)/log(2);
-	l1_inst->next_level = l2;
-
-	l2->num_sets = l2->cache_size / (l2->assoc * l2->block_size);
-	l2->tag_size = addres_length - log(l2->num_sets)/log(2) - log(l2->block_size)/log(2);
-	l2->next_level = main_mem;
-
-	main_mem->next_level = NULL;
 }
 
 void cache_alloc(cache* cache_level)
@@ -173,6 +157,18 @@ void read_trace(cache* l1_data, cache* l1_inst, cache* l2, ull* num_inst, ull* n
 	
 	while(scanf("%c %llx %d\n", &op, &address, &bytesize) == 3){
 		 // printf("%c %llx %d\n", op, address, bytesize);
+
+	// ulli index = get_index(l1_data, address);
+	// ulli tag = get_tag(l1_data, address);
+	// if (index == 0x4e || index == 0x4d)
+	// {
+	// 	printf("Index %12llx\n", index);
+	// 	//printf("LRU returned references: %u\n", num_refs);
+	// 	printf("LRU uploaded tag: %12llx\n", tag);
+	// 	printf("LRU Type: %c\n", op);
+	// 	printf("Bytes requested: %u\n", bytesize);
+	// 	printf("Byte offset %llu\n", get_byte_offset(l1_data, address));
+	// }
 		
 		if(op == 'I'){
 			*num_inst = *num_inst + 1;
@@ -238,6 +234,7 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		}else{
 			num_refs = 1;
 		}	
+
 		if(type == 'W'){
 			// printf("dirty index: %llx\n", index);
 		}
@@ -261,6 +258,7 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		search_cache(cache_level->next_level, address, type, num_bytes);
 		//update LRU
 		uint b = LRU_Get_LRU(cache_level, index);
+
 	 	LRU_Update(cache_level, index, b);
 
 	 	//check if its dirty, push it through
@@ -269,6 +267,7 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	 		//write through to next level, dirty kickout of a block
 	 		//Same index as current address, also need to extract tag and reconstruct address to pass
 	 		ulli dirty_addr = create_address(cache_level, tag, index, 0);
+
 	 		cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
 	 		search_cache(cache_level->next_level, dirty_addr, 'K', 0);
 	 	}
@@ -400,9 +399,10 @@ ulli get_byte_offset(cache* cache_level, ulli address){
 
 //finds the number of indexes we need to use for a single instruction
 int num_indices(cache* cache_level, ulli address, uint num_bytes){
-	ulli index, tag, byte_offset;
-	tag 		= get_tag(cache_level, address);
-	index 		= get_index(cache_level, address);
+	//ulli index, tag, byte_offset;
+	ulli byte_offset;
+	//tag 		= get_tag(cache_level, address);
+	//index 		= get_index(cache_level, address);
 	byte_offset = get_byte_offset(cache_level, address);
 
 	int num_blocks_requested = 1;
@@ -442,6 +442,8 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
     l2->hit_rate 		=	(double) l2->num_hits 			/ 	l2->total_requests 		* 100;
     l2->miss_rate 		= 	(double) l2->num_misses 		/ 	l2->total_requests 		* 100;
 
+    //Calculate the cycles for activities
+
     //Calculate percent of reference types
     ull total_traces 		= *num_inst + *num_reads + *num_writes;
     double inst_percent 	= ((double)*num_inst 	/ (double)total_traces) * 100;
@@ -455,7 +457,8 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 	fprintf(outputFile, "	Memory ready time = %u  :  chunksize = %u  :  chunktime = %u \n", main_mem->mem_ready, main_mem->mem_chunksize, main_mem->mem_chunktime);
 	fprintf(outputFile, "\n");
 
-	// fprintf(outputFile, "Execute time 	=	%llu;		Total refs	= %llu\n", , l1_inst->total_requests + l1_data->total_requests);
+	//ulli execute_time = (l1_data->num_hits * l1_data->hit_time) + (l1_data->num_misses * l1_data->miss_time) + (l1_inst->num_hits * l1_inst->hit_time) + (l1_inst->num_misses * l1_inst->miss_time) + (l2->num_hits * l2->hit_time) + (l2->num_misses * l2->miss_time) + (l2->num_misses * (main_mem->mem_sendaddr + (main_mem->mem_chunktime*(l2->block_size/main_mem->mem_chunksize))));
+	//fprintf(outputFile, "Execute time 	=	%llu;		Total refs	= %llu\n", execute_time, l1_inst->total_requests + l1_data->total_requests);
 	// fprintf(outputFile, "Flush time 		=	%llu", );
 	// fprintf(outputFile, "Inst refs 		=	%llu; 	Data refs 	= %llu", l1_inst->total_requests, l1_data->total_requests);
 	// fprintf(outputFile, "\n");
@@ -467,7 +470,7 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num
 	fprintf(outputFile, "	Total 	= 	%10llu\n ", total_traces);
 	fprintf(outputFile, "\n");
 
-	// fprintf(outputFile, "Total cycles for activities: 	[Percentage]\n");
+	 fprintf(outputFile, "Total cycles for activities: 	[Percentage]\n");
 	// fprintf(outputFile, "	Reads 	= 	%10llu 	    [%4.1f%%]\n", , );
 	// fprintf(outputFile, "	Writes 	= 	%10llu 	    [%4.1f%%]\n", , );
 	// fprintf(outputFile, "	Inst. 	= 	%10llu 	    [%4.1f%%]\n", , );
@@ -532,7 +535,7 @@ void print_cache(cache* cache_level, FILE * outputFile){
 					fprintf(outputFile,  "V:%d D:%d Tag: %12llx | ", cache_level->cache_set[i].block[j].valid, cache_level->cache_set[i].block[j].dirty, cache_level->cache_set[i].block[j].tag);
 				}
 				else if(cache_level->cache_set[i].block[j].valid == false){
-					fprintf(outputFile,  "V:%d D:%d Tag: - | ", cache_level->cache_set[i].block[j].valid, cache_level->cache_set[i].block[j].dirty);
+					fprintf(outputFile,  "V:%d D:%d Tag: %12c | ", cache_level->cache_set[i].block[j].valid, cache_level->cache_set[i].block[j].dirty, '-');
 				}
 			}
 			fprintf(outputFile, "\n");

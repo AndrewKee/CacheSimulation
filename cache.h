@@ -71,7 +71,7 @@ typedef struct cache_block {
 //these are all just properties of each of the caches and the main memory 
 int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem);
 
-void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem);
+void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2);
 
 //loops through the traces and does the trace
 void read_trace(cache* l1_data, cache* l1_inst, cache* l2, ull* num_inst, ull* num_reads, ull* num_writes);
