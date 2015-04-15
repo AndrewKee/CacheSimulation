@@ -239,6 +239,15 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		if(index == 0x7c && cache_level->next_level->next_level == NULL){
 			printf("its 7c\n");
 		}
+
+		if(cache_level->next_level->next_level == NULL && index == 0x7c){
+			ulli old_byteoffset = get_byte_offset(cache_level, cache_level->cache_set[index].block[0].address);
+			old_byteoffset = old_byteoffset >> 5;
+			ulli new_byte_offset = byte_offset >> 5;
+			printf("old upper or lower: %llx, type: %c\n", old_byteoffset, type);
+			printf("new upper or lower: %llx\n", new_byte_offset);
+			printf("tag: %llx\n", tag);
+		}
 		// if(cache_level->next_level->next_level == NULL && num_refs > 1){
 		// 	printf("byte_offset: %llu\n", byte_offset);
 		// 	printf("word_offset: %u\n", word_offset);
@@ -248,8 +257,8 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		for(uint i = 0; i < cache_level->assoc; i++){
 			if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
 				cache_level->num_hits = cache_level->num_hits + num_refs;
-				
-				if(type == 'W' && (cache_level->next_level->next_level != NULL || type == 'K')){
+
+				if((type == 'W' && cache_level->next_level->next_level != NULL) || type == 'K'){
 					if(cache_level->next_level->next_level == NULL)
 						printf("dirty index: %llx\n", index);
 					cache_level->cache_set[index].block[i].dirty = true;
@@ -267,7 +276,8 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		//update LRU
 		uint b = LRU_Get_LRU(cache_level, index);
 	 	LRU_Update(cache_level, index, b);
-
+	 	if(index == 0x7c && cache_level->next_level->next_level == NULL)
+	 		printf("miss\n");
 	 	//check if its dirty, push it through
 	 	if(cache_level->cache_set[index].block[b].dirty == true){
 	 		cache_level->cache_set[index].block[b].dirty = false;
