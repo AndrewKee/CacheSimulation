@@ -290,12 +290,12 @@ bool search_cache(cache* cache_level, ulli address, char type){
 			cache_level->cache_set[index].block[b].dirty = true;
 		}
 
-		if(index == 0xf8 && cache_level->next_level->next_level != NULL){
-			// printf("f8 miss\n");
-		}
+		// if(index == 0xf8 && cache_level->next_level->next_level != NULL){
+		// 	printf("f8 miss\n");
+		// }
 
-	 	if(index == 0x7c && cache_level->next_level->next_level == NULL)
-	 		// printf("7c miss\n");
+	 // 	if(index == 0x7c && cache_level->next_level->next_level == NULL)
+	 // 		printf("7c miss\n");
 	 	//check if its dirty, push it through
 	 	if(cache_level->cache_set[index].block[b].dirty == true){
 	 		cache_level->cache_set[index].block[b].dirty = false;
