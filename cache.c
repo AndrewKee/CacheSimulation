@@ -231,7 +231,7 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 			num_refs = 1;
 		}	
 		if(cache_level->next_level->next_level == NULL){
-			printf("type: %c\n", type);
+			// printf("type: %c\n", type);
 		}
 
 		if(index == 0x7c && cache_level->next_level->next_level == NULL){
@@ -246,7 +246,9 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		for(uint i = 0; i < cache_level->assoc; i++){
 			if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
 				cache_level->num_hits = cache_level->num_hits + num_refs;
-
+				if(index == 0x7c && cache_level->next_level->next_level == NULL){
+					printf("its a hit at 7c with type: %c\n", type);
+				}
 				if(type == 'W'){
 					cache_level->cache_set[index].block[i].dirty = true;
 				}
@@ -269,16 +271,16 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	 		// printf("dirty kickout\n");
 	 		//write through to next level, dirty kickout of a block
 	 		//Same index as current address, also need to extract tag and reconstruct address to pass
-	 		ulli dirty_addr = create_address(cache_level, tag, index, byte_offset);
+	 		ulli dirty_addr = create_address(cache_level, tag, index, 0);
 	 		cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
-	 		search_cache(cache_level->next_level, dirty_addr, 'W', num_bytes);
+	 		search_cache(cache_level->next_level, dirty_addr, 'W', 0);
 	 		// search_cache(cache_level, dirty_addr, 'R', num_bytes);
 	 	}
 	 	//go to next level of cache
 		search_cache(cache_level->next_level, address, 'R', num_bytes);
 		//update LRU
 	 	LRU_Update(cache_level, index, b);
-
+        ///asdfasdfasdfasdf
 	 	//if we have something valid, and we need to replace it with something new, we have a kickout.
 	 	if(cache_level->cache_set[index].block[b].valid == true){
 	 		cache_level->kickouts = cache_level->kickouts + 1;
@@ -289,6 +291,9 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	 	cache_level->cache_set[index].block[b].address 	= address;
 
 	 	if(type == 'W'){
+	 		if(index == 0x7c && cache_level->next_level->next_level == NULL){
+	 			printf("set to dirty\n");
+	 		}
 	 		cache_level->cache_set[index].block[b].dirty 	= true;
 	 	}
 	 	else
