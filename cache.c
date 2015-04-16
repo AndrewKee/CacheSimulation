@@ -76,13 +76,28 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 
 		uint address_length = 64;
 
+		//Fully Associative
+		if(l1_data->assoc == 0){
+			l1_data->assoc = l1_data->cache_size / l1_data->block_size;
+		}
+
 		l1_data->num_sets = l1_data->cache_size / (l1_data->assoc * l1_data->block_size);
 		l1_data->tag_size = address_length - log(l1_data->num_sets)/log(2) - log(l1_data->block_size)/log(2);
 		l1_data->next_level = l2;
 
+		//Fully Associative
+		if(l1_inst->assoc == 0){
+			l1_inst->assoc = l1_inst->cache_size / l1_inst->block_size;
+		}
+		
 		l1_inst->num_sets = l1_inst->cache_size / (l1_inst->assoc * l1_inst->block_size);
 		l1_inst->tag_size = address_length - log(l1_data->num_sets)/log(2) - log(l1_inst->block_size)/log(2);
 		l1_inst->next_level = l2;
+
+		//Fully Associative
+		if(l2->assoc == 0){
+			l2->assoc = l2->cache_size / l2->block_size;
+		}
 
 		l2->num_sets = l2->cache_size / (l2->assoc * l2->block_size);
 		l2->tag_size = address_length - log(l2->num_sets)/log(2) - log(l2->block_size)/log(2);
