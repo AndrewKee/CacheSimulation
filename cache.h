@@ -54,9 +54,6 @@ typedef struct cache {
 typedef struct cache_set {
 	struct cache_block* block;
 	struct LRU* lru;
-	//ulli tag;
-	//bool valid;
-	//bool dirty;
 } cache_set;
 
 typedef struct cache_block {
@@ -77,7 +74,7 @@ void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2);
 //loops through the traces and does the trace
 void read_trace(cache* l1_data, cache* l1_inst, cache* l2, ull* num_inst, ull* num_reads, ull* num_writes);
 
-bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes);
+bool search_cache(cache* cache_level, ulli address, char type);
 
 void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes, ulli index);
 
