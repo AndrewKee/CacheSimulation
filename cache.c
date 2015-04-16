@@ -3,6 +3,7 @@
 
 
  //#define DEBUG
+// uint global_cnt;
 
 int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem){
 	FILE *fp;
@@ -136,22 +137,31 @@ ulli create_address(cache* cache_level, ulli tag, ulli index, ulli byte_offset){
 
 void prep_search_cache(cache* cache_level, ulli address, uint bytesize, char op){
 	ulli index;
+	//Gets the total number of references
+	uint offset = get_byte_offset(cache_level, address);
+	uint word_offset = offset%4;
 	//find out how many times we need to 
 	uint num_i = num_indices(cache_level, address, bytesize);
 	index = get_index(cache_level, address);
+
 	for(uint i = 0; i < num_i; i++){
-		if(i > 0){
-			// printf("new index\n");
-			//if we go onto another index, we need to recreate the address, and the byteoffset will be 0, since we start at the beginning of the next index
-			bytesize = (get_byte_offset(cache_level, address) + bytesize) - cache_level->block_size;
-			address = create_address(cache_level, get_tag(cache_level, address), index, 0);
-		}else{
-			// printf("orig index\n");
-			//still need to recreate the new address with the new index
-			address = create_address(cache_level, get_tag(cache_level, address), index, get_byte_offset(cache_level, address));
+		uint bytes = bytesize;
+		if (bytesize + offset > cache_level->block_size){
+			bytes = cache_level->block_size - offset;
 		}
-		search_cache(cache_level, address, op, bytesize);
+		word_offset = offset%4;
+		address = create_address(cache_level, get_tag(cache_level, address), index, 0);
 		index++;
+
+		uint i = offset;
+		uint j = 0;
+		while(i < cache_level->block_size && j < (bytesize + word_offset)){
+			search_cache(cache_level, address, op);
+			i += 4;
+			j += 4;
+		}
+		offset = 0;
+		bytesize -= bytes;
 	}
 }
 
@@ -192,57 +202,33 @@ void flush(cache* cache_level)
 		for (j = 0; j < cache_level->assoc; j++){
 			if (cache_level->cache_set[i].block[j].dirty)
 			{
-				//Write this through, increment kickouts
-				// cache_level->dirty_kickouts++;
-
 				ulli dirty_addr = (cache_level->cache_set[i].block[j].tag << (64 -cache_level->tag_size));
 				dirty_addr |= i << cache_level->block_size;
 
 				cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
-				search_cache(cache_level->next_level, dirty_addr, 'W', 0);
 
+				search_cache(cache_level->next_level, dirty_addr, 'W');
 			}
 			cache_level->cache_set[i].block[j].valid = false;
 		}
 	}
 }
 
-//dammit, essentially ended up being the same function
-bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
+bool search_cache(cache* cache_level, ulli address, char type){
 	if (cache_level->next_level != NULL){
+
+		// if (cache_level->next_level->next_level == NULL)
+		// {
+		// 	printf("L2   ");
+		// }
+
+		// else printf("L1   ");
+		// printf("Address: %llx\n", address);
 		
-		ulli tag, byte_offset, index;
+		ulli tag, index;
 		tag 		= get_tag(cache_level, address);
-		byte_offset = get_byte_offset(cache_level, address);
 		index 		= get_index(cache_level, address);
 
-		uint num_refs = 0;
-		uint word_offset = byte_offset % 4;
-		
-
-		//find out how many references we need to the cache, since its on 4byte boundaries
-		if(word_offset + num_bytes > 4 && cache_level->next_level->next_level != NULL){
-			
-			uint i = byte_offset;
-			uint j = 0;
-			while(i < cache_level->block_size && j < (num_bytes + word_offset)){
-				num_refs++;
-				i += 4;
-				j += 4;
-			}
-			
-		}else{
-			num_refs = 1;
-		}	
-		if(type == 'I' && cache_level->next_level->next_level != NULL){
-				printf("L1  address: %llx\n", create_address(cache_level, tag, index, 0));
-				printf("byte_offset: %llu\n", byte_offset);
-				printf("num_bytes: %llu\n", num_bytes);
-				printf("num_refs: %u\n", num_refs);
-			}
-		if(cache_level->next_level->next_level == NULL){
-			// printf("type: %c\n", type);
-		}
 
 		// if(index == 0xf8 && cache_level->next_level->next_level != NULL){
 		// 	printf("\n");
@@ -261,6 +247,17 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		// 	printf("dirty: %d\n", cache_level->cache_set[index].block[0].dirty);
 		// 	printf("tag: %llx\n", tag);
 		// }
+		
+		// if(cache_level->next_level->next_level == NULL && index == 0x7c){
+		// 	printf("We got here");
+			// ulli old_byteoffset = get_byte_offset(cache_level, cache_level->cache_set[index].block[0].address);
+			// old_byteoffset = old_byteoffset >> 5;
+			// ulli new_byte_offset = byte_offset >> 5;
+			// printf("old upper or lower: %llx, type: %c\n", old_byteoffset, type);
+			// printf("new upper or lower: %llx\n", new_byte_offset);
+			// printf("tag: %llx\n", tag);
+		// }
+
 		// if(cache_level->next_level->next_level == NULL && num_refs > 1){
 		// 	printf("byte_offset: %llu\n", byte_offset);
 		// 	printf("word_offset: %u\n", word_offset);
@@ -269,13 +266,8 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 		//look for the tag in the cache
 		for(uint i = 0; i < cache_level->assoc; i++){
 			if(cache_level->cache_set[index].block[i].valid == true && cache_level->cache_set[index].block[i].tag == tag){
-				cache_level->num_hits = cache_level->num_hits + num_refs;
-				// if(index == 0xf8){
-				// 	printf("its a hit at f8 in l1 with type: %c\n", type);				
-				// }
-				// if(index == 0x7c && cache_level->next_level->next_level == NULL){
-				// 	printf("its a hit at 7c in l2 with type: %c\n", type);
-				// }
+				cache_level->num_hits = cache_level->num_hits + 1;
+				//If its a write, make it dirty
 				if(type == 'W'){
 					cache_level->cache_set[index].block[i].dirty = true;
 				}
@@ -285,9 +277,7 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 
 		//didnt find in cache, it's a miss
 		cache_level->num_misses = cache_level->num_misses + 1;
-		cache_level->num_hits = cache_level->num_hits + num_refs - 1;
 
-		
 		uint b = LRU_Get_LRU(cache_level, index);
 
 		// if(index == 0xf8 && cache_level->next_level->next_level != NULL){
@@ -305,11 +295,10 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	 		//Same index as current address, also need to extract tag and reconstruct address to pass
 	 		ulli dirty_addr = create_address(cache_level, tag, index, 0);
 	 		cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
-	 		search_cache(cache_level->next_level, dirty_addr, 'W', 0);
-	 		// search_cache(cache_level, dirty_addr, 'R', num_bytes);
+	 		search_cache(cache_level->next_level, dirty_addr, 'W');
 	 	}
 	 	//go to next level of cache
-		search_cache(cache_level->next_level, address, 'R', num_bytes);
+		search_cache(cache_level->next_level, address, 'R');
 		//update LRU
 	 	LRU_Update(cache_level, index, b);
         ///asdfasdfasdfasdf
@@ -327,11 +316,13 @@ bool search_cache(cache* cache_level, ulli address, char type, ulli num_bytes){
 	 		// 	printf("set to dirty\n");
 	 		// }
 	 		cache_level->cache_set[index].block[b].dirty 	= true;
+	 		//cache_level->num_hits = cache_level->num_hits + 1;
 	 	}
-	 	else
-	 		cache_level->cache_set[index].block[b].dirty 	= false;
+	 	else cache_level->cache_set[index].block[b].dirty 	= false;
+
 	 	return false;
-	 } else{
+	 } 
+	 else{
 	 	cache_level->num_hits = cache_level->num_hits + 1;
 		return true;
 	 }
