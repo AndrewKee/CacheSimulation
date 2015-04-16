@@ -206,8 +206,8 @@ void flush(cache* cache_level)
 				dirty_addr |= i << cache_level->block_size;
 
 				cache_level->dirty_kickouts = cache_level->dirty_kickouts + 1;
-				search_cache(cache_level->next_level, dirty_addr, 'W');
 
+				search_cache(cache_level->next_level, dirty_addr, 'W');
 			}
 			cache_level->cache_set[i].block[j].valid = false;
 		}
@@ -238,6 +238,7 @@ bool search_cache(cache* cache_level, ulli address, char type){
 			// printf("new upper or lower: %llx\n", new_byte_offset);
 			// printf("tag: %llx\n", tag);
 		// }
+
 		// if(cache_level->next_level->next_level == NULL && num_refs > 1){
 		// 	printf("byte_offset: %llu\n", byte_offset);
 		// 	printf("word_offset: %u\n", word_offset);
@@ -260,6 +261,8 @@ bool search_cache(cache* cache_level, ulli address, char type){
 
 		uint b = LRU_Get_LRU(cache_level, index);
 
+	 	if(index == 0x7c && cache_level->next_level->next_level == NULL)
+	 		printf("miss\n");
 	 	//check if its dirty, push it through
 	 	if(cache_level->cache_set[index].block[b].dirty == true){
 	 		cache_level->cache_set[index].block[b].dirty = false;
