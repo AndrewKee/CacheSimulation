@@ -319,8 +319,6 @@ uint search_cache(cache* cache_level, ulli address, char type){
 
 	 	cycles += search_cache(cache_level->next_level, address, 'R');
 		cycles += transfer(cache_level);	//Going to need to transfer down a level because we missed
-
-		search_cache(cache_level->next_level, address, 'R');
 		//update LRU
 	 	LRU_Update(cache_level, index, b);
 	 	
@@ -329,13 +327,13 @@ uint search_cache(cache* cache_level, ulli address, char type){
 	 	cache_level->cache_set[index].block[b].valid 	= true;
 	 	cache_level->cache_set[index].block[b].address 	= address;
 
-	 	if(type == 'W')
+	 	if(type == 'W' && cache_level->next_level->next_level != NULL)
 	 		cache_level->cache_set[index].block[b].dirty 	= true;
 	 	else 
 	 		cache_level->cache_set[index].block[b].dirty 	= false;
 
 	 //We are in main memory 
-	 else
+	 }else
 	 {
 	 	cache_level->num_hits = cache_level->num_hits + 1;
 	 }
@@ -432,7 +430,7 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
 
 	fprintf(outputFile, "Execute time 	=	%llu;		Total refs	= %llu\n", exec_time, total_traces);
 	fprintf(outputFile, "Flush time 	=	%llu\n", cache_results->flush_time);
-	fprintf(outputFile, "Inst refs 		=	%llu\n; 	Data refs 	= %llu\n", cache_results->num_inst , cache_results->num_reads + cache_results->num_writes );
+	fprintf(outputFile, "Inst refs 		=	%llu; 	Data refs 	= %llu\n", cache_results->num_inst , cache_results->num_reads + cache_results->num_writes );
 	fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Number of reference types : 	[Percentage]\n");
@@ -481,7 +479,7 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
 
 	fprintf(outputFile, "L1 cache cost (Icache $%d) + (Dcache $%d) = $%d\n", ICache_cost, DCache_cost, ICache_cost + DCache_cost);
 	fprintf(outputFile, "L2 cache cost = $%d; Memory cost = $%d; Total cost = $%d\n", L2_cache_cost, memory_cost, ICache_cost + DCache_cost + L2_cache_cost + memory_cost);
-	fprintf(outputFile, "Flushes = %f  :  Invalidates = %f\n", cache_results->flush_cnt, cache_results->num_invalid);
+	fprintf(outputFile, "Flushes = %llu  :  Invalidates = %llu\n", cache_results->flush_cnt, cache_results->num_invalid);
 	fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Memory Level:  L1i\n");
