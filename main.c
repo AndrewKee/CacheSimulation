@@ -18,9 +18,9 @@ int main(int argc, char *argv[]){
 	// l1_inst 	= malloc( sizeof(cache));
 	// l2 			= malloc( sizeof(cache));
 	// main_mem 	= malloc( sizeof(cache));
-	ull* num_inst  = malloc( sizeof(ull));
-	ull* num_reads = malloc( sizeof(ull));
-	ull* num_writes= malloc( sizeof(ull));
+	ulli* num_inst  = malloc( sizeof(ulli));
+	ulli* num_reads = malloc( sizeof(ulli));
+	ulli* num_writes= malloc( sizeof(ulli));
 
 	*num_inst  	= 0;
 	*num_reads 	= 0;

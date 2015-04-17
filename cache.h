@@ -3,11 +3,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <math.h>
 
 typedef unsigned int uint;
-typedef enum { false, true } bool;
+// typedef enum { false, true } bool;
 typedef unsigned long long ull;
 typedef unsigned long long int ulli;
 
@@ -72,7 +73,7 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2);
 
 //loops through the traces and does the trace
-void read_trace(cache* l1_data, cache* l1_inst, cache* l2, ull* num_inst, ull* num_reads, ull* num_writes);
+void read_trace(cache* l1_data, cache* l1_inst, cache* l2, ulli* num_inst, ulli* num_reads, ulli* num_writes);
 
 bool search_cache(cache* cache_level, ulli address, char type);
 
