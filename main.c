@@ -14,21 +14,11 @@ int main(int argc, char *argv[]){
 	cache* l1_inst  = malloc( sizeof(cache));
 	cache* l2 		= malloc( sizeof(cache));
 	cache* main_mem = malloc( sizeof(cache));
-<<<<<<< HEAD
 
 	init_cache(l1_data);
 	init_cache(l1_inst);
 	init_cache(l2);
 
-	// l1_data 	= malloc( sizeof(cache));
-	// l1_inst 	= malloc( sizeof(cache));
-	// l2 			= malloc( sizeof(cache));
-	// main_mem 	= malloc( sizeof(cache));
-	ulli* num_inst  = malloc( sizeof(ulli));
-	ulli* num_reads = malloc( sizeof(ulli));
-	ulli* num_writes= malloc( sizeof(ulli));
-=======
->>>>>>> a68b03401b6d7c85b2b6990ebc2913ee97c23802
 
 	results* cache_results = malloc( sizeof(results));
 	cache_results->num_inst = 0;
