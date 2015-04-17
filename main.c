@@ -14,6 +14,7 @@ int main(int argc, char *argv[]){
 	cache* l1_inst  = malloc( sizeof(cache));
 	cache* l2 		= malloc( sizeof(cache));
 	cache* main_mem = malloc( sizeof(cache));
+<<<<<<< HEAD
 
 	init_cache(l1_data);
 	init_cache(l1_inst);
@@ -26,10 +27,18 @@ int main(int argc, char *argv[]){
 	ulli* num_inst  = malloc( sizeof(ulli));
 	ulli* num_reads = malloc( sizeof(ulli));
 	ulli* num_writes= malloc( sizeof(ulli));
+=======
+>>>>>>> a68b03401b6d7c85b2b6990ebc2913ee97c23802
 
-	*num_inst  	= 0;
-	*num_reads 	= 0;
-	*num_writes = 0;
+	results* cache_results = malloc( sizeof(results));
+	cache_results->num_inst = 0;
+	cache_results->num_reads = 0;
+	cache_results->num_writes = 0;
+	cache_results->flush_time = 0;
+	cache_results->read_time = 0;
+	cache_results->inst_time = 0;
+	cache_results->flush_cnt = 0;
+	cache_results->num_invalid = 0;
 
 	char * x;
 	if (argv[1]) 
@@ -40,8 +49,8 @@ int main(int argc, char *argv[]){
 	printf("%s\n", x);
 	parse_config(x, l1_data, l1_inst, l2, main_mem);
 	allocate_blocks(l1_data, l1_inst, l2);
-	read_trace(l1_data, l1_inst, l2, num_inst, num_reads, num_writes);
-	report(l1_data, l1_inst, l2, main_mem, num_inst, num_reads, num_writes);
+	read_trace(l1_data, l1_inst, l2, cache_results);
+	report(l1_data, l1_inst, l2, main_mem, cache_results);
 
 	return 0;
 }

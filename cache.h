@@ -12,6 +12,21 @@ typedef unsigned int uint;
 typedef unsigned long long ull;
 typedef unsigned long long int ulli;
 
+typedef struct results 
+{
+	ulli num_inst;
+	ulli num_reads;
+	ulli num_writes;
+
+	ulli flush_time;
+	ulli write_time;
+	ulli read_time;
+	ulli inst_time;
+
+	ulli flush_cnt;
+	ulli num_invalid;
+} results;
+
 typedef struct cache {
 	//cache parameters
 	uint block_size;
@@ -73,9 +88,9 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cach
 void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2);
 
 //loops through the traces and does the trace
-void read_trace(cache* l1_data, cache* l1_inst, cache* l2, ulli* num_inst, ulli* num_reads, ulli* num_writes);
+void read_trace(cache* l1_data, cache* l1_inst, cache* l2, results* cache_results);
 
-bool search_cache(cache* cache_level, ulli address, char type);
+uint search_cache(cache* cache_level, ulli address, char type);
 
 void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes, ulli index);
 
@@ -87,17 +102,20 @@ ulli get_byte_offset(cache* cache_level, ulli address);
 
 ulli create_address(cache* cache_level, ulli tag, ulli index, ulli byte_offset);
 
-void prep_search_cache(cache* cache_level, ulli address, uint bytesize, char op);
+ulli prep_search_cache(cache* cache_level, ulli address, uint bytesize, char op);
 
 int num_indices(cache* cache_level, ulli address, uint bytesize);
 
 //outputs the results into a file
-void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, ull* num_inst, ull* num_reads, ull* num_writes);
+void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results* cache_results);
 
 void print_cache(cache* cache_level, FILE * outputFile);
 
 //Flushes the cache
-void flush(cache* cache_level);
+uint flush(cache* cache_level);
+
+//Transfer up or down a level
+uint transfer(cache* cache_level);
 
 void init_cache(cache* cache_level);
 
