@@ -99,6 +99,8 @@ void print_cache(cache* cache_level, FILE * outputFile);
 //Flushes the cache
 void flush(cache* cache_level);
 
+void init_cache(cache* cache_level);
+
 //Allocate a cache's contents
 void cache_alloc(cache* cache_level);
 

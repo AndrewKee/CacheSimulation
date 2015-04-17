@@ -14,6 +14,11 @@ int main(int argc, char *argv[]){
 	cache* l1_inst  = malloc( sizeof(cache));
 	cache* l2 		= malloc( sizeof(cache));
 	cache* main_mem = malloc( sizeof(cache));
+
+	init_cache(l1_data);
+	init_cache(l1_inst);
+	init_cache(l2);
+
 	// l1_data 	= malloc( sizeof(cache));
 	// l1_inst 	= malloc( sizeof(cache));
 	// l2 			= malloc( sizeof(cache));
