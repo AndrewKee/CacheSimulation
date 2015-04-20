@@ -275,13 +275,15 @@ uint search_cache(cache* cache_level, ul address, char type){
 
 	if (cache_level->next_level != NULL){
 		cache_level->total_requests++;
-		ul tag, index;
+		ulli tag, index, byte_offset;
 		tag 		= get_tag(cache_level, address);
 		index 		= get_index(cache_level, address);
+		byte_offset = get_byte_offset(cache_level, address);
 		//look for the tag in the cache
 		for(uint i = 0; i < cache_level->assoc; i++){
 			if(cache_level->cache_set[index].block[i].valid == true 
 					&& cache_level->cache_set[index].block[i].tag == tag){
+
 				cache_level->num_hits++;
 				//If its a write, make it dirty
 				if(type == 'W'){
@@ -300,9 +302,8 @@ uint search_cache(cache* cache_level, ul address, char type){
 		cycles += cache_level->miss_time;
 
 		uint b = LRU_Get_LRU(cache_level, index);
-		//update LRU
 	 	LRU_Update(cache_level, index, b);
-
+	 
 		//check if we need to kickout
 		if(cache_level->cache_set[index].block[b].valid == true){
 			cache_level->kickouts++;
@@ -311,7 +312,7 @@ uint search_cache(cache* cache_level, ul address, char type){
 		 	if(cache_level->cache_set[index].block[b].dirty == true){
 		 		ulli dirty_addr = create_address(cache_level, 
 		 							cache_level->cache_set[index].block[b].tag, 
-		 							index, 0);
+		 							index, byte_offset);
 		 		cache_level->dirty_kickouts++;
 		 		cycles += search_cache(cache_level->next_level, dirty_addr, 'W');
 		 		cycles += transfer(cache_level);
