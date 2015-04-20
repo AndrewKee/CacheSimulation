@@ -6,9 +6,11 @@
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
+ 
 typedef unsigned int uint;
-// typedef enum { false, true } bool;
+typedef unsigned long ul;
 typedef unsigned long long ull;
 typedef unsigned long long int ulli;
 
@@ -73,17 +75,17 @@ typedef struct cache_set {
 } cache_set;
 
 typedef struct cache_block {
-	ulli tag;
+	ull tag;
 	bool valid;
 	bool dirty;
-	ulli address;
 } cache_block;
 
 
 //parse through the config file.
 //Will store the values into the cache structs l1_data, l1_inst, l2, and main_mem
 //these are all just properties of each of the caches and the main memory 
-int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem);
+int parse_config(char* filename, cache* l1_data, cache* l1_inst, 
+					cache* l2, cache* main_mem);
 
 void unpack_addr(cache* cache_level, ulli address, ulli *tag, ulli *index, ulli *offset);
 
@@ -92,11 +94,14 @@ ulli pack_addr(cache* cache_level, ulli tag, ulli index);
 void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2);
 
 //loops through the traces and does the trace
-void read_trace(cache* l1_data, cache* l1_inst, cache* l2, results* cache_results);
+void read_trace(cache* l1_data, cache* l1_inst, cache* l2, 
+					results* cache_results);
 
-uint search_cache(cache* cache_level, ulli address, char type);
+uint search_cache(cache* cache_level, ul address, char type);
 
-void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes, ulli index);
+void look_through_cache(cache* cache_level, 
+						ulli address, char type, 
+						ulli num_bytes, ulli index);
 
 // ulli get_tag(cache* cache_level, ulli address);
 
@@ -104,14 +109,17 @@ void look_through_cache(cache* cache_level, ulli address, char type, ulli num_by
 
 // ulli get_byte_offset(cache* cache_level, ulli address);
 
-ulli create_address(cache* cache_level, ulli tag, ulli index, ulli byte_offset);
+ulli create_address(cache* cache_level, ulli tag, ulli index, 
+						ulli byte_offset);
 
-ulli prep_search_cache(cache* cache_level, ulli address, uint bytesize, char op);
+ulli prep_search_cache(cache* cache_level, ulli address, 
+						int bytesize, char op);
 
 int num_indices(cache* cache_level, ulli address, uint bytesize);
 
 //outputs the results into a file
-void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results* cache_results);
+void report(cache* l1_data, cache* l1_inst, cache* l2, 
+				cache* main_mem, results* cache_results);
 
 void print_cache(cache* cache_level, FILE * outputFile);
 
@@ -125,5 +133,10 @@ void init_cache(cache* cache_level);
 
 //Allocate a cache's contents
 void cache_alloc(cache* cache_level);
+
+static inline unsigned long int log_2(unsigned long int x)
+{
+	return (uint)round(log(x)/log(2));
+}
 
 #endif

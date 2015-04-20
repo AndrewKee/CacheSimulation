@@ -9,22 +9,21 @@ LRU* LRU_Construct(unsigned int num_block)
 	
 	if (num_block)
 	{
-		struct LRU* lru = malloc( sizeof(struct LRU));
-		struct node* n_ptr = NULL;
+		LRU* lru = malloc( sizeof(struct LRU));
+		node* n_ptr = NULL;
 		n_ptr = malloc(num_block * sizeof(struct node));
-
-		unsigned int i;
-		for (i = 0; i < num_block; i++)
+		lru->head = n_ptr;
+		for (uint i = 0; i < num_block; i++)
 		{
 			n_ptr->index = num_block - 1 - i;
 			n_ptr->next = NULL;
 			if(i) {
-				struct node* l_ptr = n_ptr;
+				node* l_ptr = n_ptr;
 				l_ptr--;
 				l_ptr->next = n_ptr;
 			}
 
-			if (!i) lru->head = n_ptr;
+			// if (i == 0) lru->head = n_ptr;
 
 			n_ptr++;
 		}
@@ -35,6 +34,7 @@ LRU* LRU_Construct(unsigned int num_block)
 }
 
 node* LRU_Update(cache* cache_level, uint set, uint block){
+	// printf("block: %u\n", block);
 	//printf("%u %u\n", set, block);
 	if (block > cache_level->assoc) 
 	{
@@ -52,26 +52,17 @@ node* LRU_Update(cache* cache_level, uint set, uint block){
 
 	if (!cur_ptr->next || cur_ptr->index == block) return cur_ptr;
 	
-	while(cur_ptr->next)
+	//Stop when cur_ptr is equal to the prior element than the block
+	while(cur_ptr->next && cur_ptr->next->index != block)
 	{
-		//Stop when cur_ptr is equal to the prior element than the block
-		if (cur_ptr->next->index == block)
-		{
-			break;
-		}
-		else
-		{
-			//Move on to the next element
-			cur_ptr = cur_ptr->next;
-		}
+		//Move on to the next element
+		cur_ptr = cur_ptr->next;
 	}
 
 	//i_ptr becomes a pointer to the block that needs to be moved to the top
 	i_ptr = cur_ptr->next;
-	// printf("cur index: %u \n", cur_ptr->index);
-	// printf("i index: %u \n", i_ptr->index);
 	//If we are not at the final element, we should link cur_ptr to the element after i_ptr
-	if (cur_ptr->next->next) 
+	if (cur_ptr->next->next != NULL) 
 	{
 		//The next pointer should skip i_ptr
 		cur_ptr->next = cur_ptr->next->next;
@@ -91,15 +82,30 @@ node* LRU_Update(cache* cache_level, uint set, uint block){
 
 unsigned int LRU_Get_LRU(cache* cache_level, uint set)
 {	
-	// printf("1\n");
 	struct node* cur_ptr = cache_level->cache_set[set].lru->head;
-	// printf("index: %u\n", cur_ptr->index);
-	//Stuck in an infinite loop here, why?
-	while (cur_ptr != NULL && cur_ptr->next != NULL)
+	while (cur_ptr->next != NULL)
 	{	
-		// printf("loop %d\n", cur_ptr->next->index);
 		cur_ptr = cur_ptr->next;
 	}
-	// printf("3\n");
 	return cur_ptr->index;
 }
+
+void print_lru(cache* cache_level, uint set){
+	struct node* cur_ptr = cache_level->cache_set[set].lru->head;
+	while (cur_ptr->next != NULL)
+	{	
+		printf("%u  ", cur_ptr->index);
+		cur_ptr = cur_ptr->next;
+	}
+	printf("%u  ", cur_ptr->index);
+	printf("\n");
+}	
+
+
+
+
+
+
+
+
+
