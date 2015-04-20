@@ -165,6 +165,14 @@ ulli prep_search_cache(cache* cache_level, ulli address, int bytesize, char op){
 		bytesize -= word_size;
 	}
 
+	// ulli cycles = 0;
+
+	// while(bytesize > 0){
+	// 	cycles += search_cache(cache_level, address, op);
+	// 	address += cache_level->bus_width;
+	// 	bytesize -= cache_level->bus_width;
+	// }
+
 	return cycles;
 }
 
@@ -188,9 +196,9 @@ void read_trace(cache* l1_data, cache* l1_inst, cache* l2,
 					&& cache_results->num_inst != 0){				
 				//Currently, this flushes l1_data, then l2, 
 				//then l1_inst, then l2
-				cache_results->flush_time = flush(l1_data);
-				cache_results->flush_time = flush(l1_inst); //invalidate all
-				cache_results->flush_time = flush(l2);
+				cache_results->flush_time += flush(l1_data);
+				cache_results->flush_time += flush(l1_inst); //invalidate all
+				cache_results->flush_time += flush(l2);
 				cache_results->flush_cnt++;
 				cache_results->num_invalid++;
 			}
@@ -238,6 +246,7 @@ uint flush(cache* cache_level)
 
 				cycles += transfer(cache_level);
 				cycles += search_cache(cache_level->next_level, dirty_addr, 'W');
+				// cycles += cache_level->hit_time;
 			}
 			cache_level->cache_set[i].block[j].valid = false;
 			cache_level->cache_set[i].block[j].dirty = false;
@@ -289,7 +298,8 @@ uint search_cache(cache* cache_level, ul address, char type){
 				if(type == 'W'){
 					cache_level->cache_set[index].block[i].dirty = true;
 				} 
-
+				// uint b = LRU_Get_LRU(cache_level, index);
+	 			LRU_Update(cache_level, index, i);
 				cycles += cache_level->hit_time;
 				return cycles;
 			}
@@ -380,6 +390,8 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
 	FILE * outputFile;
 
 	outputFile = fopen("results.dat", "wb");
+
+	cache_results->inst_time += cache_results->flush_time;
 
 	//Calculate the l1_inst things
 	l1_inst->total_requests = l1_inst->num_hits + l1_inst->num_misses;
