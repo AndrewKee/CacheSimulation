@@ -85,6 +85,10 @@ typedef struct cache_block {
 //these are all just properties of each of the caches and the main memory 
 int parse_config(char* filename, cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem);
 
+void unpack_addr(cache* cache_level, ulli address, ulli *tag, ulli *index, ulli *offset);
+
+ulli pack_addr(cache* cache_level, ulli tag, ulli index);
+
 void allocate_blocks(cache* l1_data, cache* l1_inst, cache* l2);
 
 //loops through the traces and does the trace
@@ -94,11 +98,11 @@ uint search_cache(cache* cache_level, ulli address, char type);
 
 void look_through_cache(cache* cache_level, ulli address, char type, ulli num_bytes, ulli index);
 
-ulli get_tag(cache* cache_level, ulli address);
+// ulli get_tag(cache* cache_level, ulli address);
 
-ulli get_index(cache* cache_level, ulli address);
+// ulli get_index(cache* cache_level, ulli address);
 
-ulli get_byte_offset(cache* cache_level, ulli address);
+// ulli get_byte_offset(cache* cache_level, ulli address);
 
 ulli create_address(cache* cache_level, ulli tag, ulli index, ulli byte_offset);
 
