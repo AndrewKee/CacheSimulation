@@ -2,23 +2,46 @@
 
 echo "Running Production Traces"
 
-mkdir -p TraceResults
+traceType=$1
 
-for entry in ../Traces/traces-1M/*
+traceOutFile="TraceResults-$traceType"
+traceFile="traces-$traceType"
+
+mkdir -p $traceOutFile
+
+for entry in ./Traces/$traceFile/*
 do
   echo "Production Entry: $entry"
 
         for config in Config/*
         do
+
+        		filename=${entry##*/}
+
                 echo "  -----> Running Configuration: $config"
 
-                cat $entry | ./main.o $config
+                echo "----------------------------------------------------------------" >> results.dat
+                echo "${entry##*/}_${config##*/}				Simulation Results" >> results.dat
+                echo "----------------------------------------------------------------" >> results.dat
+                if [ "$traceType" = "1M" ] || [ "$traceType" = "5M" ] || [ "$traceType" = "long"] ;
+                then
+                	if [[ $filename == *.gz ]];
+                	then
+                		zcat < $entry | ./main.o $config
+                	else
+                		echo "$filename"
+                	fi
+                else
+                	cat $entry | ./main.o $config
+                fi
 
                 echo "  -----> Finished Running: $config"
 
                 echo "  -----> Moving Results into Directory"
 
-                cp results.dat TraceResults/${entry##*/}_${config##*/}
+                
+
+                mv results.dat $traceOutFile/${filename%.*}_${config##*/}
         done
 
 done

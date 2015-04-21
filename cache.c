@@ -389,7 +389,7 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
 
 	FILE * outputFile;
 
-	outputFile = fopen("results.dat", "wb");
+	outputFile = fopen("results.dat", "ab");
 
 	cache_results->inst_time += cache_results->flush_time;
 
@@ -438,17 +438,17 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
 	fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Number of reference types : 	[Percentage]\n");
-	fprintf(outputFile, "	Reads 	= 	%10llu 	    [%4.1f%%]\n", cache_results->num_reads, 	read_precent);
-	fprintf(outputFile, "	Writes 	= 	%10llu 	    [%4.1f%%]\n", cache_results->num_writes,	write_percent);
-	fprintf(outputFile, "	Inst. 	= 	%10llu	    [%4.1f%%]\n", cache_results->num_inst, 		inst_percent);
-	fprintf(outputFile, "	Total 	= 	%10llu\n ", total_traces);
+	fprintf(outputFile, "	Reads 	= 	%15llu 	    [%4.1f%%]\n", cache_results->num_reads, 	read_precent);
+	fprintf(outputFile, "	Writes 	= 	%15llu 	    [%4.1f%%]\n", cache_results->num_writes,	write_percent);
+	fprintf(outputFile, "	Inst. 	= 	%15llu	    [%4.1f%%]\n", cache_results->num_inst, 		inst_percent);
+	fprintf(outputFile, "	Total 	= 	%15llu\n ", total_traces);
 	fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Total cycles for activities: 	[Percentage]\n");
-	fprintf(outputFile, "	Reads 	= 	%10llu 	    [%4.1f%%]\n", cache_results->read_time, ((double)cache_results->read_time / (double)(exec_time - cache_results->flush_time) * 100));
-	fprintf(outputFile, "	Writes 	= 	%10llu 	    [%4.1f%%]\n", cache_results->write_time, ((double)cache_results->write_time / (double)(exec_time - cache_results->flush_time) * 100));
-	fprintf(outputFile, "	Inst. 	= 	%10llu 	    [%4.1f%%]\n", cache_results->inst_time, ((double)cache_results->inst_time / (double)(exec_time - cache_results->flush_time) * 100));
-	fprintf(outputFile, "	Total 	= 	%10llu\n ", cache_results->read_time + cache_results->write_time + cache_results->inst_time);
+	fprintf(outputFile, "	Reads 	= 	%15llu 	    [%4.1f%%]\n", cache_results->read_time, ((double)cache_results->read_time / (double)(exec_time - cache_results->flush_time) * 100));
+	fprintf(outputFile, "	Writes 	= 	%15llu 	    [%4.1f%%]\n", cache_results->write_time, ((double)cache_results->write_time / (double)(exec_time - cache_results->flush_time) * 100));
+	fprintf(outputFile, "	Inst. 	= 	%15llu 	    [%4.1f%%]\n", cache_results->inst_time, ((double)cache_results->inst_time / (double)(exec_time - cache_results->flush_time) * 100));
+	fprintf(outputFile, "	Total 	= 	%15llu\n ", cache_results->read_time + cache_results->write_time + cache_results->inst_time);
 	fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Average cycles per activity:\n");
