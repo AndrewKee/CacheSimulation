@@ -486,17 +486,17 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
 	fprintf(outputFile, "Flushes = %llu  :  Invalidates = %llu\n", cache_results->flush_cnt, cache_results->num_invalid);
 	fprintf(outputFile, "\n");
 
-	fprintf(outputFile, "Memory Level:  L1i\n");
+	// fprintf(outputFile, "Memory Level:  L1i\n");
 
-	print_cache(l1_inst, outputFile);
+	// print_cache(l1_inst, outputFile);
 	
-	fprintf(outputFile, "Memory Level:  L1d\n");
+	// fprintf(outputFile, "Memory Level:  L1d\n");
 
-	print_cache(l1_data, outputFile);
+	// print_cache(l1_data, outputFile);
 	
-	fprintf(outputFile, "Memory Level:  L2\n");
+	// fprintf(outputFile, "Memory Level:  L2\n");
 
-	print_cache(l2, outputFile);
+	// print_cache(l2, outputFile);
 
 	
 
