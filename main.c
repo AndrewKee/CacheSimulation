@@ -36,7 +36,7 @@ int main(int argc, char *argv[]){
 	else 
 		x = "Config/defaults.dat";
 
-	printf("%s\n", x);
+	// printf("%s\n", x);
 	parse_config(x, l1_data, l1_inst, l2, main_mem);
 	allocate_blocks(l1_data, l1_inst, l2);
 	read_trace(l1_data, l1_inst, l2, cache_results);
