@@ -74,6 +74,8 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst,
 		l1_data->bus_width = 4;
 		main_mem->bus_width = 0;
 
+		uint address_length = 64;
+
 		//Fully Associative
 		if(l1_data->assoc == 0){
 			l1_data->assoc = l1_data->cache_size / l1_data->block_size;
@@ -209,21 +211,13 @@ void read_trace(cache* l1_data, cache* l1_inst, cache* l2,
 			cache_results->write_time += prep_search_cache(l1_data, address, 
 																bytesize, op);
 		}
-
-		if (inst > 380000){
-			cache_results->flush_time = flush(l1_data);
-			cache_results->flush_time = flush(l1_inst); //nothin is dirty, so invalidate everything
-			cache_results->flush_time = flush(l2);
-			cache_results->flush_cnt = cache_results->flush_cnt + 1;
-			cache_results->num_invalid = cache_results->num_invalid + 1;
-			inst = 0;
-		}
 	}
 }
 
 void init_cache(cache* cache_level){
 	uint i;
-	for (i = 0; i < cache_level->num_sets; i++){
+	for (i = 0; i < cache_level->num_sets; i++)
+	{
 		uint j;
 		for (j = 0; j < cache_level->assoc; j++){
 			cache_level->cache_set[i].block[j].valid = false;
@@ -233,7 +227,8 @@ void init_cache(cache* cache_level){
 	}
 }
 
-uint flush(cache* cache_level){
+uint flush(cache* cache_level)
+{
 	uint cycles = 0;
 
 	uint i;
@@ -241,11 +236,9 @@ uint flush(cache* cache_level){
 	{
 		uint j;
 		for (j = 0; j < cache_level->assoc; j++){
-			//if (cache_level->cache_set[i].block[j].dirty && cache_level->cache_set[i].block[j].valid)
 			if (cache_level->cache_set[i].block[j].dirty)
 			{	
-				//BULLSHIT
-				int dirty_addr = create_address(cache_level, 
+				ulli dirty_addr = create_address(cache_level, 
 									cache_level->cache_set[i].block[j].tag, 
 									i, 0);
 				cache_level->flush_kickouts++;
@@ -352,6 +345,7 @@ uint search_cache(cache* cache_level, ul address, char type){
 	 }else{
 	 	cache_level->num_hits = cache_level->num_hits + 1;
 	 }
+
 	 //Must also add hit time, "replay"
 	 cycles += cache_level->hit_time;
 	 return cycles;
