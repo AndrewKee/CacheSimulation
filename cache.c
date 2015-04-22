@@ -89,6 +89,8 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst,
 
 		l1_data->log_of_blocksize = (log_2(l1_data->block_size));
 
+		l1_data->transfer_cycles = transfer(l1_data);
+
 		//Fully Associative
 		if(l1_inst->assoc == 0){
 			l1_inst->assoc = l1_inst->cache_size / l1_inst->block_size;
@@ -102,6 +104,8 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst,
 
 		l1_inst->log_of_blocksize = (log_2(l1_inst->block_size));
 
+		l1_inst->transfer_cycles = transfer(l1_inst);
+
 		//Fully Associative
 		if(l2->assoc == 0){
 			l2->assoc = l2->cache_size / l2->block_size;
@@ -113,6 +117,8 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst,
 		l2->next_level = main_mem;
 
 		l2->log_of_blocksize = (log_2(l2->block_size));
+
+		l2->transfer_cycles = transfer(l2);
 
 		main_mem->next_level = NULL;
 	}
@@ -179,27 +185,16 @@ void read_trace(cache* l1_data, cache* l1_inst, cache* l2,
 	char op;
 	ul address = 0;
 	int bytesize = 0;
-	ulli flush_num = 380000;
+	ulli flush_num = 0;
 	while(scanf("%c %lx %d\n", &op, &address, &bytesize) == 3){
 		// printf("%c %llx %d\n", op, address, bytesize);
 		if(op == 'I'){
+			flush_num++;
 			cache_results->num_inst++;
 
 			cache_results->inst_time += prep_search_cache(l1_inst, 
 															address, 
 															bytesize, op);
-			//write all dirty blocks to the next level of cache.  
-			//do this all the way down to main memory
-			if(((cache_results->num_inst) % flush_num) == 0 
-					&& cache_results->num_inst != 0){				
-				//Currently, this flushes l1_data, then l2, 
-				//then l1_inst, then l2
-				cache_results->flush_time += flush(l1_data);
-				cache_results->flush_time += flush(l1_inst); //invalidate all
-				cache_results->flush_time += flush(l2);
-				cache_results->flush_cnt++;
-				cache_results->num_invalid++;
-			}
 		} else if (op == 'R'){
 			cache_results->num_reads++;
 			cache_results->read_time += prep_search_cache(l1_data, address, 
@@ -208,6 +203,19 @@ void read_trace(cache* l1_data, cache* l1_inst, cache* l2,
 			cache_results->num_writes++;
 			cache_results->write_time += prep_search_cache(l1_data, address, 
 																bytesize, op);
+		}
+
+		//write all dirty blocks to the next level of cache.  
+		//do this all the way down to main memory
+		if(flush_num >= 380000){	
+			flush_num = 0;			
+			//Currently, this flushes l1_data, then l2, 
+			//then l1_inst, then l2
+			cache_results->flush_time += flush(l1_data);
+			cache_results->flush_time += flush(l1_inst); //invalidate all
+			cache_results->flush_time += flush(l2);
+			cache_results->flush_cnt++;
+			cache_results->num_invalid++;
 		}
 	}
 }
@@ -241,7 +249,7 @@ uint flush(cache* cache_level)
 									i, 0);
 				cache_level->flush_kickouts++;
 
-				cycles += transfer(cache_level);
+				cycles += cache_level->transfer_cycles;
 				cycles += search_cache(cache_level->next_level, dirty_addr, 'W');
 				// cycles += cache_level->hit_time;
 			}
@@ -321,12 +329,12 @@ uint search_cache(cache* cache_level, ul address, char type){
 		 							index, byte_offset);
 		 		cache_level->dirty_kickouts++;
 		 		cycles += search_cache(cache_level->next_level, dirty_addr, 'W');
-		 		cycles += transfer(cache_level);
+		 		cycles += cache_level->transfer_cycles;
 	 		}
 	 	}
 
 	 	cycles += search_cache(cache_level->next_level, address, 'R');
-		cycles += transfer(cache_level);	
+		cycles += cache_level->transfer_cycles;	
 		//Going to need to transfer down a level because we missed
 
 	 	//bring the stuff into this cache
@@ -407,6 +415,8 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
     l2->miss_rate 		= 	(double) l2->num_misses 		/ 	l2->total_requests 		* 100;
     l2->transfers 		= 	l2->num_misses + l2->flush_kickouts;
 
+    ulli total_time = cache_results->read_time + cache_results->write_time + cache_results->inst_time;
+
     uint ICache_cost 	= (l1_inst->cache_size / 4096) 	* 100 	+ (l1_inst->cache_size / 4096) * (uint)(log_2(l1_inst->assoc)) * 100;
     uint DCache_cost 	= (l1_data->cache_size / 4096) 	* 100 	+ (l1_data->cache_size / 4096) * (uint)(log_2(l1_data->assoc)) * 100;
     uint L2_cache_cost 	= (l2->cache_size / 32768) 		* 50 	+ (l2->cache_size / 32768) 	   * (uint)(log_2(l2->assoc))	   * 50;
@@ -444,11 +454,11 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
 	fprintf(outputFile, "	Reads 	= 	%15llu 	    [%4.1f%%]\n", cache_results->read_time, ((double)cache_results->read_time / (double)(exec_time - cache_results->flush_time) * 100));
 	fprintf(outputFile, "	Writes 	= 	%15llu 	    [%4.1f%%]\n", cache_results->write_time, ((double)cache_results->write_time / (double)(exec_time - cache_results->flush_time) * 100));
 	fprintf(outputFile, "	Inst. 	= 	%15llu 	    [%4.1f%%]\n", cache_results->inst_time, ((double)cache_results->inst_time / (double)(exec_time - cache_results->flush_time) * 100));
-	fprintf(outputFile, "	Total 	= 	%15llu\n ", cache_results->read_time + cache_results->write_time + cache_results->inst_time);
+	fprintf(outputFile, "	Total 	= 	%15llu\n ", total_time);
 	fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Average cycles per activity:\n");
-	fprintf(outputFile, "	Read = %.1f; Write = %.1f; Inst. = %.1f\n", ((double)cache_results->read_time / (double)cache_results->num_reads), ((double)cache_results->write_time / (double)cache_results->num_writes), ((double)cache_results->inst_time / (double)cache_results->num_inst));
+	fprintf(outputFile, "	Read = %.1f; Write = %.1f; Inst. = %.1f\n", ((double)cache_results->read_time / (double)cache_results->num_reads), ((double)cache_results->write_time / (double)cache_results->num_writes), ((double)total_time / (double)cache_results->num_inst));
 	fprintf(outputFile, "Ideal: Exec. Time = %llu; CPI = %.1f\n", total_traces + cache_results->num_inst, round(10*(((double)total_traces + (double)cache_results->num_inst)/ (double)cache_results->num_inst))/10);
 	fprintf(outputFile, "Ideal mis-aligned: Exec. Time = %llu; CPI = %.1f\n", l1_inst->total_requests + l1_data->total_requests + cache_results->num_inst, round(10*((double)l1_inst->total_requests + (double)l1_data->total_requests + (double)cache_results->num_inst)/ (double)cache_results->num_inst)/10);
 	fprintf(outputFile, "\n");
