@@ -31,6 +31,12 @@ int main(int argc, char *argv[]){
 	else 
 		x = "Config/defaults.dat";
 
+	char * outputFile;
+	if (argv[2]) 
+		outputFile = argv[2];
+	else 
+		outputFile = "results.dat";
+
 	// printf("%s\n", x);
 	parse_config(x, l1_data, l1_inst, l2, main_mem);
 	allocate_blocks(l1_data, l1_inst, l2);
@@ -38,7 +44,7 @@ int main(int argc, char *argv[]){
 	init_cache(l1_inst);
 	init_cache(l2);
 	read_trace(l1_data, l1_inst, l2, cache_results);
-	report(l1_data, l1_inst, l2, main_mem, cache_results);
+	report(l1_data, l1_inst, l2, main_mem, cache_results, outputFile);
 
 	return 0;
 }
