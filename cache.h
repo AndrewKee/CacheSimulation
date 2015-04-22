@@ -32,7 +32,9 @@ typedef struct results
 typedef struct cache {
 	//cache parameters
 	uint block_size;
+	uint log_of_blocksize;
 	uint cache_size;
+	uint log_of_cachesize;
 	uint assoc;
 	uint hit_time;
 	uint miss_time;
