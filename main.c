@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "cache.h"
- 
+
 int main(int argc, char *argv[]){
 	cache* l1_data  = malloc( sizeof(cache));
 	cache* l1_inst  = malloc( sizeof(cache));
