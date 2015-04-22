@@ -13,6 +13,7 @@ mkdir -p $traceOutDir
 
 for entry in ./Traces/$traceFile/*
 do
+    filename=${entry##*/}
 	echo " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 	echo "---------------------- $filename --------------------------"
 	echo " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
@@ -20,7 +21,8 @@ do
         for config in Config/*
         do
         		cleanConfig=${config##*/}
-        		filename=${entry##*/}
+        		
+                totalfilename="${filename%.*}_${config##*/}"
                 echo "  --> Running $filename with Configuration: ${cleanConfig%.*}"
 
                 # echo "----------------------------------------------------------------" >> results.dat
@@ -30,19 +32,21 @@ do
                 if [ "$traceType" = "1M" ] || [ "$traceType" = "5M" ] || [ "$traceType" = "long" ] ;
                 then
                 	#make sure we only run for the .gz files, no need to run twice
-                	if [[ $filename == *.gz ]]
-                		then
-                			zcat < $entry | ./main.o $config ${filename%.*}_${config##*/}
-                	fi
+                	# if [[ $filename == *.gz ]]
+                	# 	then
+                			zcat < $entry | ./main.o $config $totalfilename
+                	# fi
                 else
-                	cat $entry | ./main.o $config ${filename%.*}_${config##*/}
+                	cat $entry | ./main.o $config $totalfilename
                 fi
 
                 echo "  -----> Finished Running: ${cleanConfig%.*}"
 
                 echo "  -----> Moving Results into Directory $traceOutDir"
+                
+                mv $totalfilename $traceOutDir/$totalfilename
+
                 echo " "
-                mv ${filename%.*}_${config##*/} $traceOutDir/${filename%.*}_${config##*/}
         done
 
 done
