@@ -238,8 +238,7 @@ uint flush(cache* cache_level)
 		for (j = 0; j < cache_level->assoc; j++){
 			if (cache_level->cache_set[i].block[j].dirty)
 			{	
-				//BULLSHIT
-				int dirty_addr = create_address(cache_level, 
+				unsigned long dirty_addr = create_address(cache_level, 
 									cache_level->cache_set[i].block[j].tag, 
 									i, 0);
 				cache_level->flush_kickouts++;
@@ -413,9 +412,9 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
 
     uint ICache_cost 	= (l1_inst->cache_size / 4096) 	* 100 	+ (l1_inst->cache_size / 4096) * (uint)(log_2(l1_inst->assoc)) * 100;
     uint DCache_cost 	= (l1_data->cache_size / 4096) 	* 100 	+ (l1_data->cache_size / 4096) * (uint)(log_2(l1_data->assoc)) * 100;
-    uint L2_cache_cost 	= (l2->cache_size / 32768) 		* 25 	+ (l2->cache_size / 32768) 	   * (uint)(log_2(l2->assoc))	   * 25;
-    int main_mem_latency_factor = (log_2(main_mem->mem_chunksize)) - 4;
-    uint memory_cost 	= 50 + 25 + (main_mem_latency_factor <= 0 ? 0 : main_mem_latency_factor) * 100;
+    uint L2_cache_cost 	= (l2->cache_size / 32768) 		* 50 	+ (l2->cache_size / 32768) 	   * (uint)(log_2(l2->assoc))	   * 50;
+    int main_mem_latency_factor = (log_2(main_mem->mem_chunksize)) - 3;
+    uint memory_cost 	= 50 + 25 + main_mem_latency_factor * 100;
 
     ulli exec_time = cache_results->inst_time + cache_results->read_time + cache_results->write_time +cache_results->flush_time;
 
