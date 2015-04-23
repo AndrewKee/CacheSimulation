@@ -13,6 +13,7 @@ mkdir -p $traceOutDir
 
 for entry in ./Traces/$traceFile/*
 do
+    filename=${entry##*/}
 	echo " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 	echo "---------------------- $filename --------------------------"
 	echo " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
@@ -20,29 +21,32 @@ do
         for config in Config/*
         do
         		cleanConfig=${config##*/}
-        		filename=${entry##*/}
+        		
+                totalfilename="${filename%.*}_${config##*/}"
                 echo "  --> Running $filename with Configuration: ${cleanConfig%.*}"
 
-                echo "----------------------------------------------------------------" >> results.dat
-                echo "${entry##*/}_${config##*/}				Simulation Results" >> results.dat
-                echo "----------------------------------------------------------------" >> results.dat
+                # echo "----------------------------------------------------------------" >> results.dat
+                # echo "${entry##*/}_${config##*/}				Simulation Results" >> results.dat
+                # echo "----------------------------------------------------------------" >> results.dat
                 #if we're in one of these traces, we need to use the zcat command
                 if [ "$traceType" = "1M" ] || [ "$traceType" = "5M" ] || [ "$traceType" = "long" ] ;
                 then
                 	#make sure we only run for the .gz files, no need to run twice
-                	if [[ $filename == *.gz ]]
-                		then
-                			zcat < $entry | ./main.o $config
-                	fi
+                	# if [[ $filename == *.gz ]]
+                	# 	then
+                			zcat < $entry | ./main.o $config $totalfilename
+                	# fi
                 else
-                	cat $entry | ./main.o $config
+                	cat $entry | ./main.o $config $totalfilename
                 fi
 
                 echo "  -----> Finished Running: ${cleanConfig%.*}"
 
                 echo "  -----> Moving Results into Directory $traceOutDir"
+                
+                mv $totalfilename $traceOutDir/$totalfilename
+
                 echo " "
-                mv results.dat $traceOutDir/${filename%.*}_${config##*/}
         done
 
 done

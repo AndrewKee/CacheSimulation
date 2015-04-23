@@ -389,13 +389,17 @@ int num_indices(cache* cache_level, ulli address, uint num_bytes){
 	return num_blocks_requested;
 }
 
-void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results* cache_results){
+void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results* cache_results, char* outputFileName){
 
 	FILE * outputFile;
 
-	outputFile = fopen("results.dat", "ab");
+	outputFile = fopen(outputFileName, "wb");
 
 	cache_results->inst_time += cache_results->flush_time;
+
+	fprintf(outputFile, "----------------------------------------------------------------\n");
+    fprintf(outputFile, "%s			Simulation Results\n", outputFileName);
+    fprintf(outputFile, "----------------------------------------------------------------\n\n");
 
 	//Calculate the l1_inst things
 	l1_inst->total_requests = l1_inst->num_hits + l1_inst->num_misses;

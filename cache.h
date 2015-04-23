@@ -119,7 +119,8 @@ int num_indices(cache* cache_level, ulli address, uint bytesize);
 
 //outputs the results into a file
 void report(cache* l1_data, cache* l1_inst, cache* l2, 
-				cache* main_mem, results* cache_results);
+				cache* main_mem, results* cache_results,
+				char* outputFileName);
 
 void print_cache(cache* cache_level, FILE * outputFile);
 
