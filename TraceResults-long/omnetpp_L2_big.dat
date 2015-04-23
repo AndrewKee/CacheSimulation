@@ -1,0 +1,56 @@
+----------------------------------------------------------------
+omnetpp_L2_big.dat			Simulation Results
+----------------------------------------------------------------
+
+Memory System: 
+	Dcache size = 8192  :  ways = 2  :  block size = 32 
+	Icache size = 8192  :  ways = 2  :  block size = 32 
+	L2-cache size = 65536  :  ways = 1  :  block size = 64 
+	Memory ready time = 30  :  chunksize = 8  :  chunktime = 15 
+
+Execute time 	=	72913835611;		Total refs	= 10000000076
+Flush time 	=	1040646632
+Inst refs 		=	6748671723; 	Data refs 	= 3251328353
+
+Number of reference types : 	[Percentage]
+	Reads 	= 	     2011922989 	    [20.1%]
+	Writes 	= 	     1239405364 	    [12.4%]
+	Inst. 	= 	     6748671723	    [67.5%]
+	Total 	= 	    10000000076
+ 
+Total cycles for activities: 	[Percentage]
+	Reads 	= 	    32030086301 	    [44.6%]
+	Writes 	= 	     7484736031 	    [10.4%]
+	Inst. 	= 	    32358366647 	    [45.0%]
+	Total 	= 	    71873188979
+ 
+Average cycles per activity:
+	Read = 15.9; Write = 6.0; Inst. = 10.6
+Ideal: Exec. Time = 16748671799; CPI = 2.5
+Ideal mis-aligned: Exec. Time = 24145770580; CPI = 3.6
+
+Memory Level: 	L1i
+	Hit Count = 11118333347 		Miss Count = 341151726
+	Total Requests = 11459485073
+ 	Hit Rate = 97.0% 	Miss Rate = 3.0%
+	Kickouts = 336631094; Dirty Kickouts = 0; Transfers = 341151726
+Flush Kickouts = 0
+
+Memory Level: 	L1d
+	Hit Count = 5675568402 		Miss Count = 262045382
+	Total Requests = 5937613784
+ 	Hit Rate = 95.6% 	Miss Rate = 4.4%
+	Kickouts = 257498822; Dirty Kickouts = 104790863; Transfers = 264066286
+Flush Kickouts = 2020904
+
+Memory Level: 	L2
+	Hit Count = 502326148 		Miss Count = 207682727
+	Total Requests = 710008875
+ 	Hit Rate = 70.7% 	Miss Rate = 29.3%
+	Kickouts = 191072558; Dirty Kickouts = 47529666; Transfers = 213526464
+Flush Kickouts = 5843737
+
+L1 cache cost (Icache $400) + (Dcache $400) = $800
+L2 cache cost = $100; Memory cost = $75; Total cost = $975
+Flushes = 17759  :  Invalidates = 17759
+

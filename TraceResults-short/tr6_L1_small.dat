@@ -1,0 +1,56 @@
+----------------------------------------------------------------
+tr6_L1_small.dat			Simulation Results
+----------------------------------------------------------------
+
+Memory System: 
+	Dcache size = 4096  :  ways = 1  :  block size = 32 
+	Icache size = 4096  :  ways = 1  :  block size = 32 
+	L2-cache size = 32768  :  ways = 1  :  block size = 64 
+	Memory ready time = 30  :  chunksize = 8  :  chunktime = 15 
+
+Execute time 	=	14837;		Total refs	= 1000
+Flush time 	=	0
+Inst refs 		=	776; 	Data refs 	= 224
+
+Number of reference types : 	[Percentage]
+	Reads 	= 	            162 	    [16.2%]
+	Writes 	= 	             62 	    [ 6.2%]
+	Inst. 	= 	            776	    [77.6%]
+	Total 	= 	           1000
+ 
+Total cycles for activities: 	[Percentage]
+	Reads 	= 	           5454 	    [36.8%]
+	Writes 	= 	           3361 	    [22.7%]
+	Inst. 	= 	           6022 	    [40.6%]
+	Total 	= 	          14837
+ 
+Average cycles per activity:
+	Read = 33.7; Write = 54.2; Inst. = 19.1
+Ideal: Exec. Time = 1776; CPI = 2.3
+Ideal mis-aligned: Exec. Time = 2518; CPI = 3.2
+
+Memory Level: 	L1i
+	Hit Count = 1283 		Miss Count = 43
+	Total Requests = 1326
+ 	Hit Rate = 96.8% 	Miss Rate = 3.2%
+	Kickouts = 0; Dirty Kickouts = 0; Transfers = 43
+Flush Kickouts = 0
+
+Memory Level: 	L1d
+	Hit Count = 346 		Miss Count = 70
+	Total Requests = 416
+ 	Hit Rate = 83.2% 	Miss Rate = 16.8%
+	Kickouts = 11; Dirty Kickouts = 7; Transfers = 70
+Flush Kickouts = 0
+
+Memory Level: 	L2
+	Hit Count = 54 		Miss Count = 66
+	Total Requests = 120
+ 	Hit Rate = 45.0% 	Miss Rate = 55.0%
+	Kickouts = 1; Dirty Kickouts = 1; Transfers = 66
+Flush Kickouts = 0
+
+L1 cache cost (Icache $100) + (Dcache $100) = $200
+L2 cache cost = $50; Memory cost = $75; Total cost = $325
+Flushes = 0  :  Invalidates = 0
+

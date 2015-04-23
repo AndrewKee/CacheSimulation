@@ -1,0 +1,56 @@
+----------------------------------------------------------------
+h264ref_L1_8way.dat			Simulation Results
+----------------------------------------------------------------
+
+Memory System: 
+	Dcache size = 8192  :  ways = 8  :  block size = 32 
+	Icache size = 8192  :  ways = 8  :  block size = 32 
+	L2-cache size = 32768  :  ways = 1  :  block size = 64 
+	Memory ready time = 30  :  chunksize = 8  :  chunktime = 15 
+
+Execute time 	=	5372604;		Total refs	= 1000000
+Flush time 	=	113542
+Inst refs 		=	766089; 	Data refs 	= 233911
+
+Number of reference types : 	[Percentage]
+	Reads 	= 	         166272 	    [16.6%]
+	Writes 	= 	          67639 	    [ 6.8%]
+	Inst. 	= 	         766089	    [76.6%]
+	Total 	= 	        1000000
+ 
+Total cycles for activities: 	[Percentage]
+	Reads 	= 	        1518094 	    [28.9%]
+	Writes 	= 	        1632735 	    [31.0%]
+	Inst. 	= 	        2108233 	    [40.1%]
+	Total 	= 	        5259062
+ 
+Average cycles per activity:
+	Read = 9.1; Write = 24.1; Inst. = 6.9
+Ideal: Exec. Time = 1766089; CPI = 2.3
+Ideal mis-aligned: Exec. Time = 2408689; CPI = 3.1
+
+Memory Level: 	L1i
+	Hit Count = 1197094 		Miss Count = 9795
+	Total Requests = 1206889
+ 	Hit Rate = 99.2% 	Miss Rate = 0.8%
+	Kickouts = 9222; Dirty Kickouts = 0; Transfers = 9795
+Flush Kickouts = 0
+
+Memory Level: 	L1d
+	Hit Count = 417150 		Miss Count = 18561
+	Total Requests = 435711
+ 	Hit Rate = 95.7% 	Miss Rate = 4.3%
+	Kickouts = 17917; Dirty Kickouts = 8946; Transfers = 18846
+Flush Kickouts = 285
+
+Memory Level: 	L2
+	Hit Count = 24104 		Miss Count = 13483
+	Total Requests = 37587
+ 	Hit Rate = 64.1% 	Miss Rate = 35.9%
+	Kickouts = 12349; Dirty Kickouts = 4176; Transfers = 14136
+Flush Kickouts = 653
+
+L1 cache cost (Icache $800) + (Dcache $800) = $1600
+L2 cache cost = $50; Memory cost = $75; Total cost = $1725
+Flushes = 2  :  Invalidates = 2
+
