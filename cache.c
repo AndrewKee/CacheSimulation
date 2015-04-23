@@ -289,10 +289,10 @@ uint search_cache(cache* cache_level, ul address, char type){
 
 	if (cache_level->next_level != NULL){
 		cache_level->total_requests++;
-		ulli tag, index, byte_offset;
+		ulli tag, index;
 		tag 		= get_tag(cache_level, address);
 		index 		= get_index(cache_level, address);
-		byte_offset = get_byte_offset(cache_level, address);
+		//byte_offset = get_byte_offset(cache_level, address);
 		//look for the tag in the cache
 		for(uint i = 0; i < cache_level->assoc; i++){
 			if(cache_level->cache_set[index].block[i].valid == true 
@@ -326,7 +326,7 @@ uint search_cache(cache* cache_level, ul address, char type){
 		 	if(cache_level->cache_set[index].block[b].dirty == true){
 		 		ulli dirty_addr = create_address(cache_level, 
 		 							cache_level->cache_set[index].block[b].tag, 
-		 							index, byte_offset);
+		 							index, 0);
 		 		cache_level->dirty_kickouts++;
 		 		cycles += search_cache(cache_level->next_level, dirty_addr, 'W');
 		 		cycles += cache_level->transfer_cycles;
