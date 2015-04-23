@@ -167,13 +167,14 @@ ulli create_address(cache* cache_level, ulli tag, ulli index, ulli byte_offset){
 ulli prep_search_cache(cache* cache_level, ulli address, int bytesize, char op){
 	ulli cycles = 0;
 	ul word_size = 4;
-	ul aligned = address & ~(word_size - 1);
-	bytesize -= word_size - (address - aligned);
-	cycles += search_cache(cache_level, aligned, op);
+
+	ul word_offset = address & (word_size - 1);
+
+	bytesize += word_offset;
 
 	while(bytesize > 0){
-		aligned += word_size;
-		cycles += search_cache(cache_level, aligned, op);
+		cycles += search_cache(cache_level, address, op);
+		address += word_size;
 		bytesize -= word_size;
 	}
 
@@ -289,10 +290,10 @@ uint search_cache(cache* cache_level, ul address, char type){
 
 	if (cache_level->next_level != NULL){
 		cache_level->total_requests++;
-		ulli tag, index;
+		ulli tag, index;//, byte_offset;
 		tag 		= get_tag(cache_level, address);
 		index 		= get_index(cache_level, address);
-		//byte_offset = get_byte_offset(cache_level, address);
+		// byte_offset = get_byte_offset(cache_level, address);
 		//look for the tag in the cache
 		for(uint i = 0; i < cache_level->assoc; i++){
 			if(cache_level->cache_set[index].block[i].valid == true 

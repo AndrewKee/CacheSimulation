@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 		x = "Config/defaults.dat";
 
 	char * outputFile;
-	if (argv[2]) 
+	if (argv[2])
 		outputFile = argv[2];
 	else 
 		outputFile = "results.dat";
