@@ -87,6 +87,10 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst,
 											- log_2(l1_data->block_size);
 		l1_data->next_level = l2;
 
+		l1_data->log_of_blocksize = (log_2(l1_data->block_size));
+
+		l1_data->transfer_cycles = transfer(l1_data);
+
 		//Fully Associative
 		if(l1_inst->assoc == 0){
 			l1_inst->assoc = l1_inst->cache_size / l1_inst->block_size;
@@ -98,6 +102,10 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst,
 											- log_2(l1_inst->block_size);
 		l1_inst->next_level = l2;
 
+		l1_inst->log_of_blocksize = (log_2(l1_inst->block_size));
+
+		l1_inst->transfer_cycles = transfer(l1_inst);
+
 		//Fully Associative
 		if(l2->assoc == 0){
 			l2->assoc = l2->cache_size / l2->block_size;
@@ -107,6 +115,10 @@ int parse_config(char* filename, cache* l1_data, cache* l1_inst,
 		l2->tag_size = address_length - log_2(l2->num_sets)
 										- log_2(l2->block_size);
 		l2->next_level = main_mem;
+
+		l2->log_of_blocksize = (log_2(l2->block_size));
+
+		l2->transfer_cycles = transfer(l2);
 
 		main_mem->next_level = NULL;
 	}
@@ -147,7 +159,7 @@ void cache_alloc(cache* cache_level)
 ulli create_address(cache* cache_level, ulli tag, ulli index, ulli byte_offset){
 	ul address = 0;
 	address |= (tag << (64 - cache_level->tag_size));
-	address |= (index << log_2(cache_level->block_size));
+	address |= (index << cache_level->log_of_blocksize);
 	address |= byte_offset;
 	return address;
 }
@@ -165,14 +177,6 @@ ulli prep_search_cache(cache* cache_level, ulli address, int bytesize, char op){
 		bytesize -= word_size;
 	}
 
-	// ulli cycles = 0;
-
-	// while(bytesize > 0){
-	// 	cycles += search_cache(cache_level, address, op);
-	// 	address += cache_level->bus_width;
-	// 	bytesize -= cache_level->bus_width;
-	// }
-
 	return cycles;
 }
 
@@ -181,27 +185,16 @@ void read_trace(cache* l1_data, cache* l1_inst, cache* l2,
 	char op;
 	ul address = 0;
 	int bytesize = 0;
-	ulli flush_num = 380000;
+	ulli flush_num = 0;
 	while(scanf("%c %lx %d\n", &op, &address, &bytesize) == 3){
 		// printf("%c %llx %d\n", op, address, bytesize);
 		if(op == 'I'){
+			flush_num++;
 			cache_results->num_inst++;
 
 			cache_results->inst_time += prep_search_cache(l1_inst, 
 															address, 
 															bytesize, op);
-			//write all dirty blocks to the next level of cache.  
-			//do this all the way down to main memory
-			if(((cache_results->num_inst) % flush_num) == 0 
-					&& cache_results->num_inst != 0){				
-				//Currently, this flushes l1_data, then l2, 
-				//then l1_inst, then l2
-				cache_results->flush_time += flush(l1_data);
-				cache_results->flush_time += flush(l1_inst); //invalidate all
-				cache_results->flush_time += flush(l2);
-				cache_results->flush_cnt++;
-				cache_results->num_invalid++;
-			}
 		} else if (op == 'R'){
 			cache_results->num_reads++;
 			cache_results->read_time += prep_search_cache(l1_data, address, 
@@ -210,6 +203,19 @@ void read_trace(cache* l1_data, cache* l1_inst, cache* l2,
 			cache_results->num_writes++;
 			cache_results->write_time += prep_search_cache(l1_data, address, 
 																bytesize, op);
+		}
+
+		//write all dirty blocks to the next level of cache.  
+		//do this all the way down to main memory
+		if(flush_num >= 380000){	
+			flush_num = 0;			
+			//Currently, this flushes l1_data, then l2, 
+			//then l1_inst, then l2
+			cache_results->flush_time += flush(l1_data);
+			cache_results->flush_time += flush(l1_inst); //invalidate all
+			cache_results->flush_time += flush(l2);
+			cache_results->flush_cnt++;
+			cache_results->num_invalid++;
 		}
 	}
 }
@@ -243,7 +249,7 @@ uint flush(cache* cache_level)
 									i, 0);
 				cache_level->flush_kickouts++;
 
-				cycles += transfer(cache_level);
+				cycles += cache_level->transfer_cycles;
 				cycles += search_cache(cache_level->next_level, dirty_addr, 'W');
 				// cycles += cache_level->hit_time;
 			}
@@ -283,10 +289,10 @@ uint search_cache(cache* cache_level, ul address, char type){
 
 	if (cache_level->next_level != NULL){
 		cache_level->total_requests++;
-		ulli tag, index, byte_offset;
+		ulli tag, index;//, byte_offset;
 		tag 		= get_tag(cache_level, address);
 		index 		= get_index(cache_level, address);
-		byte_offset = get_byte_offset(cache_level, address);
+		// byte_offset = get_byte_offset(cache_level, address);
 		//look for the tag in the cache
 		for(uint i = 0; i < cache_level->assoc; i++){
 			if(cache_level->cache_set[index].block[i].valid == true 
@@ -297,7 +303,6 @@ uint search_cache(cache* cache_level, ul address, char type){
 				if(type == 'W'){
 					cache_level->cache_set[index].block[i].dirty = true;
 				} 
-				// uint b = LRU_Get_LRU(cache_level, index);
 	 			LRU_Update(cache_level, index, i);
 				cycles += cache_level->hit_time;
 				return cycles;
@@ -321,15 +326,15 @@ uint search_cache(cache* cache_level, ul address, char type){
 		 	if(cache_level->cache_set[index].block[b].dirty == true){
 		 		ulli dirty_addr = create_address(cache_level, 
 		 							cache_level->cache_set[index].block[b].tag, 
-		 							index, byte_offset);
+		 							index, 0);
 		 		cache_level->dirty_kickouts++;
 		 		cycles += search_cache(cache_level->next_level, dirty_addr, 'W');
-		 		cycles += transfer(cache_level);
+		 		cycles += cache_level->transfer_cycles;
 	 		}
 	 	}
 
 	 	cycles += search_cache(cache_level->next_level, address, 'R');
-		cycles += transfer(cache_level);	
+		cycles += cache_level->transfer_cycles;	
 		//Going to need to transfer down a level because we missed
 
 	 	//bring the stuff into this cache
@@ -359,14 +364,14 @@ ulli get_index(cache* cache_level, ulli address){
 	ulli index;
 	index 	= address << cache_level->tag_size;
 	index 	= index   >> (cache_level->tag_size);
-	index 	= index   >> (log_2(cache_level->block_size));
+	index 	= index   >> cache_level->log_of_blocksize;
 	return index;
 }
 
 ulli get_byte_offset(cache* cache_level, ulli address){
 	ulli byte_offset;
-	byte_offset = address << (64 - (log_2(cache_level->block_size)));
-	byte_offset = byte_offset >> (64 - (log_2(cache_level->block_size)));
+	byte_offset = address << (64 - cache_level->log_of_blocksize);
+	byte_offset = byte_offset >> (64 - cache_level->log_of_blocksize);
 	return byte_offset;
 }
 
@@ -384,13 +389,17 @@ int num_indices(cache* cache_level, ulli address, uint num_bytes){
 	return num_blocks_requested;
 }
 
-void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results* cache_results){
+void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results* cache_results, char* outputFileName){
 
 	FILE * outputFile;
 
-	outputFile = fopen("results.dat", "ab");
+	outputFile = fopen(outputFileName, "wb");
 
 	cache_results->inst_time += cache_results->flush_time;
+
+	fprintf(outputFile, "----------------------------------------------------------------\n");
+    fprintf(outputFile, "%s			Simulation Results\n", outputFileName);
+    fprintf(outputFile, "----------------------------------------------------------------\n\n");
 
 	//Calculate the l1_inst things
 	l1_inst->total_requests = l1_inst->num_hits + l1_inst->num_misses;
@@ -409,6 +418,8 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
     l2->hit_rate 		=	(double) l2->num_hits 			/ 	l2->total_requests 		* 100;
     l2->miss_rate 		= 	(double) l2->num_misses 		/ 	l2->total_requests 		* 100;
     l2->transfers 		= 	l2->num_misses + l2->flush_kickouts;
+
+    ulli total_time = cache_results->read_time + cache_results->write_time + cache_results->inst_time;
 
     uint ICache_cost 	= (l1_inst->cache_size / 4096) 	* 100 	+ (l1_inst->cache_size / 4096) * (uint)(log_2(l1_inst->assoc)) * 100;
     uint DCache_cost 	= (l1_data->cache_size / 4096) 	* 100 	+ (l1_data->cache_size / 4096) * (uint)(log_2(l1_data->assoc)) * 100;
@@ -447,11 +458,11 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
 	fprintf(outputFile, "	Reads 	= 	%15llu 	    [%4.1f%%]\n", cache_results->read_time, ((double)cache_results->read_time / (double)(exec_time - cache_results->flush_time) * 100));
 	fprintf(outputFile, "	Writes 	= 	%15llu 	    [%4.1f%%]\n", cache_results->write_time, ((double)cache_results->write_time / (double)(exec_time - cache_results->flush_time) * 100));
 	fprintf(outputFile, "	Inst. 	= 	%15llu 	    [%4.1f%%]\n", cache_results->inst_time, ((double)cache_results->inst_time / (double)(exec_time - cache_results->flush_time) * 100));
-	fprintf(outputFile, "	Total 	= 	%15llu\n ", cache_results->read_time + cache_results->write_time + cache_results->inst_time);
+	fprintf(outputFile, "	Total 	= 	%15llu\n ", total_time);
 	fprintf(outputFile, "\n");
 
 	fprintf(outputFile, "Average cycles per activity:\n");
-	fprintf(outputFile, "	Read = %.1f; Write = %.1f; Inst. = %.1f\n", ((double)cache_results->read_time / (double)cache_results->num_reads), ((double)cache_results->write_time / (double)cache_results->num_writes), ((double)cache_results->inst_time / (double)cache_results->num_inst));
+	fprintf(outputFile, "	Read = %.1f; Write = %.1f; Inst. = %.1f\n", ((double)cache_results->read_time / (double)cache_results->num_reads), ((double)cache_results->write_time / (double)cache_results->num_writes), ((double)total_time / (double)cache_results->num_inst));
 	fprintf(outputFile, "Ideal: Exec. Time = %llu; CPI = %.1f\n", total_traces + cache_results->num_inst, round(10*(((double)total_traces + (double)cache_results->num_inst)/ (double)cache_results->num_inst))/10);
 	fprintf(outputFile, "Ideal mis-aligned: Exec. Time = %llu; CPI = %.1f\n", l1_inst->total_requests + l1_data->total_requests + cache_results->num_inst, round(10*((double)l1_inst->total_requests + (double)l1_data->total_requests + (double)cache_results->num_inst)/ (double)cache_results->num_inst)/10);
 	fprintf(outputFile, "\n");
