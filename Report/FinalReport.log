@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  26 APR 2015 16:49
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  26 APR 2015 21:53
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -756,22 +756,22 @@ Package epstopdf Info: Source file: <Figures/costVsConfig.eps>
 (epstopdf)                    size: 23462 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/costVsConfig-eps-c
 onverted-to.pdf Figures/costVsConfig.eps>
-(epstopdf)             \includegraphics on input line 22.
+(epstopdf)             \includegraphics on input line 26.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/costVsConfig-eps-converted-to.pdf, id=40, 485.815pt x 449.68pt>
+<Figures/costVsConfig-eps-converted-to.pdf, id=42, 485.815pt x 449.68pt>
 File: Figures/costVsConfig-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/costVsConfig-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/costVsConfig-eps-converted-to.pdf used on inpu
-t line 22.
+t line 26.
 (pdftex.def)             Requested size: 364.36035pt x 337.25917pt.
  [2pdfTeX warning (ext4): destination with the same identifier (name{figure.2})
  has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.23 \end{center}
+l.28 \end{figure}
                   <./Figures/CPITimes-eps-converted-to.pdf>]
 Package epstopdf Info: Source file: <Figures/IPCperDollarDiff_wrtL1Small.eps>
 (epstopdf)                    date: 2015-04-25 17:47:33
@@ -782,19 +782,25 @@ nverted-to.pdf>
 (epstopdf)                    size: 26184 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/IPCperDollarDiff_w
 rtL1Small-eps-converted-to.pdf Figures/IPCperDollarDiff_wrtL1Small.eps>
-(epstopdf)             \includegraphics on input line 26.
+(epstopdf)             \includegraphics on input line 34.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/IPCperDollarDiff_wrtL1Small-eps-converted-to.pdf, id=55, 469.755pt x 4
+<Figures/IPCperDollarDiff_wrtL1Small-eps-converted-to.pdf, id=60, 469.755pt x 4
 70.75874pt>
 File: Figures/IPCperDollarDiff_wrtL1Small-eps-converted-to.pdf Graphic file (ty
 pe pdf)
  <use Figures/IPCperDollarDiff_wrtL1Small-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/IPCperDollarDiff_wrtL1Small-eps-converted-to.p
-df used on input line 26.
+df used on input line 34.
 (pdftex.def)             Requested size: 352.31538pt x 353.06819pt.
 
-[3 <./Figures/costVsConfig-eps-converted-to.pdf>]
+[3pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) 
+has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.35 \end{center}
+                  <./Figures/costVsConfig-eps-converted-to.pdf>]
 Package epstopdf Info: Source file: <Figures/chunkSizes.eps>
 (epstopdf)                    date: 2015-04-25 14:51:02
 (epstopdf)                    size: 431138 bytes
@@ -803,15 +809,15 @@ Package epstopdf Info: Source file: <Figures/chunkSizes.eps>
 (epstopdf)                    size: 21851 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/chunkSizes-eps-con
 verted-to.pdf Figures/chunkSizes.eps>
-(epstopdf)             \includegraphics on input line 31.
+(epstopdf)             \includegraphics on input line 39.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/chunkSizes-eps-converted-to.pdf, id=68, 255.95625pt x 234.8775pt>
+<Figures/chunkSizes-eps-converted-to.pdf, id=74, 255.95625pt x 234.8775pt>
 File: Figures/chunkSizes-eps-converted-to.pdf Graphic file (type pdf)
 
 <use Figures/chunkSizes-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/chunkSizes-eps-converted-to.pdf used on input 
-line 31.
+line 39.
 (pdftex.def)             Requested size: 255.95561pt x 234.87692pt.
 ) (./Discussion.tex)
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 36.
@@ -826,13 +832,13 @@ Package rerunfilecheck Info: File `FinalReport.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 36.
  ) 
 Here is how much of TeX's memory you used:
- 9321 strings out of 493315
- 127681 string characters out of 6137904
- 257064 words of memory out of 5000000
- 12569 multiletter control sequences out of 15000+600000
+ 9323 strings out of 493315
+ 127707 string characters out of 6137904
+ 257126 words of memory out of 5000000
+ 12570 multiletter control sequences out of 15000+600000
  15908 words of font info for 52 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 29i,7n,26p,3244b,452s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 29i,7n,26p,3244b,448s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
 </usr/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc1200.pfb></
 usr/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc1440.pfb></us
@@ -840,10 +846,10 @@ r/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc2074.pfb></usr/
 local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc2488.pfb></usr/lo
 cal/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/loca
 l/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfxc1728.pfb>
-Output written on FinalReport.pdf (6 pages, 106648 bytes).
+Output written on FinalReport.pdf (6 pages, 108000 bytes).
 PDF statistics:
- 123 PDF objects out of 1000 (max. 8388607)
- 91 compressed objects within 1 object stream
- 11 named destinations out of 1000 (max. 500000)
+ 129 PDF objects out of 1000 (max. 8388607)
+ 97 compressed objects within 1 object stream
+ 12 named destinations out of 1000 (max. 500000)
  26 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -17,10 +17,18 @@ Another way to compare the performance of each trace is to look at the Cycles pe
 \includegraphics[scale = 0.75]{CPITimes.eps}
 \caption{CPI of all Traces with correspondence to all Configurations\label{fig:CPI}}
 \end{figure}
+
 Similar to the execution times in Fig.~\ref{fig:executiontimes}, Fig.~\ref{fig:CPI} shows that the configuration of the cache can dramatically effect the CPI. 
-\begin{center}
+
+Figures.~\ref{fig:executiontimes}~\&~\ref{fig:CPI} show that Fully Associative configurations give the fastest results, but at what cost? 
+\begin{figure}[H]
+\centering
 \includegraphics[scale = 0.75]{costVsConfig.eps}
-\end{center}
+\caption{Cost of all the different Configurations\label{fig:costVsConfig}}
+\end{figure}
+Fig.~\ref{fig:costVsConfig} shows the total cost of having each Configuration.  The fully associative configurations are much more expensive than the other configurations.  Viewing both Fig.~\ref{fig:CPI}~\&~\ref{fig:costVsConfig} show that cost transfers quite proportionally to performance.  
+
+
 
 \begin{center}
 \includegraphics[scale = 0.75]{IPCperDollarDiff_wrtL1Small.eps}
