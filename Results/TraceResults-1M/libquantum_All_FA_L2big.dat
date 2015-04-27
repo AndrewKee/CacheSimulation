@@ -1,0 +1,56 @@
+----------------------------------------------------------------
+libquantum_All_FA_L2big.dat			Simulation Results
+----------------------------------------------------------------
+
+Memory System: 
+	Dcache size = 8192  :  ways = 256  :  block size = 32 
+	Icache size = 8192  :  ways = 256  :  block size = 32 
+	L2-cache size = 65536  :  ways = 1024  :  block size = 64 
+	Memory ready time = 30  :  chunksize = 8  :  chunktime = 15 
+
+Execute time 	=	3982682;		Total refs	= 1000000
+Flush time 	=	168007
+Inst refs 		=	750311; 	Data refs 	= 249689
+
+Number of reference types : 	[Percentage]
+	Reads 	= 	         172161 	    [17.2%]
+	Writes 	= 	          77528 	    [ 7.8%]
+	Inst. 	= 	         750311	    [75.0%]
+	Total 	= 	        1000000
+ 
+Total cycles for activities: 	[Percentage]
+	Reads 	= 	         813829 	    [21.3%]
+	Writes 	= 	        1446284 	    [37.9%]
+	Inst. 	= 	        1554562 	    [40.8%]
+	Total 	= 	        3814675
+ 
+Average cycles per activity:
+	Read = 4.7; Write = 18.7; Inst. = 5.1
+Ideal: Exec. Time = 1750311; CPI = 2.3
+Ideal mis-aligned: Exec. Time = 2279398; CPI = 3.0
+
+Memory Level: 	L1i
+	Hit Count = 1178699 		Miss Count = 1946
+	Total Requests = 1180645
+ 	Hit Rate = 99.8% 	Miss Rate = 0.2%
+	Kickouts = 1689; Dirty Kickouts = 0; Transfers = 1946
+Flush Kickouts = 0
+
+Memory Level: 	L1d
+	Hit Count = 334568 		Miss Count = 13874
+	Total Requests = 348442
+ 	Hit Rate = 96.0% 	Miss Rate = 4.0%
+	Kickouts = 13362; Dirty Kickouts = 8742; Transfers = 14130
+Flush Kickouts = 256
+
+Memory Level: 	L2
+	Hit Count = 16924 		Miss Count = 7894
+	Total Requests = 24818
+ 	Hit Rate = 68.2% 	Miss Rate = 31.8%
+	Kickouts = 5846; Dirty Kickouts = 2596; Transfers = 8918
+Flush Kickouts = 1024
+
+L1 cache cost (Icache $1800) + (Dcache $1800) = $3600
+L2 cache cost = $1100; Memory cost = $75; Total cost = $4775
+Flushes = 1  :  Invalidates = 1
+
