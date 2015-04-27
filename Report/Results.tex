@@ -28,12 +28,15 @@ Figures.~\ref{fig:executiontimes}~\&~\ref{fig:CPI} show that Fully Associative c
 \end{figure}
 Fig.~\ref{fig:costVsConfig} shows the total cost of having each Configuration.  The fully associative configurations are much more expensive than the other configurations.  Viewing both Fig.~\ref{fig:CPI}~\&~\ref{fig:costVsConfig} show that cost transfers quite proportionally to performance.  
 
+The next step is to find the performance of the configurations with respect the the cheapest/slowest configuration.  It was found that L1 small was the cheapest and slowest (on average) configuration.  Fig.~\ref{fig:IPC} shows the relative performance per dollar with respect to the L1 Small configuration.
 
-
-\begin{center}
+\begin{figure}[H]
+\centering
 \includegraphics[scale = 0.75]{IPCperDollarDiff_wrtL1Small.eps}
-\end{center}
+\caption{Relative performance with respect to L1 Small\label{fig:IPC}}
+\end{figure}
 
+Fig.~\ref{fig:IPC} uses Instructions per Cycle to calculate relative performance with respect to L1 Small.  
 
 \begin{center}
 \includegraphics[]{chunkSizes.eps}
