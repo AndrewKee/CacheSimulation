@@ -53,4 +53,3 @@ Flush Kickouts = 14958746
 L1 cache cost (Icache $1800) + (Dcache $1800) = $3600
 L2 cache cost = $1100; Memory cost = $75; Total cost = $4775
 Flushes = 32862  :  Invalidates = 32862
-
