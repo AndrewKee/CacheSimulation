@@ -1,0 +1,17 @@
+\documentclass[FinalReport.tex]{subfiles}
+\begin{document}
+
+\bigskip
+
+\newpage
+\section*{\textsc{\Large Conclusion}}
+
+The simulation successfully evaluated input traces for various hardware configurations.  Certain traces demonstrated more variance than others, depending on the structure and functionality of the code used to generate them.  Traces that exhibited low variance and relatively high cycles per instruction were likely written sequentially, did not utilize large arrays, and had few loops.  
+
+	The cost of the hardware is an important consideration when evaluating real world performance increases.  While the FA configurations yielded the highest instructions per cycle, they were also the most expensive and therefore not the best performance increase per dollar.  Additionally, some traces such as libquantum that had very low variance across configurations do not require more advanced hardware than the low cost configuration of L1-small.  Traces such as onmetpp however have very high variance and benefit greatly from more expensive cache structures.  When considering the larges performance increase per dollar from the lowest cost configuration, doubling the L2 cache size and changing cache associativity to 2-way (L2-Big) was the best option.  
+	
+	Finally, memory chunksize is an important variable in performance and cost.  As chunksize increases, the relative gains in performance are diminished.  After a chunksize of 64, performance change is negligible compared the increase in price.  Initially doubling the chunksize from 8 to 16 however yielded significant performance gains.
+	
+	Given more time, we would run more simulations to confirm and identify trends in our results.  Many of the configurations tested changed more than one cache attribute such as size and associativity, making the results difficult to evaluate. Simulating all cache configurations would give greater insight into what configuration changes yield the largest performance increases per cost.  
+
+\end{document}

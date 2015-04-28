@@ -46,6 +46,8 @@ chunks = [53574291155 42804461615 37419546845 34727089460];
 %put labels on the points
 % figure;
 % plot(chunkcost, chunks);
+% xlabel('Cost of Configuration');
+% ylabel('Execution Time (cycles)');
 
 % chunksize = [8 16 32 64];
 % figure;
@@ -58,6 +60,67 @@ chunks = [53574291155 42804461615 37419546845 34727089460];
 cost = [975 1425 4175 4775 525 925 1725 325 725 1025 975];
 % bar(cost);
 % ylabel('Cost');
+% xlabel('Associativities');
+
+
+
+%IPC
+IPC = zeros(1, 11);
+for i = 1:11
+    IPC(i) = (sum(1./cpitimes(i, :))/5);
+%     (sum(cpitimes(i, :))/5)
+end
+% figure;
+% bar(IPC);
+% ylabel('IPC');
+% xlabel('Associativities');
+
+%Omnetpp IPC
+% figure;
+omnIPC = 1./cpitimes(:,4);
+% bar(omnIPC);
+% title('omnetpp');
+% ylabel('IPC');
+% xlabel('Associativities');
+
+% inrefto = 8;
+% DeltaIPCperCost = zeros(1,11);
+% for i = 1:11
+%     DeltaIPCperCost(i) = (omnIPC(i)) / cost(i);
+% end
+% figure;
+% bar(DeltaIPCperCost);
+% title('Omnetpp');
+% ylabel('IPC');
+% xlabel('Associativities');
+% 
+% DeltaIPCDeltaCost = zeros(1,11);
+% inrefto = 8;
+% for i = 1:11
+%     DeltaIPCDeltaCost(i) = (omnIPC(i) - omnIPC(inrefto)) / (cost(i) - cost(inrefto));
+% end
+% figure;
+% bar(DeltaIPCDeltaCost);
+% ylabel('IPC per Dollar');
+% xlabel('Associativities');
+
+%libquantum IPC
+% figure;
+% libIPC = 1./cpitimes(:,3);
+% bar(libIPC);
+% title('libquantum');
+% ylabel('IPC');
+% xlabel('Associativities');
+% 
+% inrefto = 11;
+% DeltaIPCperCost = zeros(1,11);
+% for i = 1:11
+%     DeltaIPCperCost(i) = (libIPC(i)) / cost(i);
+% end
+% figure;
+% bar(DeltaIPCperCost);
+% title('libquantum');
+% ylabel('IPC');
 % xlabel('Associativities');
 
 
@@ -75,7 +138,7 @@ end
 DeltaIPCDeltaCost = zeros(1,11);
 inrefto = 8;
 for i = 1:11
-    DeltaIPCDeltaCost(i) = (IPCperdollar(inrefto) - IPCperdollar(i)) / cost(inrefto)*cost(i);
+    DeltaIPCDeltaCost(i) = (IPC(i) - IPC(inrefto)) / (cost(i) - cost(inrefto));
     
     if i ~= inrefto
         
@@ -84,5 +147,38 @@ for i = 1:11
 end
 figure;
 bar(DeltaIPCDeltaCost);
-ylabel('IPC');
+ylabel('IPC per Dollar');
 xlabel('Associativities');
+
+DeltaIPCDeltaCost = zeros(1,11);
+inrefto = 8;
+for i = 1:11
+    DeltaIPCDeltaCost(i) = (IPC(i)) / (cost(i));
+    
+    if i ~= inrefto
+        
+%         DeltaIPCDeltaCost(i) = (abs(IPCperdollar(inrefto) - IPCperdollar(i))/(cost(inrefto) - cost(i)));
+    end
+end
+% figure;
+% bar(DeltaIPCDeltaCost);
+% ylabel('IPC per Dollar');
+% xlabel('Associativities');
+
+
+avgCPI = zeros(1,11);
+for i = 1:11
+    avgCPI(i) = (sum(cpitimes(i, :))/5);
+%     (sum(cpitimes(i, :))/5)
+end
+
+CPIperCost = zeros(1,11);
+
+for i = 1:11
+    CPIperCost(i) = (avgCPI(i)) * cost(i);
+end
+% figure;
+% bar(CPIperCost);
+% ylabel('CPI per Dollar');
+% xlabel('Associativities');
+

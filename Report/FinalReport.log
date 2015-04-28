@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  26 APR 2015 23:08
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  27 APR 2015 22:44
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -614,25 +614,49 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \@float@everytoks=\toks33
 \@floatcapt=\box33
 )
+(/usr/local/texlive/2013/texmf-dist/tex/latex/caption/subcaption.sty
+Package: subcaption 2013/02/03 v1.1-62 Sub-captions (AR)
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2013/05/02 v3.3-89 Customizing captions (AR)
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2013/05/02 v1.6-88 caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 57.
+\captionmargin=\dimen152
+\captionmargin@=\dimen153
+\captionwidth=\dimen154
+\caption@tempdima=\dimen155
+\caption@indent=\dimen156
+\caption@parindent=\dimen157
+\caption@hangindent=\dimen158
+)
+\c@ContinuedFloat=\count121
+Package caption Info: float package is loaded.
+Package caption Info: hyperref package is loaded.
+)
+\c@subfigure=\count122
+\c@subtable=\count123
+)
 (./FinalReport.aux)
 \openout1 = `FinalReport.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 21.
+LaTeX Font Info:    ... okay on input line 21.
 \AtBeginShipoutBox=\box34
-Package hyperref Info: Link coloring OFF on input line 20.
+Package hyperref Info: Link coloring OFF on input line 21.
 
 (/usr/local/texlive/2013/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -640,45 +664,45 @@ Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 (/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count121
+\c@section@level=\count124
 )
-LaTeX Info: Redefining \ref on input line 20.
-LaTeX Info: Redefining \pageref on input line 20.
-LaTeX Info: Redefining \nameref on input line 20.
+LaTeX Info: Redefining \ref on input line 21.
+LaTeX Info: Redefining \pageref on input line 21.
+LaTeX Info: Redefining \nameref on input line 21.
 
 (./FinalReport.out) (./FinalReport.out)
 \@outlinefile=\write4
 \openout4 = `FinalReport.out'.
 
-LaTeX Font Info:    Try loading font information for U+msa on input line 20.
+LaTeX Font Info:    Try loading font information for U+msa on input line 21.
 
 (/usr/local/texlive/2013/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 20.
+LaTeX Font Info:    Try loading font information for U+msb on input line 21.
 
 (/usr/local/texlive/2013/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+rsfs on input line 20.
+LaTeX Font Info:    Try loading font information for U+rsfs on input line 21.
 
 (/usr/local/texlive/2013/texmf-dist/tex/latex/jknapltx/ursfs.fd
 File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 )
-Package xypdf Info: Line width: 0.47998pt on input line 20.
+Package xypdf Info: Line width: 0.47998pt on input line 21.
 
 (/usr/local/texlive/2013/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count122
-\scratchdimen=\dimen152
+\scratchcounter=\count125
+\scratchdimen=\dimen159
 \scratchbox=\box35
-\nofMPsegments=\count123
-\nofMParguments=\count124
+\nofMPsegments=\count126
+\nofMParguments=\count127
 \everyMPshowfont=\toks34
-\MPscratchCnt=\count125
-\MPscratchDim=\dimen153
-\MPnumerator=\count126
-\makeMPintoPDFobject=\count127
+\MPscratchCnt=\count128
+\MPscratchDim=\dimen160
+\MPnumerator=\count129
+\makeMPintoPDFobject=\count130
 \everyMPtoPDFconversion=\toks35
 ) (/usr/local/texlive/2013/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
@@ -695,6 +719,9 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+
 (./title.tex [1
 
 {/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]) (./Int
@@ -703,7 +730,7 @@ Package epstopdf Info: Source file: <Figures/bargraph1.eps>
 (epstopdf)                    date: 2015-04-25 14:50:46
 (epstopdf)                    size: 831498 bytes
 (epstopdf)             Output file: <Figures/bargraph1-eps-converted-to.pdf>
-(epstopdf)                    date: 2015-04-26 12:11:09
+(epstopdf)                    date: 2015-04-27 22:12:59
 (epstopdf)                    size: 37441 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/bargraph1-eps-conv
 erted-to.pdf Figures/bargraph1.eps>
@@ -716,24 +743,18 @@ File: Figures/bargraph1-eps-converted-to.pdf Graphic file (type pdf)
 <use Figures/bargraph1-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/bargraph1-eps-converted-to.pdf used on input l
 ine 9.
-(pdftex.def)             Requested size: 350.05695pt x 340.27042pt.
+(pdftex.def)             Requested size: 303.37984pt x 294.89825pt.
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.13 
-      [1pdfTeX warning (ext4): destination with the same identifier (name{figur
-e.1}) has been already used, duplicate ignored
-
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.13 
-      <./Figures/bargraph1-eps-converted-to.pdf>]
+      [1 <./Figures/bargraph1-eps-converted-to.pdf>]
 Package epstopdf Info: Source file: <Figures/CPITimes.eps>
 (epstopdf)                    date: 2015-04-25 16:56:20
 (epstopdf)                    size: 807702 bytes
 (epstopdf)             Output file: <Figures/CPITimes-eps-converted-to.pdf>
-(epstopdf)                    date: 2015-04-26 12:11:54
+(epstopdf)                    date: 2015-04-27 22:13:00
 (epstopdf)                    size: 32832 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/CPITimes-eps-conve
 rted-to.pdf Figures/CPITimes.eps>
@@ -746,13 +767,13 @@ File: Figures/CPITimes-eps-converted-to.pdf Graphic file (type pdf)
 <use Figures/CPITimes-eps-converted-to.pdf>
 Package pdftex.def Info: Figures/CPITimes-eps-converted-to.pdf used on input li
 ne 17.
-(pdftex.def)             Requested size: 351.56256pt x 338.76479pt.
+(pdftex.def)             Requested size: 304.6847pt x 293.59338pt.
 Package epstopdf Info: Source file: <Figures/costVsConfig.eps>
 (epstopdf)                    date: 2015-04-25 17:08:00
 (epstopdf)                    size: 790046 bytes
 (epstopdf)             Output file: <Figures/costVsConfig-eps-converted-to.pdf>
 
-(epstopdf)                    date: 2015-04-26 12:12:33
+(epstopdf)                    date: 2015-04-27 22:13:01
 (epstopdf)                    size: 23462 bytes
 (epstopdf)             Command: <repstopdf --outfile=Figures/costVsConfig-eps-c
 onverted-to.pdf Figures/costVsConfig.eps>
@@ -766,97 +787,176 @@ File: Figures/costVsConfig-eps-converted-to.pdf Graphic file (type pdf)
 Package pdftex.def Info: Figures/costVsConfig-eps-converted-to.pdf used on inpu
 t line 26.
 (pdftex.def)             Requested size: 364.36035pt x 337.25917pt.
- [2pdfTeX warning (ext4): destination with the same identifier (name{figure.2})
- has been already used, duplicate ignored
+ [2 <./Figures/CPITimes-eps-converted-to.pdf>]) (./Discussion.tex [3 <./Figures
+/costVsConfig-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <Figures/IPC.eps>
+(epstopdf)                    date: 2015-04-27 20:21:30
+(epstopdf)                    size: 815390 bytes
+(epstopdf)             Output file: <Figures/IPC-eps-converted-to.pdf>
+(epstopdf)                    date: 2015-04-27 22:13:02
+(epstopdf)                    size: 26300 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/IPC-eps-converted-
+to.pdf Figures/IPC.eps>
+(epstopdf)             \includegraphics on input line 15.
+Package epstopdf Info: Output file is already uptodate.
+ <Figures/IPC-eps-converted-to.pdf, id=77, 478.78876pt x 463.7325pt>
+File: Figures/IPC-eps-converted-to.pdf Graphic file (type pdf)
 
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.28 \end{figure}
-                  <./Figures/CPITimes-eps-converted-to.pdf>]
-Package epstopdf Info: Source file: <Figures/IPCperDollarDiff_wrtL1Small.eps>
-(epstopdf)                    date: 2015-04-25 17:47:33
-(epstopdf)                    size: 808102 bytes
-(epstopdf)             Output file: <Figures/IPCperDollarDiff_wrtL1Small-eps-co
-nverted-to.pdf>
-(epstopdf)                    date: 2015-04-26 12:11:55
-(epstopdf)                    size: 26184 bytes
-(epstopdf)             Command: <repstopdf --outfile=Figures/IPCperDollarDiff_w
-rtL1Small-eps-converted-to.pdf Figures/IPCperDollarDiff_wrtL1Small.eps>
-(epstopdf)             \includegraphics on input line 35.
+<use Figures/IPC-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/IPC-eps-converted-to.pdf used on input line 15
+.
+(pdftex.def)             Requested size: 359.09068pt x 347.79851pt.
+ [4]
+
+LaTeX Warning: Reference `IPCperDollar' on page 5 undefined on input line 19.
+
+Package epstopdf Info: Source file: <Figures/IPCperDollar.eps>
+(epstopdf)                    date: 2015-04-27 22:18:04
+(epstopdf)                    size: 760410 bytes
+(epstopdf)             Output file: <Figures/IPCperDollar-eps-converted-to.pdf>
+
+(epstopdf)                    date: 2015-04-27 22:35:55
+(epstopdf)                    size: 24938 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/IPCperDollar-eps-c
+onverted-to.pdf Figures/IPCperDollar.eps>
+(epstopdf)             \includegraphics on input line 23.
+Package epstopdf Info: Output file is already uptodate.
+<Figures/IPCperDollar-eps-converted-to.pdf, id=83, 460.72125pt x 444.66125pt>
+File: Figures/IPCperDollar-eps-converted-to.pdf Graphic file (type pdf)
+
+<use Figures/IPCperDollar-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/IPCperDollar-eps-converted-to.pdf used on inpu
+t line 23.
+(pdftex.def)             Requested size: 345.54008pt x 333.49512pt.
+ [5 <./Figures/IPC-eps-converted-to.pdf>]
+
+LaTeX Warning: Reference `IPCperDollar' on page 6 undefined on input line 27.
+
+
+LaTeX Warning: Reference `deltaIPCperDollar' on page 6 undefined on input line 
+27.
+
+Package epstopdf Info: Source file: <Figures/deltaIPCperdeltaCost.eps>
+(epstopdf)                    date: 2015-04-27 22:08:51
+(epstopdf)                    size: 805330 bytes
+(epstopdf)             Output file: <Figures/deltaIPCperdeltaCost-eps-converted
+-to.pdf>
+(epstopdf)                    date: 2015-04-27 22:35:56
+(epstopdf)                    size: 26895 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/deltaIPCperdeltaCo
+st-eps-converted-to.pdf Figures/deltaIPCperdeltaCost.eps>
+(epstopdf)             \includegraphics on input line 31.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/IPCperDollarDiff_wrtL1Small-eps-converted-to.pdf, id=61, 469.755pt x 4
-70.75874pt>
-File: Figures/IPCperDollarDiff_wrtL1Small-eps-converted-to.pdf Graphic file (ty
-pe pdf)
- <use Figures/IPCperDollarDiff_wrtL1Small-eps-converted-to.pdf>
-Package pdftex.def Info: Figures/IPCperDollarDiff_wrtL1Small-eps-converted-to.p
-df used on input line 35.
-(pdftex.def)             Requested size: 352.31538pt x 353.06819pt.
+<Figures/deltaIPCperdeltaCost-eps-converted-to.pdf, id=98, 462.72874pt x 472.76
+625pt>
+File: Figures/deltaIPCperdeltaCost-eps-converted-to.pdf Graphic file (type pdf)
 
-[3pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) 
-has been already used, duplicate ignored
-
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.38 
-      <./Figures/costVsConfig-eps-converted-to.pdf>]
-Package epstopdf Info: Source file: <Figures/chunkSizes.eps>
-(epstopdf)                    date: 2015-04-25 14:51:02
-(epstopdf)                    size: 431138 bytes
-(epstopdf)             Output file: <Figures/chunkSizes-eps-converted-to.pdf>
-(epstopdf)                    date: 2015-04-26 12:11:11
-(epstopdf)                    size: 21851 bytes
-(epstopdf)             Command: <repstopdf --outfile=Figures/chunkSizes-eps-con
-verted-to.pdf Figures/chunkSizes.eps>
-(epstopdf)             \includegraphics on input line 42.
+ <use Figures/deltaIPCperdeltaCost-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/deltaIPCperdeltaCost-eps-converted-to.pdf used
+ on input line 31.
+(pdftex.def)             Requested size: 347.0457pt x 354.5738pt.
+ [6 <./Figures/IPCperDollar-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <Figures/omnetpp_IPCperDollar.eps>
+(epstopdf)                    date: 2015-04-27 22:00:24
+(epstopdf)                    size: 758258 bytes
+(epstopdf)             Output file: <Figures/omnetpp_IPCperDollar-eps-converted
+-to.pdf>
+(epstopdf)                    date: 2015-04-27 22:37:04
+(epstopdf)                    size: 22905 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/omnetpp_IPCperDoll
+ar-eps-converted-to.pdf Figures/omnetpp_IPCperDollar.eps>
+(epstopdf)             \includegraphics on input line 40.
 Package epstopdf Info: Output file is already uptodate.
 
-<Figures/chunkSizes-eps-converted-to.pdf, id=77, 255.95625pt x 234.8775pt>
-File: Figures/chunkSizes-eps-converted-to.pdf Graphic file (type pdf)
+<Figures/omnetpp_IPCperDollar-eps-converted-to.pdf, id=119, 468.75125pt x 457.7
+1pt>
+File: Figures/omnetpp_IPCperDollar-eps-converted-to.pdf Graphic file (type pdf)
 
-<use Figures/chunkSizes-eps-converted-to.pdf>
-Package pdftex.def Info: Figures/chunkSizes-eps-converted-to.pdf used on input 
-line 42.
-(pdftex.def)             Requested size: 255.95561pt x 234.87692pt.
- [4pdfTeX warning (ext4): destination with the same identifier (name{figure.4})
- has been already used, duplicate ignored
+ <use Figures/omnetpp_IPCperDollar-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/omnetpp_IPCperDollar-eps-converted-to.pdf used
+ on input line 40.
+(pdftex.def)             Requested size: 222.65915pt x 217.4145pt.
+Package epstopdf Info: Source file: <Figures/omnetpp_deltaIPCperdeltaDollar.eps
+>
+(epstopdf)                    date: 2015-04-27 22:02:21
+(epstopdf)                    size: 798458 bytes
+(epstopdf)             Output file: <Figures/omnetpp_deltaIPCperdeltaDollar-eps
+-converted-to.pdf>
+(epstopdf)                    date: 2015-04-27 22:37:05
+(epstopdf)                    size: 26439 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/omnetpp_deltaIPCpe
+rdeltaDollar-eps-converted-to.pdf Figures/omnetpp_deltaIPCperdeltaDollar.eps>
+(epstopdf)             \includegraphics on input line 44.
+Package epstopdf Info: Output file is already uptodate.
 
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.43 \end{center}
-                  <./Figures/IPCperDollarDiff_wrtL1Small-eps-converted-to.pdf>]
-) (./Discussion.tex)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 36.
- [5 <./Figures/chunkSizes-eps-converted-to.pdf>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 36.
+<Figures/omnetpp_deltaIPCperdeltaDollar-eps-converted-to.pdf, id=120, 460.72125
+pt x 468.75125pt>
+File: Figures/omnetpp_deltaIPCperdeltaDollar-eps-converted-to.pdf Graphic file 
+(type pdf)
 
-(./FinalReport.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 36.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 36.
+<use Figures/omnetpp_deltaIPCperdeltaDollar-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/omnetpp_deltaIPCperdeltaDollar-eps-converted-t
+o.pdf used on input line 44.
+(pdftex.def)             Requested size: 218.84486pt x 222.65915pt.
+ [7 <./Figures/deltaIPCperdeltaCost-eps-converted-to.pdf>]
+Package epstopdf Info: Source file: <Figures/chunksizeVsCost.eps>
+(epstopdf)                    date: 2015-04-27 22:22:22
+(epstopdf)                    size: 800490 bytes
+(epstopdf)             Output file: <Figures/chunksizeVsCost-eps-converted-to.p
+df>
+(epstopdf)                    date: 2015-04-27 22:22:29
+(epstopdf)                    size: 25612 bytes
+(epstopdf)             Command: <repstopdf --outfile=Figures/chunksizeVsCost-ep
+s-converted-to.pdf Figures/chunksizeVsCost.eps>
+(epstopdf)             \includegraphics on input line 56.
+Package epstopdf Info: Output file is already uptodate.
+
+<Figures/chunksizeVsCost-eps-converted-to.pdf, id=140, 486.81876pt x 447.6725pt
+>
+File: Figures/chunksizeVsCost-eps-converted-to.pdf Graphic file (type pdf)
+ <use Figures/chunksizeVsCost-eps-converted-to.pdf>
+Package pdftex.def Info: Figures/chunksizeVsCost-eps-converted-to.pdf used on i
+nput line 56.
+(pdftex.def)             Requested size: 365.11317pt x 335.75354pt.
+ [8 <./Figures/omnetpp_IPCperDollar-eps-converted-to.pdf> <./Figures/omnetpp_de
+ltaIPCperdeltaDollar-eps-converted-to.pdf>]) (./Conclusion.tex [9 <./Figures/ch
+unksizeVsCost-eps-converted-to.pdf>])
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 40.
+ [10]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 40.
+ (./FinalReport.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 40.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 40.
 Package rerunfilecheck Info: File `FinalReport.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 36.
+
+
+LaTeX Warning: There were undefined references.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 40.
  ) 
 Here is how much of TeX's memory you used:
- 9325 strings out of 493315
- 127724 string characters out of 6137904
- 257193 words of memory out of 5000000
- 12571 multiletter control sequences out of 15000+600000
- 15908 words of font info for 52 fonts, out of 8000000 for 9000
+ 10423 strings out of 493315
+ 148271 string characters out of 6137904
+ 279663 words of memory out of 5000000
+ 13641 multiletter control sequences out of 15000+600000
+ 17453 words of font info for 54 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 29i,7n,26p,3244b,448s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,8n,40p,3244b,554s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}
-</usr/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc1200.pfb></
-usr/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc1440.pfb></us
-r/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc2074.pfb></usr/
-local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc2488.pfb></usr/lo
-cal/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/loca
-l/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfxc1728.pfb>
-Output written on FinalReport.pdf (6 pages, 109023 bytes).
+</usr/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></
+usr/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc1200.pfb></us
+r/local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc1440.pfb></usr/
+local/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc2074.pfb></usr/lo
+cal/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfcc2488.pfb></usr/loca
+l/texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/
+texlive/2013/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/te
+xlive/2013/texmf-dist/fonts/type1/public/cm-super/sfxc1728.pfb>
+Output written on FinalReport.pdf (11 pages, 170004 bytes).
 PDF statistics:
- 134 PDF objects out of 1000 (max. 8388607)
- 101 compressed objects within 2 object streams
- 13 named destinations out of 1000 (max. 500000)
- 26 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 228 PDF objects out of 1000 (max. 8388607)
+ 172 compressed objects within 2 object streams
+ 23 named destinations out of 1000 (max. 500000)
+ 46 words of extra memory for PDF output out of 10000 (max. 10000000)
 
