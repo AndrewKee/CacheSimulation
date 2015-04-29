@@ -46,5 +46,11 @@ int main(int argc, char *argv[]){
 	read_trace(l1_data, l1_inst, l2, cache_results);
 	report(l1_data, l1_inst, l2, main_mem, cache_results, outputFile);
 
+	cache_dealloc(l1_inst);
+	cache_dealloc(l1_data);
+	cache_dealloc(l2);
+	free(cache_results);
+
+
 	return 0;
 }

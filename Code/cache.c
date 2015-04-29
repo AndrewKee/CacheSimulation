@@ -155,6 +155,21 @@ void cache_alloc(cache* cache_level)
 	}
 }
 
+void cache_dealloc(cache* cache_level)
+{
+	uint i = 0;
+
+	for(i = 0; i < cache_level->num_sets; i++){
+
+		LRU_DeConstruct(cache_level->cache_set[i].lru);
+		
+		free(cache_level->cache_set[i].block);
+	}
+	free(cache_level->cache_set);
+
+	free(cache_level);
+}
+
 //recreates the address
 ulli create_address(cache* cache_level, ulli tag, ulli index, ulli byte_offset){
 	ul address = 0;
