@@ -21,5 +21,8 @@ LRU* LRU_Construct(unsigned int num_block);
 node* LRU_Update(cache* cache_level, uint set, uint block);
 
 unsigned int LRU_Get_LRU(cache* cache_level, uint set);
+
+void LRU_DeConstruct(LRU* lru);
+
 void print_lru(cache* cache_level, uint set);
 #endif

@@ -90,6 +90,22 @@ unsigned int LRU_Get_LRU(cache* cache_level, uint set)
 	return cur_ptr->index;
 }
 
+void LRU_DeConstruct(LRU* lru)
+{
+	node* n_ptr = lru->head;
+	node* l_ptr = n_ptr;
+	while (n_ptr->next)
+	{
+		l_ptr = n_ptr;
+		n_ptr = n_ptr->next;
+		free(l_ptr);
+	}
+
+	free(n_ptr);
+
+	free(lru);
+}
+
 void print_lru(cache* cache_level, uint set){
 	struct node* cur_ptr = cache_level->cache_set[set].lru->head;
 	while (cur_ptr->next != NULL)

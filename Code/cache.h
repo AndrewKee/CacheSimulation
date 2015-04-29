@@ -135,6 +135,8 @@ void init_cache(cache* cache_level);
 //Allocate a cache's contents
 void cache_alloc(cache* cache_level);
 
+void cache_dealloc(cache* cache_level);
+
 static inline unsigned long int log_2(unsigned long int x)
 {
 	return (uint)round(log(x)/log(2));
