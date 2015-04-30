@@ -203,7 +203,6 @@ void read_trace(cache* l1_data, cache* l1_inst, cache* l2,
 	int bytesize = 0;
 	ulli flush_num = 0;
 	while(scanf("%c %lx %d\n", &op, &address, &bytesize) == 3){
-		// printf("%c %llx %d\n", op, address, bytesize);
 		if(op == 'I'){
 			flush_num++;
 			cache_results->num_inst++;
@@ -267,7 +266,6 @@ uint flush(cache* cache_level)
 
 				cycles += cache_level->transfer_cycles;
 				cycles += search_cache(cache_level->next_level, dirty_addr, 'W');
-				// cycles += cache_level->hit_time;
 			}
 			cache_level->cache_set[i].block[j].valid = false;
 			cache_level->cache_set[i].block[j].dirty = false;
@@ -511,20 +509,6 @@ void report(cache* l1_data, cache* l1_inst, cache* l2, cache* main_mem, results*
 	fprintf(outputFile, "L2 cache cost = $%d; Memory cost = $%d; Total cost = $%d\n", L2_cache_cost, memory_cost, ICache_cost + DCache_cost + L2_cache_cost + memory_cost);
 	fprintf(outputFile, "Flushes = %llu  :  Invalidates = %llu\n", cache_results->flush_cnt, cache_results->num_invalid);
 	fprintf(outputFile, "\n");
-
-	// fprintf(outputFile, "Memory Level:  L1i\n");
-
-	// print_cache(l1_inst, outputFile);
-	
-	// fprintf(outputFile, "Memory Level:  L1d\n");
-
-	// print_cache(l1_data, outputFile);
-	
-	// fprintf(outputFile, "Memory Level:  L2\n");
-
-	// print_cache(l2, outputFile);
-
-	
 
 	fclose(outputFile);
 }

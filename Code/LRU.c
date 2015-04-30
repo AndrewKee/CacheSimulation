@@ -1,6 +1,5 @@
 //LRU Linked List
 #include "LRU.h"
-// #include "cache.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -22,9 +21,6 @@ LRU* LRU_Construct(unsigned int num_block)
 				l_ptr--;
 				l_ptr->next = n_ptr;
 			}
-
-			// if (i == 0) lru->head = n_ptr;
-
 			n_ptr++;
 		}
 
@@ -34,8 +30,6 @@ LRU* LRU_Construct(unsigned int num_block)
 }
 
 node* LRU_Update(cache* cache_level, uint set, uint block){
-	// printf("block: %u\n", block);
-	//printf("%u %u\n", set, block);
 	if (block > cache_level->assoc) 
 	{
 		printf("Block index exceeds associativity: ERROR");

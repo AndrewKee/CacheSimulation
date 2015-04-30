@@ -1,6 +1,3 @@
-// struct cache;
-// typedef struct cache cache; 
-// typedef unsigned int uint;
 #ifndef LRU_H
 #define LRU_H
 #include "cache.h"
