@@ -3,13 +3,13 @@
 
 \section*{\textsc{\Large Results}}
 
-An initial way to view the performance of the traces with specific configurations is to look at the execution times for those Configurations.  Fig.~\ref{fig:executiontimes} shows each Trace and its execution time for each Configuration in relation to all the other traces.
+An initial way to view the performance of the traces with specific configurations is to look at the execution times for those configurations.  Fig.~\ref{fig:executiontimes} shows each trace and its execution time for each configuration in relation to all the other traces.
 \begin{figure}[H]
 \centering
 \includegraphics[scale = 0.65]{bargraph1.eps}
 \caption{Execution times of all traces with correspondence to all configurations\label{fig:executiontimes}}
 \end{figure}
-The execution time for some traces varies very little with changes in cache configuration while other traces are largely effected by the cache configuration.  As seen in Fig.~\ref{fig:executiontimes}, {libquantum} has a very steady execution time which does not seem to depend on cache configuration.  A trace like {omnetpp} however, is very dependent on the cache configuration.  The execution times range from 40 billion cycles to 120 billion cycles. 
+The execution time for some traces vary very little with changes in cache configuration while other traces are largely effected by the cache configuration.  As seen in Fig.~\ref{fig:executiontimes}, {libquantum} has a very steady execution time which does not seem to depend on cache configuration.  A trace like {omnetpp} however, is very dependent on the cache configuration.  The execution times range from 40 billion cycles to 120 billion cycles. 
 
 Another way to compare the performance of each trace is to look at the Cycles per Instruction (CPI).  This is plotted in Fig.~\ref{fig:CPI}.
 \begin{figure}[H]
